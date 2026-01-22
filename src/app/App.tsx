@@ -1,11 +1,11 @@
-import { useState } from 'react'
-import { Routes, Route, Link } from 'react-router-dom'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from 'react';
+import { Link, Route, Routes } from 'react-router-dom';
+import './App.css';
+import reactLogo from './assets/react.svg';
+import viteLogo from '/vite.svg';
 
 function Home() {
-  const [count, setCount] = useState(0)
+  const [count, setCount] = useState(0);
 
   return (
     <>
@@ -19,18 +19,14 @@ function Home() {
       </div>
       <h1>Tools</h1>
       <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          PWA React + TypeScript + Vite 프로젝트
-        </p>
+        <button onClick={() => setCount((count) => count + 1)}>count is {count}</button>
+        <p>PWA React + TypeScript + Vite 프로젝트</p>
       </div>
       <p className="read-the-docs">
         React Router가 설정되어 있습니다. <Link to="/about">About 페이지</Link>로 이동해보세요.
       </p>
     </>
-  )
+  );
 }
 
 function About() {
@@ -42,7 +38,7 @@ function About() {
         <Link to="/">홈으로 돌아가기</Link>
       </p>
     </div>
-  )
+  );
 }
 
 function App() {
@@ -51,7 +47,7 @@ function App() {
       <Route path="/" element={<Home />} />
       <Route path="/about" element={<About />} />
     </Routes>
-  )
+  );
 }
 
-export default App
+export default App;
