@@ -10,9 +10,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['vite.svg', 'icon-192x192.png', 'icon-512x512.png'],
       manifest: {
-        name: 'MIDAS Tools',
-        short_name: 'MIDAS Tools',
-        description: 'MIDAS Tools PWA 애플리케이션',
+        name: 'Tools',
+        short_name: 'Tools',
+        description: 'Tools PWA 애플리케이션',
         theme_color: '#000000',
         background_color: '#ffffff',
         display: 'standalone',
