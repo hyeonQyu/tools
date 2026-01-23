@@ -302,7 +302,7 @@ function ThemeProvider({ children }: ThemeProviderProps) {
         },
       },
     });
-  }, [mode, pxToRem]);
+  }, [mode]);
 
   return (
     <ThemeModeContext.Provider value={{ mode, setMode }}>
