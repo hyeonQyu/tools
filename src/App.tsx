@@ -1,3 +1,4 @@
+import BudgetingPage from '@/pages/budgeting/BudgetingPage';
 import { useState } from 'react';
 import { Link, Route, Routes } from 'react-router-dom';
 import './App.css';
@@ -44,8 +45,7 @@ function About() {
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/about" element={<About />} />
+      <Route path="/budgeting" element={<BudgetingPage />} />
     </Routes>
   );
 }
