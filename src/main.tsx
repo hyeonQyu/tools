@@ -1,3 +1,4 @@
+import { DialogProvider } from '@/dialog';
 import { IndexedDBProvider } from '@/indexed-db';
 import { ThemeProvider } from '@/styles';
 import { StrictMode } from 'react';
@@ -11,7 +12,9 @@ createRoot(document.getElementById('root')!).render(
     <BrowserRouter>
       <ThemeProvider>
         <IndexedDBProvider>
-          <App />
+          <DialogProvider>
+            <App />
+          </DialogProvider>
         </IndexedDBProvider>
       </ThemeProvider>
     </BrowserRouter>
