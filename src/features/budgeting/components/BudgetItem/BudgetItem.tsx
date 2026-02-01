@@ -1,9 +1,10 @@
 import { useCalculateBudgetItemValue } from '@/features/budgeting/hooks';
 import { useBudgetingConfigStore, useBudgetingStore } from '@/features/budgeting/stores';
 import { formatAmount, parseInputWithUnit } from '@/lib';
-import { Add as AddIcon, Delete as DeleteIcon, DragIndicator as DragIndicatorIcon, Remove as RemoveIcon } from '@mui/icons-material';
-import { Box, Card, Checkbox, FormControlLabel, IconButton, InputAdornment, Stack, TextField, Typography } from '@mui/material';
+import { Delete as DeleteIcon, DragIndicator as DragIndicatorIcon } from '@mui/icons-material';
+import { Box, Card, Checkbox, FormControlLabel, IconButton, Stack, TextField, Typography } from '@mui/material';
 import { ChangeEvent, HTMLAttributes } from 'react';
+import NumericInput from '../NumericInput';
 
 interface BudgetItemProps {
   itemId: string;
@@ -30,10 +31,13 @@ function BudgetItem({ itemId, dragHandleProps }: BudgetItemProps) {
     updateItem(itemId, { name: e.target.value });
   };
 
-  const handleAmountChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const inputValue = parseFloat(e.target.value) || 0;
-    const actualValue = parseInputWithUnit(inputValue, inputUnit);
+  const handleAmountChange = (value: number) => {
+    const actualValue = parseInputWithUnit(value, inputUnit);
     updateItem(itemId, { value: actualValue });
+  };
+
+  const handlePercentageChange = (value: number) => {
+    updateItem(itemId, { value });
   };
 
   const handleAmountFixedChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -44,7 +48,6 @@ function BudgetItem({ itemId, dragHandleProps }: BudgetItemProps) {
     deleteItem(itemId);
   };
 
-  // 현재 입력 모드 결정
   const isPercentageInput = !item.isAmountFixed && allocationType === 'percentage';
 
   return (
@@ -71,97 +74,34 @@ function BudgetItem({ itemId, dragHandleProps }: BudgetItemProps) {
         <Box>
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1}>
             {/* 금액 입력 */}
-            <Stack direction="row" spacing={1} alignItems="center" sx={{ flex: 1 }}>
-              <IconButton
-                onClick={() => updateItem(itemId, { value: Math.max(0, item.value - controlUnit) })}
-                size="small"
-                sx={{ border: 1, borderColor: 'divider' }}
-                disabled={isPercentageInput}
-              >
-                <RemoveIcon fontSize="small" />
-              </IconButton>
-              <TextField
-                fullWidth
-                size="small"
-                type="number"
-                label="금액"
-                value={item.value / inputUnit}
-                onChange={handleAmountChange}
-                disabled={isPercentageInput}
-                slotProps={{
-                  input: {
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <Typography variant="body2" color="text.secondary">
-                          원
-                        </Typography>
-                      </InputAdornment>
-                    ),
-                  },
-                }}
-              />
-              <IconButton
-                onClick={() => updateItem(itemId, { value: item.value + controlUnit })}
-                size="small"
-                sx={{ border: 1, borderColor: 'divider' }}
-                disabled={isPercentageInput}
-              >
-                <AddIcon fontSize="small" />
-              </IconButton>
-            </Stack>
+            <NumericInput
+              label="금액"
+              value={item.value / inputUnit}
+              onChange={handleAmountChange}
+              onIncrement={() => updateItem(itemId, { value: item.value + controlUnit })}
+              onDecrement={() => updateItem(itemId, { value: Math.max(0, item.value - controlUnit) })}
+              inputUnit={inputUnit}
+              disabled={isPercentageInput}
+            />
 
             {/* 비율 표시/입력 */}
-            <Stack direction="row" spacing={1} alignItems="center" sx={{ flex: 1 }}>
-              <IconButton
-                onClick={() => {
-                  if (isPercentageInput) {
-                    updateItem(itemId, { value: Math.max(0, item.value - 1) });
-                  }
-                }}
-                size="small"
-                sx={{ border: 1, borderColor: 'divider' }}
-                disabled={!isPercentageInput}
-              >
-                <RemoveIcon fontSize="small" />
-              </IconButton>
-              <TextField
-                fullWidth
-                size="small"
-                type="number"
-                label="비율"
-                value={isPercentageInput ? item.value : percentage.toFixed(1)}
-                onChange={(e) => {
-                  if (isPercentageInput) {
-                    const inputValue = parseFloat(e.target.value) || 0;
-                    updateItem(itemId, { value: inputValue });
-                  }
-                }}
-                disabled={!isPercentageInput}
-                slotProps={{
-                  input: {
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <Typography variant="body2" color="text.secondary">
-                          %
-                        </Typography>
-                      </InputAdornment>
-                    ),
-                  },
-                }}
-              />
-              <IconButton
-                onClick={() => {
-                  if (isPercentageInput) {
-                    updateItem(itemId, { value: item.value + 1 });
-                  }
-                }}
-                size="small"
-                sx={{ border: 1, borderColor: 'divider' }}
-                disabled={!isPercentageInput}
-              >
-                <AddIcon fontSize="small" />
-              </IconButton>
-            </Stack>
+            <NumericInput
+              label="비율"
+              value={isPercentageInput ? item.value : parseFloat(percentage.toFixed(1))}
+              onChange={handlePercentageChange}
+              onIncrement={() => {
+                if (isPercentageInput) {
+                  updateItem(itemId, { value: item.value + 1 });
+                }
+              }}
+              onDecrement={() => {
+                if (isPercentageInput) {
+                  updateItem(itemId, { value: Math.max(0, item.value - 1) });
+                }
+              }}
+              unit="%"
+              disabled={!isPercentageInput}
+            />
           </Stack>
         </Box>
 
