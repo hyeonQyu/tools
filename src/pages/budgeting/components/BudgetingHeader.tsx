@@ -1,3 +1,4 @@
+import { SlideUpTransition } from '@/components/SlideUpTransition';
 import { useDialog } from '@/dialog';
 import { BudgetingConfigDialog } from '@/features/budgeting/components';
 import { Settings as SettingsIcon } from '@mui/icons-material';
@@ -10,8 +11,10 @@ function BudgetingHeader() {
     await dialog.open<void>({
       title: '분배 설정',
       content: (close) => <BudgetingConfigDialog close={close} />,
-      maxWidth: 'sm',
-      fullWidth: true,
+      fullScreen: true,
+      slots: {
+        transition: SlideUpTransition,
+      },
     });
   };
 
