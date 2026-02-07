@@ -26,9 +26,6 @@ function NumericInput({ value, onChange, onIncrement, onDecrement, inputUnit, un
 
   return (
     <Stack direction="row" spacing={1} alignItems="center" sx={{ flex: 1 }}>
-      <IconButton onClick={onDecrement} size="small" sx={{ border: 1, borderColor: 'divider' }} disabled={disabled}>
-        <RemoveIcon fontSize="small" />
-      </IconButton>
       <TextField
         {...textFieldProps}
         fullWidth
@@ -51,6 +48,10 @@ function NumericInput({ value, onChange, onIncrement, onDecrement, inputUnit, un
           },
         }}
       />
+
+      <IconButton onClick={onDecrement} size="small" sx={{ border: 1, borderColor: 'divider' }} disabled={disabled}>
+        <RemoveIcon fontSize="small" />
+      </IconButton>
       <IconButton onClick={onIncrement} size="small" sx={{ border: 1, borderColor: 'divider' }} disabled={disabled}>
         <AddIcon fontSize="small" />
       </IconButton>
