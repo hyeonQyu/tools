@@ -33,7 +33,6 @@ export const useBudgetingAutoSave = () => {
         };
 
         await idbStore.update('current-budgeting', updatedData);
-        console.log('[useBudgetingAutoSave] 저장 완료:', updatedData);
       } catch (error) {
         console.error('[useBudgetingAutoSave] 저장 실패:', error);
       }
