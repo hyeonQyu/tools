@@ -1,5 +1,6 @@
 import { DialogProvider } from '@/dialog';
 import { IndexedDBProvider } from '@/indexed-db';
+import ReactQueryClientProvider from '@/react-query/ReactQueryClientProvider';
 import { ThemeProvider } from '@/styles';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
@@ -9,13 +10,15 @@ import App from './App';
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
-      <ThemeProvider>
-        <IndexedDBProvider>
-          <DialogProvider>
-            <App />
-          </DialogProvider>
-        </IndexedDBProvider>
-      </ThemeProvider>
+      <ReactQueryClientProvider>
+        <ThemeProvider>
+          <IndexedDBProvider>
+            <DialogProvider>
+              <App />
+            </DialogProvider>
+          </IndexedDBProvider>
+        </ThemeProvider>
+      </ReactQueryClientProvider>
     </BrowserRouter>
   </StrictMode>,
 );

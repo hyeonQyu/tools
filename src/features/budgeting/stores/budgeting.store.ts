@@ -2,7 +2,7 @@ import { AllocationType, BudgetItem } from '@/features/budgeting/types';
 import { generateRandomKey } from '@/lib';
 import { create } from 'zustand';
 
-interface BudgetingStates {
+export interface BudgetingStates {
   totalAmount: number;
   allocationType: AllocationType;
   items: BudgetItem[];
@@ -15,7 +15,8 @@ interface BudgetingActions {
   updateItem: (id: string, updates: Partial<BudgetItem>) => void;
   deleteItem: (id: string) => void;
   reorderItems: (items: BudgetItem[]) => void;
-  reset: () => void;
+  reset: (states?: Partial<BudgetingStates>) => void;
+  getState: () => BudgetingStates;
 }
 
 type BudgetingStore = BudgetingStates & BudgetingActions;
@@ -26,7 +27,7 @@ const initialStates: BudgetingStates = {
   items: [],
 };
 
-export const useBudgetingStore = create<BudgetingStore>()((set) => ({
+export const useBudgetingStore = create<BudgetingStore>()((set, get) => ({
   ...initialStates,
   setTotalAmount: (amount) => set({ totalAmount: amount }),
   setAllocationType: (type) => set({ allocationType: type }),
@@ -51,5 +52,10 @@ export const useBudgetingStore = create<BudgetingStore>()((set) => ({
       items: state.items.filter((item) => item.id !== id),
     })),
   reorderItems: (items) => set({ items }),
-  reset: () => set(initialStates),
+  reset: (states) => set({ ...initialStates, ...states }),
+  getState: () => ({
+    totalAmount: get().totalAmount,
+    allocationType: get().allocationType,
+    items: get().items,
+  }),
 }));

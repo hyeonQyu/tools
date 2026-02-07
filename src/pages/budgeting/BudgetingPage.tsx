@@ -1,8 +1,12 @@
 import { BudgetItemList } from '@/features/budgeting/components';
+import { useBudgetingAutoSave, useBudgetingLoad } from '@/features/budgeting/hooks';
 import { Box, Stack } from '@mui/material';
 import { AllocationTypeSelector, BudgetingHeader, BudgetSummary, TotalAmountInput } from './components';
 
 function BudgetingPage() {
+  useBudgetingLoad();
+  useBudgetingAutoSave();
+
   return (
     <Box sx={{ maxWidth: 900, mx: 'auto' }}>
       <Stack

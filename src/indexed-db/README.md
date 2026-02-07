@@ -111,6 +111,187 @@ export function MyComponent() {
 }
 ```
 
+## 타입 중복 방지 베스트 프랙티스
+
+### 문제: 기존 TypeScript 타입과 Zod 스키마 중복
+
+IndexedDB 스키마를 정의할 때 프로젝트에 이미 TypeScript 타입이 있다면, 동일한 구조를 Zod 스키마로 다시 작성하게 되어 중복이 발생합니다:
+
+```typescript
+// ❌ 나쁜 예: 타입과 스키마 중복 정의
+
+// types/user.types.ts
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  age: number;
+}
+
+// db.config.ts
+const userSchema = z.object({
+  id: z.string(),        // 중복!
+  name: z.string(),      // 중복!
+  email: z.string(),     // 중복!
+  age: z.number(),       // 중복!
+});
+```
+
+**문제점**:
+- 타입 정의가 두 곳에 존재
+- 타입 변경 시 두 곳 모두 수정해야 함
+- 동기화 누락 위험
+
+### 해결: Zod 스키마를 진실의 원천으로
+
+**Zod 스키마를 먼저 정의**하고, TypeScript 타입은 `z.infer`로 자동 추론합니다:
+
+```typescript
+// ✅ 좋은 예: Zod 스키마에서 타입 추론
+
+// types/user.types.ts
+import { z } from 'zod';
+
+// 1. Zod 스키마 정의 (진실의 원천)
+export const userSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  email: z.string().email(),
+  age: z.number().min(0).max(150),
+});
+
+// 2. TypeScript 타입은 스키마에서 자동 추론
+export type User = z.infer<typeof userSchema>;
+
+// db.config.ts
+import { userSchema } from '@/types/user.types';
+
+const dbConfig = createDBConfig({
+  name: 'MyApp',
+  version: 1,
+  stores: [
+    {
+      name: 'users',
+      schema: userSchema, // ✅ 기존 스키마 재사용!
+      keyPath: 'id',
+      autoIncrement: false,
+    },
+  ] as const,
+});
+```
+
+**장점**:
+- ✅ 타입 정의와 런타임 검증 로직이 완전히 동기화됨
+- ✅ 중복 제거: 한 곳만 수정하면 타입과 스키마가 모두 업데이트됨
+- ✅ IndexedDB에서 기존 스키마를 재사용 가능
+- ✅ 유지보수 용이
+
+### 실제 예제: Budgeting 타입
+
+프로젝트의 budgeting 기능에서 실제로 적용한 예제입니다:
+
+```typescript
+// features/budgeting/types/budgeting.types.ts
+import { z } from 'zod';
+
+// Zod 스키마 정의
+export const budgetingUnitSchema = z.union([
+  z.literal(1),
+  z.literal(10000),
+  z.literal(100000),
+]);
+
+export const allocationTypeSchema = z.enum(['percentage', 'amount']);
+
+export const budgetItemSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  value: z.number(),
+  isAmountFixed: z.boolean(),
+});
+
+// 타입은 스키마에서 추론
+export type BudgetingUnit = z.infer<typeof budgetingUnitSchema>;
+export type AllocationType = z.infer<typeof allocationTypeSchema>;
+export type BudgetItem = z.infer<typeof budgetItemSchema>;
+
+// indexed-db/db.config.ts
+import {
+  budgetItemSchema,
+  allocationTypeSchema,
+  budgetingUnitSchema,
+} from '@/features/budgeting/types';
+
+// 기존 스키마를 조합하여 IndexedDB 스키마 생성
+const currentBudgetingSchema = z.object({
+  id: z.literal('current-budgeting'),
+  form: z.object({
+    totalAmount: z.number(),
+    allocationType: allocationTypeSchema, // ✅ 재사용
+    items: z.array(budgetItemSchema),     // ✅ 재사용
+  }),
+  config: z.object({
+    inputUnit: budgetingUnitSchema,       // ✅ 재사용
+    controlUnit: budgetingUnitSchema,     // ✅ 재사용
+  }),
+  savedAt: z.number(),
+});
+```
+
+### 마이그레이션 가이드
+
+기존 TypeScript 타입을 Zod 스키마 기반으로 전환하는 방법:
+
+1. **기존 타입 파일에 Zod import 추가**
+   ```typescript
+   import { z } from 'zod';
+   ```
+
+2. **타입을 Zod 스키마로 변환**
+   ```typescript
+   // Before
+   export type Status = 'active' | 'inactive';
+   
+   // After
+   export const statusSchema = z.enum(['active', 'inactive']);
+   export type Status = z.infer<typeof statusSchema>;
+   ```
+
+3. **복잡한 객체도 동일하게 적용**
+   ```typescript
+   // Before
+   export interface Product {
+     id: number;
+     name: string;
+     price: number;
+     status: Status;
+   }
+   
+   // After
+   export const productSchema = z.object({
+     id: z.number(),
+     name: z.string(),
+     price: z.number(),
+     status: statusSchema, // 다른 스키마 재사용!
+   });
+   export type Product = z.infer<typeof productSchema>;
+   ```
+
+4. **IndexedDB 설정에서 스키마 재사용**
+   ```typescript
+   import { productSchema } from '@/types';
+   
+   const dbConfig = createDBConfig({
+     stores: [
+       {
+         name: 'products',
+         schema: productSchema, // ✅ 재사용
+         // ...
+       },
+     ] as const,
+   });
+   ```
+
 ## 기본 사용법
 
 ### 1. Provider 설정

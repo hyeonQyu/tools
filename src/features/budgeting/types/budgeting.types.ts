@@ -1,10 +1,16 @@
-export type BudgetingUnit = 1 | 10000 | 100000;
+import { z } from 'zod';
 
-export type AllocationType = 'percentage' | 'amount';
+export const budgetingUnitSchema = z.union([z.literal(1), z.literal(10000), z.literal(100000)]);
 
-export interface BudgetItem {
-  id: string;
-  name: string;
-  value: number;
-  isAmountFixed: boolean;
-}
+export const allocationTypeSchema = z.enum(['percentage', 'amount']);
+
+export const budgetItemSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  value: z.number(),
+  isAmountFixed: z.boolean(),
+});
+
+export type BudgetingUnit = z.infer<typeof budgetingUnitSchema>;
+export type AllocationType = z.infer<typeof allocationTypeSchema>;
+export type BudgetItem = z.infer<typeof budgetItemSchema>;

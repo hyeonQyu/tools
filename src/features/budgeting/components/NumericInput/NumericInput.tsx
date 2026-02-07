@@ -1,5 +1,5 @@
 import { BudgetingUnit } from '@/features/budgeting/types';
-import { getUnitLabel } from '@/features/budgeting/utils.ts';
+import { getUnitLabel } from '@/features/budgeting/utils';
 import { Add as AddIcon, Remove as RemoveIcon } from '@mui/icons-material';
 import { IconButton, InputAdornment, Stack, TextField, TextFieldProps, Typography } from '@mui/material';
 import { ChangeEvent } from 'react';

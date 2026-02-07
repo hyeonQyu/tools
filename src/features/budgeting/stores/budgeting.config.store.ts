@@ -1,7 +1,7 @@
 import { BudgetingUnit } from '@/features/budgeting/types';
 import { create } from 'zustand';
 
-interface BudgetingConfigStates {
+export interface BudgetingConfigStates {
   inputUnit: BudgetingUnit;
   controlUnit: BudgetingUnit;
 }
@@ -9,7 +9,8 @@ interface BudgetingConfigStates {
 interface BudgetingConfigActions {
   setInputUnit: (inputUnit: BudgetingUnit) => void;
   setControlUnit: (controlUnit: BudgetingUnit) => void;
-  reset: () => void;
+  reset: (states?: Partial<BudgetingConfigStates>) => void;
+  getState: () => BudgetingConfigStates;
 }
 
 type BudgetingConfigStore = BudgetingConfigStates & BudgetingConfigActions;
@@ -19,9 +20,13 @@ const initialStates: BudgetingConfigStates = {
   controlUnit: 1,
 };
 
-export const useBudgetingConfigStore = create<BudgetingConfigStore>()((set) => ({
+export const useBudgetingConfigStore = create<BudgetingConfigStore>()((set, get) => ({
   ...initialStates,
   setInputUnit: (inputUnit) => set({ inputUnit }),
   setControlUnit: (controlUnit) => set({ controlUnit }),
-  reset: () => set(initialStates),
+  reset: (states) => set({ ...initialStates, ...states }),
+  getState: () => ({
+    inputUnit: get().inputUnit,
+    controlUnit: get().controlUnit,
+  }),
 }));
