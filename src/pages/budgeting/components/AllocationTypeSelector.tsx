@@ -18,8 +18,8 @@ function AllocationTypeSelector() {
         분배 방식
       </Typography>
       <ToggleButtonGroup value={allocationType} exclusive onChange={handleAllocationTypeChange} fullWidth size="small">
-        <ToggleButton value="percentage">비율(%)</ToggleButton>
         <ToggleButton value="amount">금액(원)</ToggleButton>
+        <ToggleButton value="percentage">비율(%)</ToggleButton>
       </ToggleButtonGroup>
     </Box>
   );

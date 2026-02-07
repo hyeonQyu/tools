@@ -22,7 +22,7 @@ type BudgetingStore = BudgetingStates & BudgetingActions;
 
 const initialStates: BudgetingStates = {
   totalAmount: 0,
-  allocationType: 'percentage',
+  allocationType: 'amount',
   items: [],
 };
 

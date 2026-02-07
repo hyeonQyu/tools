@@ -72,7 +72,7 @@ function BudgetItem({ itemId, dragHandleProps }: BudgetItemProps) {
 
         {/* 세 번째 줄: 금액/비율 입력 */}
         <Box>
-          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1}>
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
             {/* 금액 입력 */}
             <NumericInput
               label="금액"
