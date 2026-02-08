@@ -13,9 +13,15 @@ const { AppRoutesProvider, useAppRoutes, useTypedNavigation, _types } = createAp
       component: <SelectPage />,
     },
   },
-  budgeting: {
+  tool: {
     _metadata: {
-      component: <BudgetingPage />,
+      component: null,
+    },
+
+    budgeting: {
+      _metadata: {
+        component: <BudgetingPage />,
+      },
     },
   },
 });

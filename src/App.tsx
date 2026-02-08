@@ -8,26 +8,30 @@ type RouteNodeWithPath = {
   path: string;
 };
 
-const getRouteNodes = (routeTree: AppRouteTree, paths: string[] = []): RouteNodeWithPath[] => {
-  const checkRouteNode = (obj: unknown): obj is AppRouteNode => {
-    if (typeof obj === 'object' && obj !== null && '_metadata' in obj) {
-      return typeof obj._metadata === 'object' && obj._metadata !== null && 'component' in obj._metadata;
-    }
-    return false;
-  };
+const checkRouteNode = (obj: unknown): obj is AppRouteNode => {
+  return (
+    typeof obj === 'object' &&
+    obj !== null &&
+    '_metadata' in obj &&
+    typeof (obj as AppRouteNode)._metadata === 'object' &&
+    (obj as AppRouteNode)._metadata !== null &&
+    'component' in (obj as AppRouteNode)._metadata
+  );
+};
 
-  const checkRouteTree = (obj: unknown): obj is AppRouteTree => {
-    return typeof obj === 'object' && obj !== null && !('_metadata' in obj);
-  };
-
+const getRouteNodes = (routeTree: AppRouteTree, pathPrefix: string[] = []): RouteNodeWithPath[] => {
   return Object.entries(routeTree).reduce<RouteNodeWithPath[]>((acc, [key, value]) => {
-    if (checkRouteNode(value)) {
+    if (value == null || typeof value !== 'object') return acc;
+
+    const childKeys = Object.keys(value);
+
+    if (childKeys.length > 0) {
+      acc.push(...getRouteNodes(value as unknown as AppRouteTree, pathPrefix.concat(key)));
+    } else if (checkRouteNode(value)) {
       acc.push({
         node: value,
-        path: `/${paths.concat(key).join('/')}`,
+        path: `/${pathPrefix.concat(key).join('/')}`,
       });
-    } else if (checkRouteTree(value)) {
-      acc.push(...getRouteNodes(value, paths.concat(key)));
     }
     return acc;
   }, []);
