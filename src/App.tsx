@@ -19,14 +19,24 @@ const checkRouteNode = (obj: unknown): obj is AppRouteNode => {
   );
 };
 
+const checkNestedRouteTree = (obj: unknown): obj is AppRouteTree => {
+  if (obj == null || typeof obj !== 'object' || Array.isArray(obj)) return false;
+  const keys = Object.keys(obj);
+  if (keys.length === 0) return false;
+  return keys.every((k) => {
+    const v = (obj as Record<string, unknown>)[k];
+    return v != null && typeof v === 'object';
+  });
+};
+
 const getRouteNodes = (routeTree: AppRouteTree, pathPrefix: string[] = []): RouteNodeWithPath[] => {
   return Object.entries(routeTree).reduce<RouteNodeWithPath[]>((acc, [key, value]) => {
     if (value == null || typeof value !== 'object') return acc;
 
-    const childKeys = Object.keys(value);
+    const childKeys = Object.keys(value).filter((k) => k !== '_metadata');
 
-    if (childKeys.length > 0) {
-      acc.push(...getRouteNodes(value as unknown as AppRouteTree, pathPrefix.concat(key)));
+    if (childKeys.length > 0 && checkNestedRouteTree(value)) {
+      acc.push(...getRouteNodes(value, pathPrefix.concat(key)));
     } else if (checkRouteNode(value)) {
       acc.push({
         node: value,
