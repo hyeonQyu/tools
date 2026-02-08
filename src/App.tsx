@@ -1,32 +1,11 @@
 import SelectPage from '@/pages/select/SelectPage';
-import { AppRouteNode, AppRouteTree, useAppRoutes, useTypedNavigation } from '@/routes';
+import { AppRouteNode, AppRouteTree, checkNestedRouteTree, checkRouteNode, useAppRoutes, useTypedNavigate } from '@/routes';
 import { useEffect } from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
 
 type RouteNodeWithPath = {
   node: AppRouteNode;
   path: string;
-};
-
-const checkRouteNode = (obj: unknown): obj is AppRouteNode => {
-  return (
-    typeof obj === 'object' &&
-    obj !== null &&
-    '_metadata' in obj &&
-    typeof (obj as AppRouteNode)._metadata === 'object' &&
-    (obj as AppRouteNode)._metadata !== null &&
-    'component' in (obj as AppRouteNode)._metadata
-  );
-};
-
-const checkNestedRouteTree = (obj: unknown): obj is AppRouteTree => {
-  if (obj == null || typeof obj !== 'object' || Array.isArray(obj)) return false;
-  const keys = Object.keys(obj);
-  if (keys.length === 0) return false;
-  return keys.every((k) => {
-    const v = (obj as Record<string, unknown>)[k];
-    return v != null && typeof v === 'object';
-  });
 };
 
 const getRouteNodes = (routeTree: AppRouteTree, pathPrefix: string[] = []): RouteNodeWithPath[] => {
@@ -51,7 +30,7 @@ function App() {
   const appRoutes = useAppRoutes();
   const routeNodes = getRouteNodes(appRoutes);
   const location = useLocation();
-  const navigate = useTypedNavigation();
+  const navigate = useTypedNavigate();
 
   useEffect(() => {
     if (location.pathname === '/') {

@@ -1,15 +1,17 @@
 import BudgetingPage from '@/pages/budgeting/BudgetingPage';
 import SelectPage from '@/pages/select/SelectPage';
 import { createAppRoutes } from '@hyeonqyu/typed-router-react';
+import { AccountBalanceWallet } from '@mui/icons-material';
 import { ReactNode } from 'react';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const { AppRoutesProvider, useAppRoutes, useTypedNavigation, _types } = createAppRoutes<
-  { component: ReactNode },
+const { AppRoutesProvider, useAppRoutes, useTypedNavigate, getPathnameFromNode, _types } = createAppRoutes<
+  { name?: string; component: ReactNode; icon?: ReactNode },
   Record<string, unknown>
 >()({
   select: {
     _metadata: {
+      name: '선택',
       component: <SelectPage />,
     },
   },
@@ -20,6 +22,8 @@ const { AppRoutesProvider, useAppRoutes, useTypedNavigation, _types } = createAp
 
     budgeting: {
       _metadata: {
+        name: '예산 분배',
+        icon: <AccountBalanceWallet />,
         component: <BudgetingPage />,
       },
     },
@@ -27,7 +31,7 @@ const { AppRoutesProvider, useAppRoutes, useTypedNavigation, _types } = createAp
 });
 
 // eslint-disable-next-line react-refresh/only-export-components
-export { AppRoutesProvider, useAppRoutes, useTypedNavigation };
+export { AppRoutesProvider, getPathnameFromNode, useAppRoutes, useTypedNavigate };
 export type AppRouteNode = typeof _types.AppRouteNode;
 export type AppRoutesContext = typeof _types.AppRoutesContext;
 export type AppRoutesMetadata = typeof _types.AppRoutesMetadata;

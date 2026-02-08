@@ -1633,16 +1633,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hyeonqyu/typed-router-react@npm:^1.7.0":
-  version: 1.7.0
-  resolution: "@hyeonqyu/typed-router-react@npm:1.7.0"
+"@hyeonqyu/typed-router-react@npm:^1.7.1":
+  version: 1.7.1
+  resolution: "@hyeonqyu/typed-router-react@npm:1.7.1"
   dependencies:
     "@hyeonqyu/typed-router-core": "npm:^1.6.0"
   peerDependencies:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
     react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
     react-router-dom: ^6.0.0 || ^7.0.0
-  checksum: 10c0/88b390271b913b90bee03096b831eb1d358c42fa20ec486542da5cc230993f0abe70a8ca460e9185df83997c7d51496edb1711516889409b6fe7a930c6392ebb
+  checksum: 10c0/414e67af57e89ae376df67b5fd025dda275ce871e70d5fbb983368a46765cc1681dcd16f9be8130f6358f4c48f191f5234a8ab25f97f3804f4608c752881f7e0
   languageName: node
   linkType: hard
 
@@ -6110,7 +6110,7 @@ __metadata:
     "@emotion/cache": "npm:^11.14.0"
     "@emotion/react": "npm:^11.14.0"
     "@emotion/styled": "npm:^11.14.1"
-    "@hyeonqyu/typed-router-react": "npm:^1.7.0"
+    "@hyeonqyu/typed-router-react": "npm:^1.7.1"
     "@mui/icons-material": "npm:^7.3.7"
     "@mui/material": "npm:^7.3.7"
     "@tanstack/react-query": "npm:^5.90.20"
