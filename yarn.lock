@@ -1620,6 +1620,32 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@hyeonqyu/typed-router-core@npm:^1.6.0":
+  version: 1.6.1
+  resolution: "@hyeonqyu/typed-router-core@npm:1.6.1"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+    zod: ^3.0.0
+  peerDependenciesMeta:
+    zod:
+      optional: true
+  checksum: 10c0/075329f8dee81a049a0f092fc93fb943319a2773c7e3acb423c7ab1c256325d97232831df97cbfc443ed2481da682e5198016c46e4eb2a001c79ed7a25ff2e5a
+  languageName: node
+  linkType: hard
+
+"@hyeonqyu/typed-router-react@npm:^1.7.0":
+  version: 1.7.0
+  resolution: "@hyeonqyu/typed-router-react@npm:1.7.0"
+  dependencies:
+    "@hyeonqyu/typed-router-core": "npm:^1.6.0"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+    react-router-dom: ^6.0.0 || ^7.0.0
+  checksum: 10c0/88b390271b913b90bee03096b831eb1d358c42fa20ec486542da5cc230993f0abe70a8ca460e9185df83997c7d51496edb1711516889409b6fe7a930c6392ebb
+  languageName: node
+  linkType: hard
+
 "@isaacs/balanced-match@npm:^4.0.1":
   version: 4.0.1
   resolution: "@isaacs/balanced-match@npm:4.0.1"
@@ -6084,6 +6110,7 @@ __metadata:
     "@emotion/cache": "npm:^11.14.0"
     "@emotion/react": "npm:^11.14.0"
     "@emotion/styled": "npm:^11.14.1"
+    "@hyeonqyu/typed-router-react": "npm:^1.7.0"
     "@mui/icons-material": "npm:^7.3.7"
     "@mui/material": "npm:^7.3.7"
     "@tanstack/react-query": "npm:^5.90.20"
