@@ -1,4 +1,4 @@
-import { getPathnameFromNode, useAppRoutes } from '@/routes';
+import { AppRoutesPathname, getPathnameFromNode, useAppRoutes } from '@/routes';
 import { useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 
@@ -11,7 +11,7 @@ export const useBottomNavigation = () => {
     const navigationRouteNodes = [appRoutes.select] as const;
 
     return navigationRouteNodes.map((routeNode) => {
-      const pathname = getPathnameFromNode(routeNode) ?? '';
+      const pathname = (getPathnameFromNode(routeNode) ?? '') as AppRoutesPathname;
       const label = routeNode._metadata.name;
 
       return {

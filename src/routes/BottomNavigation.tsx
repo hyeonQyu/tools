@@ -1,6 +1,6 @@
 'use client';
 
-import { AppRoutesPathname, useBottomNavigation } from '@/routes';
+import { useBottomNavigation, useTypedNavigate } from '@/routes';
 import { pxToRem, Z_INDEX } from '@/styles';
 import { BottomNavigationAction, BottomNavigation as MUIBottomNavigation, Paper, useTheme } from '@mui/material';
 import { ComponentType } from 'react';
@@ -9,6 +9,7 @@ export const BOTTOM_NAVIGATION_HEIGHT = 56;
 
 function BottomNavigation() {
   const { spacing } = useTheme();
+  const navigate = useTypedNavigate();
 
   const { navigationData, currentNavigationIndex } = useBottomNavigation();
 
@@ -25,16 +26,16 @@ function BottomNavigation() {
       }}
     >
       <MUIBottomNavigation showLabels value={currentNavigationIndex}>
-        {navigationData.map((item, index) => {
+        {navigationData.map(({ pathname, label, iconFilled, iconOutlined }, index) => {
           const isActive = currentNavigationIndex === index;
-          const IconComponent = (isActive ? item.iconFilled : item.iconOutlined) as ComponentType | null;
+          const IconComponent = (isActive ? iconFilled : iconOutlined) as ComponentType | null;
 
           return (
             <BottomNavigationAction
-              key={item.pathname}
-              label={item.label}
+              key={pathname}
+              label={label}
               icon={IconComponent && <IconComponent />}
-              href={item.pathname as AppRoutesPathname}
+              onClick={() => navigate(pathname)}
               sx={{
                 minWidth: spacing(8),
                 padding: spacing(1, 2),
