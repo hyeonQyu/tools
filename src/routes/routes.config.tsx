@@ -1,17 +1,28 @@
 import BudgetingPage from '@/pages/budgeting/BudgetingPage';
 import SelectPage from '@/pages/select/SelectPage';
 import { createAppRoutes } from '@hyeonqyu/typed-router-react';
-import { AccountBalanceWallet } from '@mui/icons-material';
-import { ReactNode } from 'react';
+import { LocalAtm, LocalAtmOutlined, ViewCarousel, ViewCarouselOutlined } from '@mui/icons-material';
+import { ComponentType, ReactNode } from 'react';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const { AppRoutesProvider, useAppRoutes, useTypedNavigate, getPathnameFromNode, _types } = createAppRoutes<
-  { name?: string; component: ReactNode; icon?: ReactNode },
+  {
+    name?: string;
+    component: ReactNode;
+    icon?: {
+      outlined: ComponentType;
+      filled: ComponentType;
+    };
+  },
   Record<string, unknown>
 >()({
   select: {
     _metadata: {
       name: '선택',
+      icon: {
+        outlined: ViewCarouselOutlined,
+        filled: ViewCarousel,
+      },
       component: <SelectPage />,
     },
   },
@@ -23,7 +34,10 @@ const { AppRoutesProvider, useAppRoutes, useTypedNavigate, getPathnameFromNode, 
     budgeting: {
       _metadata: {
         name: '예산 분배',
-        icon: <AccountBalanceWallet />,
+        icon: {
+          outlined: LocalAtmOutlined,
+          filled: LocalAtm,
+        },
         component: <BudgetingPage />,
       },
     },

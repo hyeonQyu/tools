@@ -1,11 +1,11 @@
 import { AppRouteNode, checkRouteNode, getPathnameFromNode, useAppRoutes, useTypedNavigate } from '@/routes';
 import { Box, Card, CardActionArea, CardContent, Typography } from '@mui/material';
-import { cloneElement, ReactElement, ReactNode } from 'react';
+import { ComponentType } from 'react';
 
 interface Tool {
   key: string;
   name: string;
-  icon: ReactNode;
+  IconComponent: ComponentType | null;
   path: string;
 }
 
@@ -22,7 +22,7 @@ function SelectPage() {
       return {
         key,
         name: node._metadata.name || '',
-        icon: node._metadata.icon,
+        IconComponent: node._metadata.icon?.filled ?? null,
         path: path as string,
       };
     });
@@ -44,9 +44,9 @@ function SelectPage() {
           gap: 3,
         }}
       >
-        {tools.map((tool) => (
+        {tools.map(({ key, name, IconComponent, path }) => (
           <Card
-            key={tool.key}
+            key={key}
             sx={{
               height: '100%',
               transition: 'all 0.2s ease',
@@ -57,7 +57,7 @@ function SelectPage() {
             }}
           >
             <CardActionArea
-              onClick={() => navigate(tool.path as Parameters<typeof navigate>[0])}
+              onClick={() => navigate(path as Parameters<typeof navigate>[0])}
               sx={{
                 height: '100%',
                 display: 'flex',
@@ -77,7 +77,7 @@ function SelectPage() {
                   p: 2,
                 }}
               >
-                {tool.icon && (
+                {IconComponent && (
                   <Box
                     sx={{
                       display: 'flex',
@@ -90,13 +90,11 @@ function SelectPage() {
                       color: 'primary.contrastText',
                     }}
                   >
-                    {typeof tool.icon === 'object' && 'type' in tool.icon
-                      ? cloneElement(tool.icon as ReactElement, { sx: { fontSize: 28 } })
-                      : tool.icon}
+                    <IconComponent />
                   </Box>
                 )}
                 <Typography variant="body1" component="div" fontWeight={500}>
-                  {tool.name}
+                  {name}
                 </Typography>
               </CardContent>
             </CardActionArea>

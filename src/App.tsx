@@ -1,3 +1,4 @@
+import Layout from '@/components/Layout/Layout';
 import SelectPage from '@/pages/select/SelectPage';
 import { AppRouteNode, AppRouteTree, checkNestedRouteTree, checkRouteNode, useAppRoutes, useTypedNavigate } from '@/routes';
 import { useEffect } from 'react';
@@ -39,12 +40,14 @@ function App() {
   }, [location.pathname, navigate]);
 
   return (
-    <Routes>
-      <Route index element={<SelectPage />} />
-      {routeNodes.map(({ node, path }) => (
-        <Route key={path} path={path} element={node._metadata.component} />
-      ))}
-    </Routes>
+    <Layout>
+      <Routes>
+        <Route index element={<SelectPage />} />
+        {routeNodes.map(({ node, path }) => (
+          <Route key={path} path={path} element={node._metadata.component} />
+        ))}
+      </Routes>
+    </Layout>
   );
 }
 
