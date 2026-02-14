@@ -30,7 +30,6 @@ function NumericInput({ value, onChange, onIncrement, onDecrement, inputUnit, un
         {...textFieldProps}
         fullWidth
         type="text"
-        inputMode="decimal"
         value={value}
         onChange={handleChange}
         disabled={disabled}
@@ -38,6 +37,7 @@ function NumericInput({ value, onChange, onIncrement, onDecrement, inputUnit, un
           ...textFieldProps.slotProps,
           input: {
             ...textFieldProps.slotProps?.input,
+            inputMode: 'decimal',
             endAdornment: (
               <InputAdornment position="end" sx={{ minWidth: 'fit-content' }}>
                 <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: 'nowrap', minWidth: 'max-content' }}>
