@@ -1,4 +1,5 @@
 import { generateRandomKey, r } from '@/lib';
+import { BOTTOM_NAVIGATION_HEIGHT } from '@/routes';
 import { Button, DialogActions, DialogContent, DialogTitle, Dialog as MUIDialog } from '@mui/material';
 import { ReactNode, useCallback, useMemo, useState } from 'react';
 import { DialogContext } from './DialogContext';
@@ -119,6 +120,18 @@ export function DialogProvider({ children }: DialogProviderProps) {
               if (reason === 'escapeKeyDown' && options.disableEscapeKeyDown) return;
               handleClose(null);
             }}
+            sx={
+              options.fullScreen
+                ? {
+                    '& .MuiDialog-container': {
+                      alignItems: 'flex-start',
+                    },
+                    '& .MuiDialog-paper': {
+                      maxHeight: `calc(100dvh - ${BOTTOM_NAVIGATION_HEIGHT}px)`,
+                    },
+                  }
+                : undefined
+            }
           >
             {options.title && <DialogTitle>{options.title}</DialogTitle>}
             {renderedContent}

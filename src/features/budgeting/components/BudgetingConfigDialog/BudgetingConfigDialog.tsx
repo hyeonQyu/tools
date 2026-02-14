@@ -24,6 +24,7 @@ function BudgetingConfigDialog({ close }: BudgetingConfigDialogProps) {
   const controlUnit = useBudgetingConfigStore((store) => store.controlUnit);
   const setInputUnit = useBudgetingConfigStore((store) => store.setInputUnit);
   const setControlUnit = useBudgetingConfigStore((store) => store.setControlUnit);
+
   const [tempInputUnit, setTempInputUnit] = useState<BudgetingUnit>(inputUnit);
   const [tempControlUnit, setTempControlUnit] = useState<BudgetingUnit>(controlUnit);
 
