@@ -5,7 +5,7 @@ import { pxToRem, Z_INDEX } from '@/styles';
 import { BottomNavigationAction, BottomNavigation as MUIBottomNavigation, Paper, useTheme } from '@mui/material';
 import { ComponentType } from 'react';
 
-export const BOTTOM_NAVIGATION_HEIGHT = 56;
+export const BOTTOM_NAVIGATION_HEIGHT = 72;
 
 function BottomNavigation() {
   const { spacing } = useTheme();
@@ -21,6 +21,7 @@ function BottomNavigation() {
         bottom: 0,
         left: 0,
         right: 0,
+        pb: spacing(2),
         zIndex: Z_INDEX.bottomNavigation,
         height: pxToRem(BOTTOM_NAVIGATION_HEIGHT),
       }}
