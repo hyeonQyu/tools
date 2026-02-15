@@ -38,3 +38,5 @@ workbox-*.js.map
 !.yarn/sdks
 !.yarn/versions
 .pnp.*
+
+.env
