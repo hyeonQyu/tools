@@ -84,7 +84,7 @@ function BudgetingConfigDialog({ close }: BudgetingConfigDialogProps) {
         </Stack>
       </DialogContent>
 
-      <DialogActions>
+      <DialogActions sx={{ py: 3, px: 2 }}>
         <Button onClick={() => close()}>취소</Button>
         <Button onClick={handleSave} variant="contained">
           저장
