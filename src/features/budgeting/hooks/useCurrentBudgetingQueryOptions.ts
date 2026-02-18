@@ -1,14 +1,11 @@
-import { useIndexedDBStore } from '@/indexed-db';
+import { budgetingService } from '@/features/budgeting/data';
 import { useMemo } from 'react';
 
 export const useCurrentBudgetingQueryOptions = () => {
-  const idbStore = useIndexedDBStore('current-budgeting');
-
   return useMemo(() => {
     return {
       queryKey: ['current-budgeting'],
-      queryFn: () => idbStore?.get('current-budgeting'),
-      enabled: Boolean(idbStore),
+      queryFn: () => budgetingService.load(),
     };
-  }, [idbStore]);
+  }, []);
 };

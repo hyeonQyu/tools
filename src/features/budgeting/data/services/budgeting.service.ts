@@ -11,5 +11,10 @@ export const createBudgetingService = getServiceCreator<BudgetingService, Budget
         await budgetingRepository.create(payload);
       }
     },
+    load: async () => {
+      const exists = await budgetingRepository.exists();
+      if (!exists) return null;
+      return budgetingRepository.read();
+    },
   };
 });

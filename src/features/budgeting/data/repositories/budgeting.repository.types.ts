@@ -18,5 +18,6 @@ export type BudgetingEntity = DocumentEntity<BudgetingPayload>;
 export interface BudgetingRepository {
   create: (payload: BudgetingPayload) => Promise<void>;
   update: (payload: BudgetingPayload) => Promise<void>;
+  read: () => Promise<BudgetingEntity>;
   exists: () => Promise<boolean>;
 }
