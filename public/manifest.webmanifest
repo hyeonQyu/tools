@@ -2,7 +2,7 @@
   "name": "Tools",
   "short_name": "Tools",
   "description": "Tools PWA 애플리케이션",
-  "theme_color": "#ffffff",
+  "theme_color": "#fafafa",
   "background_color": "#ffffff",
   "display": "standalone",
   "scope": "/",
