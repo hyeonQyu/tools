@@ -1,6 +1,6 @@
+import { useGoalsTrackingStore } from '@/features/goals-tracking/stores';
 import { GoalsTrackerViewType } from '@/features/goals-tracking/types';
 import { Tab, Tabs } from '@mui/material';
-import { useState } from 'react';
 
 const tabs: Array<{ label: string; value: GoalsTrackerViewType }> = [
   { label: '일별 기록', value: 'daily' },
@@ -8,7 +8,8 @@ const tabs: Array<{ label: string; value: GoalsTrackerViewType }> = [
 ];
 
 function GoalsTrackerViewTabs() {
-  const [currentValue, setCurrentValue] = useState<GoalsTrackerViewType>(tabs[0].value);
+  const currentView = useGoalsTrackingStore((s) => s.currentView);
+  const setCurrentView = useGoalsTrackingStore((s) => s.setCurrentView);
 
   return (
     <Tabs
@@ -18,8 +19,8 @@ function GoalsTrackerViewTabs() {
         },
       }}
       variant="fullWidth"
-      value={currentValue}
-      onChange={(_, value) => setCurrentValue(value)}
+      value={currentView}
+      onChange={(_, value) => setCurrentView(value)}
     >
       {tabs.map(({ label, value }) => (
         <Tab key={value} value={value} label={label} sx={{ padding: 1 }} />
