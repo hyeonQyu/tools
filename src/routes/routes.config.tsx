@@ -5,7 +5,7 @@ import { LocalAtm, LocalAtmOutlined, ViewCarousel, ViewCarouselOutlined } from '
 import { ComponentType, ReactNode } from 'react';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const { AppRoutesProvider, useAppRoutes, useTypedNavigate, getPathnameFromNode, _types } = createAppRoutes<
+const { AppRoutesProvider, useAppRoutes, useTypedNavigate, useCurrentRouteNode, getPathnameFromNode, _types } = createAppRoutes<
   {
     name?: string;
     component: ReactNode;
@@ -45,7 +45,7 @@ const { AppRoutesProvider, useAppRoutes, useTypedNavigate, getPathnameFromNode, 
 });
 
 // eslint-disable-next-line react-refresh/only-export-components
-export { AppRoutesProvider, getPathnameFromNode, useAppRoutes, useTypedNavigate };
+export { AppRoutesProvider, getPathnameFromNode, useAppRoutes, useCurrentRouteNode, useTypedNavigate };
 export type AppRouteNode = typeof _types.AppRouteNode;
 export type AppRoutesContext = typeof _types.AppRoutesContext;
 export type AppRoutesMetadata = typeof _types.AppRoutesMetadata;

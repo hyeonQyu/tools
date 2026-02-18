@@ -1,43 +1,35 @@
+import { ToolLayout } from '@/components/ToolLayout';
 import {
   AllocationTypeSelector,
-  BudgetingHeader,
+  BudgetingConfigButton,
   BudgetItemList,
   BudgetSummary,
   TotalAmountInput,
   useBudgetingAutoSave,
   useBudgetingLoad,
 } from '@/features/budgeting';
-import { Box, Stack } from '@mui/material';
 
 function BudgetingPage() {
   useBudgetingLoad();
   useBudgetingAutoSave();
 
   return (
-    <Box sx={{ maxWidth: 900, mx: 'auto' }}>
-      <Stack
-        spacing={2}
-        sx={{
-          position: 'sticky',
-          top: 0,
-          bgcolor: 'background.default',
-          zIndex: 10,
-          px: 3,
-          py: 2,
-          borderBottom: '1px solid',
-          borderColor: 'divider',
-        }}
-      >
-        <BudgetingHeader />
-        <BudgetSummary />
-      </Stack>
+    <ToolLayout>
+      <ToolLayout.Header>
+        <ToolLayout.Row justifyContent="space-between" alignItems="center">
+          <ToolLayout.Title />
+          <BudgetingConfigButton />
+        </ToolLayout.Row>
 
-      <Stack spacing={2} sx={{ px: 3, py: 2, mb: 2 }}>
+        <BudgetSummary />
+      </ToolLayout.Header>
+
+      <ToolLayout.Body>
         <TotalAmountInput />
         <AllocationTypeSelector />
         <BudgetItemList />
-      </Stack>
-    </Box>
+      </ToolLayout.Body>
+    </ToolLayout>
   );
 }
 
