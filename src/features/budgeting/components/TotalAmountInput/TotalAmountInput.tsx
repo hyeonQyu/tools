@@ -1,4 +1,4 @@
-import NumericInput from '@/features/budgeting/components/NumericInput';
+import { NumericInput } from '@/features/budgeting';
 import { useBudgetingConfigStore, useBudgetingStore } from '@/features/budgeting/stores';
 import { formatAmount, parseInputWithUnit } from '@/lib';
 import { Box, Typography } from '@mui/material';

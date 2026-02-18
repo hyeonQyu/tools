@@ -1,6 +1,6 @@
 import { SlideUpTransition } from '@/components/SlideUpTransition';
 import { useDialog } from '@/dialog';
-import { BudgetingConfigDialog } from '@/features/budgeting/components';
+import { BudgetingConfigDialog } from '@/features/budgeting';
 import { Settings as SettingsIcon } from '@mui/icons-material';
 import { IconButton, Stack, Typography } from '@mui/material';
 

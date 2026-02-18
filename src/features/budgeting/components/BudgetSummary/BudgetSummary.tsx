@@ -1,5 +1,4 @@
-import { useBudgetCalculations } from '@/features/budgeting/hooks';
-import { useBudgetingStore } from '@/features/budgeting/stores';
+import { useBudgetCalculations, useBudgetingStore } from '@/features/budgeting';
 import { formatAmount } from '@/lib';
 import { Alert, Chip, Stack } from '@mui/material';
 
