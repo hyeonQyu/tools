@@ -1,5 +1,5 @@
 import BudgetingPage from '@/pages/budgeting/BudgetingPage';
-import GoalTrackingPage from '@/pages/goal-tracking/GoalTrackingPage';
+import GoalsTrackingPage from '@/pages/goals-tracking/GoalsTrackingPage';
 import SelectPage from '@/pages/select/SelectPage';
 import { createAppRoutes } from '@hyeonqyu/typed-router-react';
 import { Checklist, ChecklistOutlined, LocalAtm, LocalAtmOutlined, ViewCarousel, ViewCarouselOutlined } from '@mui/icons-material';
@@ -43,14 +43,14 @@ const { AppRoutesProvider, useAppRoutes, useTypedNavigate, useCurrentRouteNode, 
       },
     },
 
-    goalTracking: {
+    'goals-tracking': {
       _metadata: {
         name: '목표 관리',
         icon: {
           outlined: ChecklistOutlined,
           filled: Checklist,
         },
-        component: <GoalTrackingPage />,
+        component: <GoalsTrackingPage />,
       },
     },
   },

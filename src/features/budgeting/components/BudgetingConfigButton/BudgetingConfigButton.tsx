@@ -7,7 +7,7 @@ import { IconButton } from '@mui/material';
 function BudgetingConfigButton() {
   const dialog = useDialog();
 
-  const handleOpenConfigDialog = async () => {
+  const handleClick = async () => {
     await dialog.open<void>({
       title: '분배 설정',
       content: (close) => <BudgetingConfigDialog close={close} />,
@@ -19,7 +19,7 @@ function BudgetingConfigButton() {
   };
 
   return (
-    <IconButton onClick={handleOpenConfigDialog}>
+    <IconButton onClick={handleClick}>
       <Settings />
     </IconButton>
   );
