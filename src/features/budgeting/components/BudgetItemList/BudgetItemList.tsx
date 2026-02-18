@@ -1,5 +1,5 @@
 import { SortableItem } from '@/components/SortableItem';
-import { BudgetingItem } from '@/features/budgeting';
+import BudgetItem from '@/features/budgeting/components/BudgetItem/BudgetItem';
 import { useBudgetingStore } from '@/features/budgeting/stores';
 import { closestCenter, DndContext, DragEndEvent, KeyboardSensor, PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
@@ -47,7 +47,7 @@ function BudgetItemList() {
         <SortableContext items={items.map((item) => item.id)} strategy={verticalListSortingStrategy}>
           {items.map((item) => (
             <SortableItem key={item.id} id={item.id}>
-              {(dragHandleProps: HTMLAttributes<HTMLElement>) => <BudgetingItem itemId={item.id} dragHandleProps={dragHandleProps} />}
+              {(dragHandleProps: HTMLAttributes<HTMLElement>) => <BudgetItem itemId={item.id} dragHandleProps={dragHandleProps} />}
             </SortableItem>
           ))}
         </SortableContext>
