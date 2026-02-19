@@ -32,7 +32,7 @@ function BudgetingPage() {
         <BudgetSummary />
       </Stack>
 
-      <Stack spacing={2} sx={{ px: 4, py: 2, mb: 2 }}>
+      <Stack spacing={2} sx={{ px: 3, py: 2, mb: 2 }}>
         <TotalAmountInput />
         <AllocationTypeSelector />
         <BudgetItemList />
