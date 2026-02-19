@@ -32,7 +32,7 @@ export const useBudgetingAutoSave = () => {
   );
 
   const debouncedSave = useMemo(() => {
-    return debounce(saveUpdated, TIME_UNIT.unitOfMs.asSecond * 3);
+    return debounce(saveUpdated, TIME_UNIT.unitOfMs.asSecond * 1.5);
   }, [saveUpdated]);
 
   useEffect(() => {
