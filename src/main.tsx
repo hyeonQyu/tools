@@ -1,4 +1,5 @@
 import { DialogProvider } from '@/dialog';
+import { FirebaseAuthProvider } from '@/firebase';
 import { IndexedDBProvider } from '@/indexed-db';
 import ReactQueryClientProvider from '@/react-query/ReactQueryClientProvider';
 import { AppRoutesProvider } from '@/routes';
@@ -19,11 +20,13 @@ createRoot(document.getElementById('root')!).render(
       <BrowserRouter>
         <ReactQueryClientProvider>
           <ThemeProvider>
-            <IndexedDBProvider>
-              <DialogProvider>
-                <App />
-              </DialogProvider>
-            </IndexedDBProvider>
+            <FirebaseAuthProvider>
+              <IndexedDBProvider>
+                <DialogProvider>
+                  <App />
+                </DialogProvider>
+              </IndexedDBProvider>
+            </FirebaseAuthProvider>
           </ThemeProvider>
         </ReactQueryClientProvider>
       </BrowserRouter>

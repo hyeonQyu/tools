@@ -1,6 +1,6 @@
-import { useQueryCurrentBudgeting } from '@/features/budgeting/hooks/useQueryCurrentBudgeting';
+import { budgetingService } from '@/features/budgeting/data';
+import { useQueryCurrentBudgeting } from '@/features/budgeting/hooks';
 import { BudgetingConfigStates, BudgetingStates, useBudgetingConfigStore, useBudgetingStore } from '@/features/budgeting/stores';
-import { useIndexedDBStore } from '@/indexed-db';
 import { TIME_UNIT } from '@/lib';
 import { debounce, isEqual } from 'es-toolkit';
 import { useCallback, useEffect, useMemo } from 'react';
@@ -14,30 +14,21 @@ export const useBudgetingAutoSave = () => {
   const getFormState = useBudgetingStore((store) => store.getState);
   const getConfigState = useBudgetingConfigStore((store) => store.getState);
 
-  const idbStore = useIndexedDBStore('current-budgeting');
-
   const saveUpdated = useCallback(
     async (formState: BudgetingStates, configState: BudgetingConfigStates) => {
-      if (!idbStore || !data) return;
+      if (!data) return;
 
       try {
         if (isEqual(formState, data.form) && isEqual(configState, data.config)) {
           return;
         }
 
-        const updatedData = {
-          id: data.id,
-          form: formState,
-          config: configState,
-          savedAt: Date.now(),
-        };
-
-        await idbStore.update('current-budgeting', updatedData);
+        await budgetingService.save({ form: formState, config: configState });
       } catch (error) {
         console.error('[useBudgetingAutoSave] 저장 실패:', error);
       }
     },
-    [idbStore, data],
+    [data],
   );
 
   const debouncedSave = useMemo(() => {

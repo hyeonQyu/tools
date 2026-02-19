@@ -1,10 +1,8 @@
-import { useCalculateBudgetItemValue } from '@/features/budgeting/hooks';
-import { useBudgetingConfigStore, useBudgetingStore } from '@/features/budgeting/stores';
+import { NumericInput, useBudgetingConfigStore, useBudgetingStore, useCalculateBudgetItemValue } from '@/features/budgeting';
 import { formatAmount, parseInputWithUnit } from '@/lib';
 import { Delete as DeleteIcon, DragIndicator as DragIndicatorIcon } from '@mui/icons-material';
 import { Box, Card, Checkbox, FormControlLabel, IconButton, Stack, TextField, Typography } from '@mui/material';
 import { ChangeEvent, HTMLAttributes } from 'react';
-import NumericInput from '../NumericInput';
 
 interface BudgetItemProps {
   itemId: string;

@@ -1,5 +1,5 @@
 import { SortableItem } from '@/components/SortableItem';
-import { BudgetItem } from '@/features/budgeting/components';
+import BudgetItem from '@/features/budgeting/components/BudgetItem/BudgetItem';
 import { useBudgetingStore } from '@/features/budgeting/stores';
 import { closestCenter, DndContext, DragEndEvent, KeyboardSensor, PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';

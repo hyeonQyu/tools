@@ -1,5 +1,12 @@
-import { AllocationTypeSelector, BudgetingHeader, BudgetItemList, BudgetSummary, TotalAmountInput } from '@/features/budgeting/components';
-import { useBudgetingAutoSave, useBudgetingLoad } from '@/features/budgeting/hooks';
+import {
+  AllocationTypeSelector,
+  BudgetingHeader,
+  BudgetItemList,
+  BudgetSummary,
+  TotalAmountInput,
+  useBudgetingAutoSave,
+  useBudgetingLoad,
+} from '@/features/budgeting';
 import { Box, Stack } from '@mui/material';
 
 function BudgetingPage() {

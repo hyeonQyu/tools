@@ -1,5 +1,4 @@
-import { useCalculateBudgetItemValue } from '@/features/budgeting/hooks/useCalculateBudgetItemValue';
-import { useBudgetingStore } from '@/features/budgeting/stores';
+import { useBudgetingStore, useCalculateBudgetItemValue } from '@/features/budgeting';
 import { useMemo } from 'react';
 import { useFixedSum } from './useFixedSum';
 import { useTotalAllocatableAmount } from './useTotalAllocatableAmount';

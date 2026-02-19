@@ -1,20 +1,20 @@
-import { AllocationType, BudgetItem } from '@/features/budgeting/types';
+import { AllocationType, BudgetingItem } from '@/features/budgeting/types';
 import { generateRandomKey } from '@/lib';
 import { create } from 'zustand';
 
 export interface BudgetingStates {
   totalAmount: number;
   allocationType: AllocationType;
-  items: BudgetItem[];
+  items: BudgetingItem[];
 }
 
 interface BudgetingActions {
   setTotalAmount: (amount: number) => void;
   setAllocationType: (type: AllocationType) => void;
   addItem: () => void;
-  updateItem: (id: string, updates: Partial<BudgetItem>) => void;
+  updateItem: (id: string, updates: Partial<BudgetingItem>) => void;
   deleteItem: (id: string) => void;
-  reorderItems: (items: BudgetItem[]) => void;
+  reorderItems: (items: BudgetingItem[]) => void;
   reset: (states?: Partial<BudgetingStates>) => void;
   getState: () => BudgetingStates;
 }

@@ -13,4 +13,4 @@ export const budgetItemSchema = z.object({
 
 export type BudgetingUnit = z.infer<typeof budgetingUnitSchema>;
 export type AllocationType = z.infer<typeof allocationTypeSchema>;
-export type BudgetItem = z.infer<typeof budgetItemSchema>;
+export type BudgetingItem = z.infer<typeof budgetItemSchema>;
