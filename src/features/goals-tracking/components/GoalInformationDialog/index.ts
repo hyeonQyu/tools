@@ -1,1 +1,2 @@
-export { default as GoalInformationDialog } from './GoalCreationDialog';
+export * from './GoalInformationDialog';
+export { default as GoalInformationDialog } from './GoalInformationDialog';

@@ -4,6 +4,7 @@ import { IndexedDBProvider } from '@/indexed-db';
 import ReactQueryClientProvider from '@/react-query/ReactQueryClientProvider';
 import { AppRoutesProvider } from '@/routes';
 import { ThemeProvider } from '@/styles';
+import { SnackbarProvider } from 'notistack';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
@@ -23,7 +24,9 @@ createRoot(document.getElementById('root')!).render(
             <FirebaseAuthProvider>
               <IndexedDBProvider>
                 <DialogProvider>
-                  <App />
+                  <SnackbarProvider>
+                    <App />
+                  </SnackbarProvider>
                 </DialogProvider>
               </IndexedDBProvider>
             </FirebaseAuthProvider>

@@ -1,9 +1,19 @@
 import { ColorSelector } from '@/components/ColorSelector';
+import { ConstraintError } from '@/lib';
 import { Button, DialogActions, DialogContent, FormLabel, Stack, TextField } from '@mui/material';
 import { useState } from 'react';
 
+export type GoalResult = {
+  name: string;
+  color: string;
+};
+
 interface GoalInformationDialogProps {
-  close: (result?: void) => void;
+  close: (result?: GoalResult) => void;
+  confirmConfig: {
+    label: string;
+    onConfirm: (result: GoalResult) => Promise<void>;
+  };
 }
 
 const GOAL_COLORS = [
@@ -21,11 +31,20 @@ const GOAL_COLORS = [
   '#8d6e63',
 ];
 
-function GoalInformationDialog({ close }: GoalInformationDialogProps) {
+function GoalInformationDialog({ close, confirmConfig }: GoalInformationDialogProps) {
   const [name, setName] = useState('');
   const [color, setColor] = useState(GOAL_COLORS[0]);
+  const [nameError, setNameError] = useState<string | null>(null);
 
-  const handleCreate = () => {};
+  const handleCreate = async () => {
+    try {
+      return await confirmConfig.onConfirm({ name, color });
+    } catch (e) {
+      if (e instanceof ConstraintError) {
+        setNameError(e.message);
+      }
+    }
+  };
 
   return (
     <>
@@ -35,7 +54,12 @@ function GoalInformationDialog({ close }: GoalInformationDialogProps) {
             label="목표 이름"
             slotProps={{ input: { placeholder: '예: 운동하기, 독서하기' } }}
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) => {
+              setName(e.target.value);
+              setNameError(null);
+            }}
+            error={nameError !== null}
+            helperText={nameError}
             fullWidth
           />
 
@@ -51,7 +75,7 @@ function GoalInformationDialog({ close }: GoalInformationDialogProps) {
           취소
         </Button>
         <Button fullWidth onClick={handleCreate} variant="contained">
-          생성
+          {confirmConfig.label}
         </Button>
       </DialogActions>
     </>
