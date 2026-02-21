@@ -10,6 +10,8 @@ export const enqueueClosableSnackbar = <V extends VariantType>(
   const snackbarKey = enqueueSnackbar({
     ...(options as object),
     autoHideDuration,
+    anchorOrigin: { vertical: 'bottom', horizontal: 'center' },
+    style: { marginBottom: '4rem' },
     action: <Close sx={{ cursor: 'pointer' }} onClick={() => closeSnackbar(snackbarKey)} />,
   });
 
