@@ -1,7 +1,8 @@
 import { ColorSelector } from '@/components/ColorSelector';
+import { useAutoTimeoutFocus } from '@/hooks';
 import { ConstraintError } from '@/lib';
 import { Button, DialogActions, DialogContent, FormLabel, Stack, TextField } from '@mui/material';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 export type GoalResult = {
   name: string;
@@ -36,6 +37,9 @@ function GoalInformationDialog({ close, confirmConfig }: GoalInformationDialogPr
   const [color, setColor] = useState(GOAL_COLORS[0]);
   const [nameError, setNameError] = useState<string | null>(null);
 
+  const nameInputRef = useRef<HTMLInputElement>(null);
+  useAutoTimeoutFocus(nameInputRef);
+
   const handleCreate = async () => {
     try {
       return await confirmConfig.onConfirm({ name, color });
@@ -51,6 +55,7 @@ function GoalInformationDialog({ close, confirmConfig }: GoalInformationDialogPr
       <DialogContent>
         <Stack spacing={3} paddingTop={2}>
           <TextField
+            inputRef={nameInputRef}
             label="목표 이름"
             slotProps={{ input: { placeholder: '예: 운동하기, 독서하기' } }}
             value={name}
