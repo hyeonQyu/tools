@@ -1,1 +1,2 @@
-export * from './goals-tracking.store';
+export * from './goalsTracking.daily.store';
+export * from './goalsTracking.store';

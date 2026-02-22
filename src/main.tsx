@@ -1,3 +1,4 @@
+import { DateLocalizationProvider } from '@/date';
 import { DialogProvider } from '@/dialog';
 import { FirebaseAuthProvider } from '@/firebase';
 import { IndexedDBProvider } from '@/indexed-db';
@@ -16,20 +17,22 @@ registerSW({
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <AppRoutesProvider>
-      <BrowserRouter>
-        <ReactQueryClientProvider>
-          <ThemeProvider>
-            <FirebaseAuthProvider>
-              <IndexedDBProvider>
-                <DialogProvider>
-                  <App />
-                </DialogProvider>
-              </IndexedDBProvider>
-            </FirebaseAuthProvider>
-          </ThemeProvider>
-        </ReactQueryClientProvider>
-      </BrowserRouter>
-    </AppRoutesProvider>
+    <DateLocalizationProvider>
+      <AppRoutesProvider>
+        <BrowserRouter>
+          <ReactQueryClientProvider>
+            <ThemeProvider>
+              <FirebaseAuthProvider>
+                <IndexedDBProvider>
+                  <DialogProvider>
+                    <App />
+                  </DialogProvider>
+                </IndexedDBProvider>
+              </FirebaseAuthProvider>
+            </ThemeProvider>
+          </ReactQueryClientProvider>
+        </BrowserRouter>
+      </AppRoutesProvider>
+    </DateLocalizationProvider>
   </StrictMode>,
 );
