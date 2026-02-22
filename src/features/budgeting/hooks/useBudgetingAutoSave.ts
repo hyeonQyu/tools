@@ -1,12 +1,13 @@
 import { budgetingService } from '@/features/budgeting/data';
-import { useQueryCurrentBudgeting } from '@/features/budgeting/hooks';
+import { getBudgetingLoadQueryOptions } from '@/features/budgeting/queries';
 import { BudgetingConfigStates, BudgetingStates, useBudgetingConfigStore, useBudgetingStore } from '@/features/budgeting/stores';
 import { TIME_UNIT } from '@/lib';
+import { useQuery } from '@tanstack/react-query';
 import { debounce, isEqual } from 'es-toolkit';
 import { useCallback, useEffect, useMemo } from 'react';
 
 export const useBudgetingAutoSave = () => {
-  const { data } = useQueryCurrentBudgeting();
+  const { data } = useQuery(getBudgetingLoadQueryOptions());
 
   const formStore = useBudgetingStore();
   const configStore = useBudgetingConfigStore();
