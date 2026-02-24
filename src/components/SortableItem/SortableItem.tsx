@@ -19,7 +19,7 @@ function SortableItem({ id, children }: SortableItemProps) {
 
   return (
     <Box ref={setNodeRef} style={style}>
-      {typeof children === 'function' ? children({ ...attributes, ...listeners }) : children}
+      {typeof children === 'function' ? children({ ...attributes, ...listeners, style: { touchAction: 'none' } }) : children}
     </Box>
   );
 }
