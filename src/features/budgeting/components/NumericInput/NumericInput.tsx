@@ -37,7 +37,7 @@ function NumericInput({ value, onChange, onIncrement, onDecrement, inputUnit, un
           ...textFieldProps.slotProps,
           input: {
             ...textFieldProps.slotProps?.input,
-            inputMode: 'decimal',
+            inputMode: 'numeric',
             endAdornment: (
               <InputAdornment position="end" sx={{ minWidth: 'fit-content' }}>
                 <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: 'nowrap', minWidth: 'max-content' }}>
