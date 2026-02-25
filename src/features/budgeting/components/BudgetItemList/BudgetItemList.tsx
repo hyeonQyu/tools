@@ -21,7 +21,7 @@ function BudgetItemList() {
     useSensor(TouchSensor, {
       activationConstraint: {
         delay: 250,
-        tolerance: 5,
+        tolerance: 10,
       },
     }),
     useSensor(KeyboardSensor, {
