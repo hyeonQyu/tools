@@ -8,4 +8,6 @@ export type GoalDailyRecordPayload = {
 
 export type GoalDailyRecordEntity = DocumentEntity<GoalDailyRecordPayload>;
 
-export interface GoalDailyRecordsRepository {}
+export interface GoalDailyRecordsRepository {
+  findByDate: (date: Date) => Promise<GoalDailyRecordPayload[]>;
+}
