@@ -30,6 +30,7 @@ function GoalsSection({ title, items, unfoldable = false }: GoalsSectionProps) {
         p: 1,
         '&::before': { display: 'none' },
         '&.Mui-disabled': { backgroundColor: 'transparent' },
+        '&.Mui-disabled .MuiAccordionSummary-root': { opacity: 1 },
       }}
     >
       <AccordionSummary
