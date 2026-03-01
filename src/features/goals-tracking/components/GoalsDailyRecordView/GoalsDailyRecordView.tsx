@@ -12,6 +12,7 @@ function GoalsDailyRecordView() {
         <GoalsDailyDatePicker />
         <GoalsDailyProgress />
       </ToolLayout.Header>
+
       <ToolLayout.Body>
         <Suspense fallback={<GoalsDailyRecordsSkeleton />}>
           <GoalsDailyRecords />
