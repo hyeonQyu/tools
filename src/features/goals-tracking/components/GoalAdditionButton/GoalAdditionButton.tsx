@@ -2,7 +2,7 @@ import { SlideUpTransition } from '@/components/SlideUpTransition';
 import { useDialog } from '@/dialog';
 import { GoalInformationDialog, GoalResult } from '@/features/goals-tracking/components/GoalInformationDialog';
 import { goalsTrackingService } from '@/features/goals-tracking/data';
-import { getGoalsFindAllQueryOptions } from '@/features/goals-tracking/queries/goals.query.find';
+import { getGoalsFindAllQueryOptions } from '@/features/goals-tracking/queries';
 import { enqueueClosableSnackbar } from '@/styles';
 import { Add } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
