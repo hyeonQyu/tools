@@ -1,18 +1,14 @@
-import { getGoalsFindByDateQueryOptions } from '@/features/goals-tracking/queries';
+import { useDailyGoals } from '@/features/goals-tracking/hooks';
 import { useGoalsTrackingDailyStore } from '@/features/goals-tracking/stores';
 import { Box, LinearProgress } from '@mui/material';
-import { useSuspenseQuery } from '@tanstack/react-query';
 
 function GoalsDailyProgress() {
   const date = useGoalsTrackingDailyStore((store) => store.date);
-
-  const {
-    data: { goals },
-  } = useSuspenseQuery(getGoalsFindByDateQueryOptions(date));
+  const goals = useDailyGoals(date);
 
   const completedGoals = goals.filter(({ done }) => done).length;
   const totalGoals = goals.length;
-  const progress = (completedGoals / totalGoals) * 100;
+  const progress = totalGoals === 0 ? 0 : (completedGoals / totalGoals) * 100;
 
   return (
     <Box sx={{ px: 2 }}>

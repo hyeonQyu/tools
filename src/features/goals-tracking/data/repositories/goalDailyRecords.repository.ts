@@ -13,8 +13,8 @@ export const goalDailyRecordsRepository = getFirebaseRepositoryCreator('goalDail
 }) => {
   return {
     findByDate: async (date) => {
-      const userId = auth.currentUser!.uid;
       const kstMidnightDate = toKstMidnightDate(date);
+      const userId = auth.currentUser!.uid;
 
       const q = query(
         collection(db, collectionName),
