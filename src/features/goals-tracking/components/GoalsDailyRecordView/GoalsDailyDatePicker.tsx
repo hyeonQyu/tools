@@ -1,5 +1,6 @@
 import { dateFormat } from '@/date';
 import { useGoalsTrackingDailyStore } from '@/features/goals-tracking/stores';
+import { getKstNow, toKstDateKey } from '@/lib';
 import { pxToRem } from '@/styles';
 import { ArrowBackIosNew, ArrowForwardIos } from '@mui/icons-material';
 import { Box, Button, IconButton, Typography } from '@mui/material';
@@ -13,8 +14,9 @@ function GoalsDailyDatePicker() {
   const anchorRef = useRef<HTMLSpanElement>(null);
 
   const dayjsDate = dayjs(date);
-  const dayjsToday = dayjs();
-  const isToday = dayjsDate.isSame(dayjsToday, 'day');
+  const today = getKstNow();
+  const dayjsToday = dayjs(today);
+  const isToday = toKstDateKey(date) === toKstDateKey(today);
 
   const handlePrevDay = () => setDate(dayjsDate.subtract(1, 'day').toDate());
   const handleNextDay = () => setDate(dayjsDate.add(1, 'day').toDate());

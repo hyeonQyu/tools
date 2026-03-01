@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { getKstNow, toKstMidnightDate } from '@/lib';
 
 interface GoalsTrackingDailyStates {
   date: Date;
@@ -11,12 +12,12 @@ interface GoalsTrackingDailyActions {
 
 type GoalsTrackingDailyStore = GoalsTrackingDailyStates & GoalsTrackingDailyActions;
 
-const initialStates: GoalsTrackingDailyStates = {
-  date: new Date(),
-};
+const getInitialStates = (): GoalsTrackingDailyStates => ({
+  date: getKstNow(),
+});
 
 export const useGoalsTrackingDailyStore = create<GoalsTrackingDailyStore>((set) => ({
-  ...initialStates,
-  setDate: (date) => set({ date }),
-  reset: (states) => set({ ...initialStates, ...states }),
+  ...getInitialStates(),
+  setDate: (date) => set({ date: toKstMidnightDate(date) }),
+  reset: (states) => set({ ...getInitialStates(), ...states }),
 }));
