@@ -11,11 +11,17 @@ export type DailyGoal = {
   done: boolean;
 };
 
+export type YearlyGoal = {
+  goal: Omit<GoalEntity, 'userId'>;
+  doneDates: Date[];
+};
+
 export interface GoalsTrackingService {
   create: (payload: GoalPayload) => Promise<void>;
   getDailyRecords: (date: Date) => Promise<{ date: Date; goals: DailyGoal[] }>;
   completeGoal: (payload: GoalDailyRecordPayload) => Promise<void>;
   uncompleteGoal: (payload: GoalDailyRecordPayload) => Promise<void>;
+  getYearlyRecords: (year: number) => Promise<{ year: number; goals: YearlyGoal[] }>;
 }
 
 export interface GoalsTrackingServiceDependencies {
