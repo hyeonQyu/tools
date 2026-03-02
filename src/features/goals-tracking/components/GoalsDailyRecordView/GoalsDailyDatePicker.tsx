@@ -1,9 +1,7 @@
 import { dateFormat } from '@/date';
+import NavigationPicker from '@/features/goals-tracking/components/shared/NavigationPicker';
 import { useGoalsTrackingDailyStore } from '@/features/goals-tracking/stores';
 import { getKstNow, toKstDateKey } from '@/lib';
-import { pxToRem } from '@/styles';
-import { ArrowBackIosNew, ArrowForwardIos } from '@mui/icons-material';
-import { Box, Button, IconButton, Typography } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 import { useRef, useState } from 'react';
@@ -23,53 +21,29 @@ function GoalsDailyDatePicker() {
   const handleGoToday = () => setDate(dayjsToday.toDate());
 
   return (
-    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-      <IconButton onClick={handlePrevDay}>
-        <ArrowBackIosNew />
-      </IconButton>
-
-      <Box sx={{ position: 'relative' }}>
-        <Typography ref={anchorRef} onClick={() => setOpen(true)} variant="h6" sx={{ cursor: 'pointer', userSelect: 'none' }}>
-          {dayjsDate.format(dateFormat)}
-        </Typography>
-        {!isToday && (
-          <Button
-            size="small"
-            onClick={handleGoToday}
-            variant="outlined"
-            sx={{
-              position: 'absolute',
-              top: '50%',
-              left: `calc(100% + ${pxToRem(12)})`,
-              transform: 'translateY(-50%)',
-              whiteSpace: 'nowrap',
-              fontSize: '0.65rem',
-              py: 0.25,
-              px: 0.75,
-              height: 'fit-content',
-              minWidth: pxToRem(44),
-            }}
-          >
-            오늘로
-          </Button>
-        )}
-        <DatePicker
-          open={open}
-          onClose={() => setOpen(false)}
-          value={dayjsDate}
-          maxDate={dayjsToday}
-          onChange={(newValue) => newValue && setDate(newValue.toDate())}
-          slotProps={{
-            textField: { sx: { display: 'none' } },
-            popper: { anchorEl: anchorRef.current },
-          }}
-        />
-      </Box>
-
-      <IconButton onClick={handleNextDay} disabled={isToday}>
-        <ArrowForwardIos />
-      </IconButton>
-    </Box>
+    <NavigationPicker
+      label={dayjsDate.format(dateFormat)}
+      onPrev={handlePrevDay}
+      onNext={handleNextDay}
+      disableNext={isToday}
+      jumpButtonLabel="오늘로"
+      onJump={handleGoToday}
+      showJumpButton={!isToday}
+      onLabelClick={() => setOpen(true)}
+      labelRef={anchorRef}
+    >
+      <DatePicker
+        open={open}
+        onClose={() => setOpen(false)}
+        value={dayjsDate}
+        maxDate={dayjsToday}
+        onChange={(newValue) => newValue && setDate(newValue.toDate())}
+        slotProps={{
+          textField: { sx: { display: 'none' } },
+          popper: { anchorEl: anchorRef.current },
+        }}
+      />
+    </NavigationPicker>
   );
 }
 
