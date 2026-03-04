@@ -1,23 +1,14 @@
 import { useBudgetingConfigStore } from '@/features/budgeting/stores';
 import { BudgetingUnit } from '@/features/budgeting/types';
-import {
-  Box,
-  Button,
-  DialogActions,
-  DialogContent,
-  FormControl,
-  FormControlLabel,
-  FormLabel,
-  Radio,
-  RadioGroup,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { Box, Button, DialogActions, DialogContent, Stack, Typography } from '@mui/material';
 import { useState } from 'react';
+import BudgetingUnitRadioFormControl from './BudgetingUnitRadioFormControl';
 
 interface BudgetingConfigDialogProps {
   close: (result?: void) => void;
 }
+
+const BUDGETING_UNITS: BudgetingUnit[] = [1, 10000, 100000];
 
 function BudgetingConfigDialog({ close }: BudgetingConfigDialogProps) {
   const inputUnit = useBudgetingConfigStore((store) => store.inputUnit);
@@ -34,12 +25,6 @@ function BudgetingConfigDialog({ close }: BudgetingConfigDialogProps) {
     close();
   };
 
-  const unitLabels: Record<BudgetingUnit, string> = {
-    1: '1원',
-    10000: '1만원',
-    100000: '10만원',
-  };
-
   return (
     <>
       <DialogContent>
@@ -50,37 +35,23 @@ function BudgetingConfigDialog({ close }: BudgetingConfigDialogProps) {
             </Typography>
           </Box>
 
-          <FormControl>
-            <FormLabel id="input-unit-label">입력 단위</FormLabel>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 1, mt: 0.5 }}>
-              숫자를 직접 입력할 때 적용되는 단위입니다
-            </Typography>
-            <RadioGroup
-              aria-labelledby="input-unit-label"
-              value={tempInputUnit}
-              onChange={(e) => setTempInputUnit(Number(e.target.value) as BudgetingUnit)}
-            >
-              <FormControlLabel value={1} control={<Radio />} label={unitLabels[1]} />
-              <FormControlLabel value={10000} control={<Radio />} label={unitLabels[10000]} />
-              <FormControlLabel value={100000} control={<Radio />} label={unitLabels[100000]} />
-            </RadioGroup>
-          </FormControl>
+          <BudgetingUnitRadioFormControl
+            labelId="input-unit-label"
+            label="입력 단위"
+            description="숫자를 직접 입력할 때 적용되는 단위입니다"
+            value={tempInputUnit}
+            units={BUDGETING_UNITS}
+            onChange={setTempInputUnit}
+          />
 
-          <FormControl>
-            <FormLabel id="control-unit-label">조정 단위</FormLabel>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 1, mt: 0.5 }}>
-              +/- 버튼으로 금액을 조정할 때 증감되는 단위입니다
-            </Typography>
-            <RadioGroup
-              aria-labelledby="control-unit-label"
-              value={tempControlUnit}
-              onChange={(e) => setTempControlUnit(Number(e.target.value) as BudgetingUnit)}
-            >
-              <FormControlLabel value={1} control={<Radio />} label={unitLabels[1]} />
-              <FormControlLabel value={10000} control={<Radio />} label={unitLabels[10000]} />
-              <FormControlLabel value={100000} control={<Radio />} label={unitLabels[100000]} />
-            </RadioGroup>
-          </FormControl>
+          <BudgetingUnitRadioFormControl
+            labelId="control-unit-label"
+            label="조정 단위"
+            description="+/- 버튼으로 금액을 조정할 때 증감되는 단위입니다"
+            value={tempControlUnit}
+            units={BUDGETING_UNITS}
+            onChange={setTempControlUnit}
+          />
         </Stack>
       </DialogContent>
 
