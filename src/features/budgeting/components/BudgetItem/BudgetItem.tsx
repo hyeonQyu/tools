@@ -1,5 +1,6 @@
 import { NumericInput, useBudgetingConfigStore, useBudgetingStore, useCalculateBudgetItemValue } from '@/features/budgeting';
 import { formatAmount, parseInputWithUnit } from '@/lib';
+import { pxToRem } from '@/styles';
 import { Delete as DeleteIcon, DragIndicator as DragIndicatorIcon } from '@mui/icons-material';
 import { Box, Card, Checkbox, FormControlLabel, IconButton, Stack, TextField, Typography } from '@mui/material';
 import { ChangeEvent, HTMLAttributes } from 'react';
@@ -49,9 +50,8 @@ function BudgetItem({ itemId, dragHandleProps }: BudgetItemProps) {
   const isPercentageInput = !item.isAmountFixed && allocationType === 'percentage';
 
   return (
-    <Card sx={{ p: 2, mb: 2 }}>
-      <Stack spacing={2}>
-        {/* 첫 번째 줄: 드래그 핸들, 이름, 삭제 버튼 */}
+    <Card sx={{ p: 1.5, mb: 2 }}>
+      <Stack spacing={1.4}>
         <Stack direction="row" spacing={1} alignItems="center">
           <Box {...dragHandleProps} sx={{ cursor: 'grab', display: 'flex', alignItems: 'center' }}>
             <DragIndicatorIcon color="action" />
@@ -62,16 +62,8 @@ function BudgetItem({ itemId, dragHandleProps }: BudgetItemProps) {
           </IconButton>
         </Stack>
 
-        {/* 두 번째 줄: 금액으로 고정 체크박스 */}
-        <FormControlLabel
-          control={<Checkbox checked={item.isAmountFixed} onChange={handleAmountFixedChange} size="small" />}
-          label="금액으로 고정"
-        />
-
-        {/* 세 번째 줄: 금액/비율 입력 */}
-        <Box>
-          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-            {/* 금액 입력 */}
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+          {!isPercentageInput && (
             <NumericInput
               label="금액"
               value={item.value / inputUnit}
@@ -81,8 +73,9 @@ function BudgetItem({ itemId, dragHandleProps }: BudgetItemProps) {
               inputUnit={inputUnit}
               disabled={isPercentageInput}
             />
+          )}
 
-            {/* 비율 표시/입력 */}
+          {isPercentageInput && (
             <NumericInput
               label="비율"
               value={isPercentageInput ? item.value : parseFloat(percentage.toFixed(1))}
@@ -100,13 +93,24 @@ function BudgetItem({ itemId, dragHandleProps }: BudgetItemProps) {
               unit="%"
               disabled={!isPercentageInput}
             />
-          </Stack>
-        </Box>
+          )}
+        </Stack>
 
-        {/* 네 번째 줄: 계산된 값 표시 */}
-        <Stack direction="row" spacing={2} justifyContent="space-between" sx={{ px: 1 }}>
+        <Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between">
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={item.isAmountFixed}
+                onChange={handleAmountFixedChange}
+                size="small"
+                sx={{ '&.MuiCheckbox-root': { padding: 0 } }}
+              />
+            }
+            label="금액으로 고정"
+            sx={{ height: pxToRem(24) }}
+          />
           <Typography variant="body2" color="text.secondary">
-            = {formatAmount(amount)} ({percentage.toFixed(1)}%)
+            {formatAmount(amount)} ({percentage.toFixed(1)}%)
           </Typography>
         </Stack>
       </Stack>

@@ -28,6 +28,7 @@ function NumericInput({ value, onChange, onIncrement, onDecrement, inputUnit, un
     <Stack direction="row" spacing={1} alignItems="center" sx={{ flex: 1 }}>
       <TextField
         {...textFieldProps}
+        size="small"
         fullWidth
         type="text"
         value={value}
