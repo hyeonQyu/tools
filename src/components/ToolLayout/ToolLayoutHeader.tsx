@@ -1,11 +1,12 @@
-import { Stack } from '@mui/material';
+import { Stack, SxProps, Theme } from '@mui/material';
 import { ReactNode } from 'react';
 
 interface ToolLayoutHeaderProps {
   children: ReactNode;
+  sx?: SxProps<Theme>;
 }
 
-function ToolLayoutHeader({ children }: ToolLayoutHeaderProps) {
+function ToolLayoutHeader({ children, sx }: ToolLayoutHeaderProps) {
   return (
     <Stack
       spacing={2}
@@ -18,6 +19,7 @@ function ToolLayoutHeader({ children }: ToolLayoutHeaderProps) {
         py: 2,
         borderBottom: '1px solid',
         borderColor: 'divider',
+        ...sx,
       }}
     >
       {children}

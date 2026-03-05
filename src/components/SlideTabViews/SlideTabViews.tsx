@@ -1,4 +1,4 @@
-import { Box } from '@mui/material';
+import { Box, SxProps, Theme } from '@mui/material';
 import { AnimatePresence, motion, Variants } from 'framer-motion';
 import { ReactNode, useMemo, useRef } from 'react';
 
@@ -11,6 +11,7 @@ interface SlideTabViewsProps<T extends string> {
   currentValue: T;
   items: SlideTabViewsItem<T>[];
   duration?: number;
+  sx?: SxProps<Theme>;
 }
 
 const slideVariants: Variants = {
@@ -19,7 +20,7 @@ const slideVariants: Variants = {
   exit: (dir: number) => ({ x: `${dir * -100}%` }),
 };
 
-function SlideTabViews<T extends string>({ currentValue, items, duration = 0.25 }: SlideTabViewsProps<T>) {
+function SlideTabViews<T extends string>({ currentValue, items, duration = 0.25, sx }: SlideTabViewsProps<T>) {
   const prevValueRef = useRef<T>(currentValue);
   const directionRef = useRef(0);
 
@@ -36,7 +37,7 @@ function SlideTabViews<T extends string>({ currentValue, items, duration = 0.25 
   const activeItem = items.find((item) => item.value === currentValue);
 
   return (
-    <Box sx={{ position: 'relative', overflow: 'hidden' }}>
+    <Box sx={{ position: 'relative', overflow: 'hidden', ...sx }}>
       <Box sx={{ visibility: 'hidden', pointerEvents: 'none' }} aria-hidden="true">
         {activeItem?.children}
       </Box>
@@ -50,7 +51,7 @@ function SlideTabViews<T extends string>({ currentValue, items, duration = 0.25 
           animate="center"
           exit="exit"
           transition={transition}
-          style={{ position: 'absolute', top: 0, left: 0, right: 0 }}
+          style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
         >
           {activeItem?.children}
         </motion.div>
