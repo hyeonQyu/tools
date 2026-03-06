@@ -73,5 +73,14 @@ export const goalDailyRecordsRepository = getFirebaseRepositoryCreator('goalDail
       const deletePromises = snapshot.docs.map((docSnap) => deleteDoc(doc(db, collectionName, docSnap.id)));
       await Promise.all(deletePromises);
     },
+
+    deleteByGoalId: async (goalId) => {
+      const userId = auth.currentUser!.uid;
+
+      const q = query(collection(db, collectionName), where('userId', '==', userId), where('goalId', '==', goalId));
+      const snapshot = await getDocs(q);
+      const deletePromises = snapshot.docs.map((docSnap) => deleteDoc(doc(db, collectionName, docSnap.id)));
+      await Promise.all(deletePromises);
+    },
   };
 });

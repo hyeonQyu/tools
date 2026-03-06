@@ -12,4 +12,5 @@ export interface GoalDailyRecordsRepository {
   findByYear: (year: number) => Promise<GoalDailyRecordPayload[]>;
   create: (payload: GoalDailyRecordPayload) => Promise<void>;
   delete: (payload: GoalDailyRecordPayload) => Promise<void>;
+  deleteByGoalId: (goalId: string) => Promise<void>;
 }

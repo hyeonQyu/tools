@@ -1,4 +1,4 @@
-import { useOpenGoalUpdateButton } from '@/features/goals-tracking/hooks';
+import { useDeleteGoal, useOpenGoalUpdateButton } from '@/features/goals-tracking/hooks';
 import { MoreVert } from '@mui/icons-material';
 import { IconButton, ListItemText, Menu, MenuItem } from '@mui/material';
 import { useState } from 'react';
@@ -12,6 +12,7 @@ function GoalMenuButton({ goalId }: GoalMenuButtonProps) {
   const open = Boolean(anchorEl);
 
   const openGoalUpdateButton = useOpenGoalUpdateButton();
+  const deleteGoal = useDeleteGoal();
 
   const handleOpen = (e: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(e.currentTarget);
@@ -28,6 +29,7 @@ function GoalMenuButton({ goalId }: GoalMenuButtonProps) {
 
   const handleDelete = () => {
     handleClose();
+    deleteGoal(goalId);
   };
 
   return (
