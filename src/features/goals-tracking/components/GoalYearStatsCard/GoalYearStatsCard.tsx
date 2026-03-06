@@ -1,8 +1,8 @@
 import { toKstDateKey } from '@/lib';
-import { MoreVert } from '@mui/icons-material';
-import { Card, CardContent, IconButton, Stack, Typography } from '@mui/material';
+import { Card, CardContent, Stack, Typography } from '@mui/material';
 import { useMemo } from 'react';
 import GoalHeatmap from './GoalHeatmap';
+import GoalMenuButton from './GoalMenuButton';
 import GoalStatItem from './GoalStatItem';
 
 interface GoalYearStatsCardProps {
@@ -51,9 +51,7 @@ function GoalYearStatsCard({ year, goal }: GoalYearStatsCardProps) {
           <Typography variant="subtitle1" fontWeight={600}>
             {goal.name}
           </Typography>
-          <IconButton size="small" edge="end">
-            <MoreVert fontSize="small" />
-          </IconButton>
+          <GoalMenuButton goalId={goal.id} />
         </Stack>
 
         <Stack direction="row" sx={{ justifyContent: 'space-around' }}>

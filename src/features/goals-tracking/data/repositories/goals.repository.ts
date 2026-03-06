@@ -1,6 +1,6 @@
 import { GoalEntity, GoalsRepository } from '@/features/goals-tracking/data/repositories/goals.repository.types';
 import { getFirebaseRepositoryCreator, serializeEntity } from '@/firebase';
-import { Timestamp, addDoc, collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore';
+import { Timestamp, addDoc, collection, doc, getDoc, getDocs, query, updateDoc, where } from 'firebase/firestore';
 
 export const goalsRepository = getFirebaseRepositoryCreator('goals')<GoalsRepository>(({ db, auth, collectionName }) => {
   return {
@@ -16,6 +16,11 @@ export const goalsRepository = getFirebaseRepositoryCreator('goals')<GoalsReposi
       };
 
       await addDoc(collection(db, collectionName), goalEntity);
+    },
+
+    update: async (goalId, payload) => {
+      const docRef = doc(db, collectionName, goalId);
+      await updateDoc(docRef, { ...payload, updatedAt: Timestamp.now().toDate() });
     },
 
     findByName: async (name) => {

@@ -9,7 +9,8 @@ export type GoalResult = {
   color: string;
 };
 
-interface GoalInformationDialogProps {
+export interface GoalInformationDialogProps {
+  defaultValues?: GoalResult;
   close: (result?: GoalResult) => void;
   confirmConfig: {
     label: string;
@@ -32,9 +33,9 @@ const GOAL_COLORS = [
   '#8d6e63',
 ];
 
-function GoalInformationDialog({ close, confirmConfig }: GoalInformationDialogProps) {
-  const [name, setName] = useState('');
-  const [color, setColor] = useState(GOAL_COLORS[0]);
+function GoalInformationDialog({ defaultValues = { name: '', color: GOAL_COLORS[0] }, close, confirmConfig }: GoalInformationDialogProps) {
+  const [name, setName] = useState(defaultValues.name);
+  const [color, setColor] = useState(defaultValues.color);
   const [nameError, setNameError] = useState<string | null>(null);
 
   const nameInputRef = useRef<HTMLInputElement>(null);
