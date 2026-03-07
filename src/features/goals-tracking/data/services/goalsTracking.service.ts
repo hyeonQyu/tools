@@ -30,6 +30,14 @@ export const createGoalsTrackingService = getServiceCreator<GoalsTrackingService
           })),
         };
       },
+
+      completeGoal: async (payload) => {
+        await goalDailyRecordsRepository.create(payload);
+      },
+
+      uncompleteGoal: async (payload) => {
+        await goalDailyRecordsRepository.delete(payload);
+      },
     };
   },
 );

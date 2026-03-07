@@ -14,16 +14,17 @@ import {
 
 interface GoalsSectionProps {
   title: string;
-  items: Array<{ checked: boolean; name: string }>;
+  items: Array<{ id: string; checked: boolean; name: string }>;
+  onToggleCompleted?: (id: string) => void | Promise<void>;
   unfoldable?: boolean;
 }
 
-function GoalsSection({ title, items, unfoldable = false }: GoalsSectionProps) {
+function GoalsSection({ title, items, onToggleCompleted, unfoldable = false }: GoalsSectionProps) {
   return (
     <Accordion
       defaultExpanded
       disableGutters
-      disabled={!unfoldable}
+      disabled={unfoldable}
       elevation={0}
       square
       sx={{
@@ -34,12 +35,12 @@ function GoalsSection({ title, items, unfoldable = false }: GoalsSectionProps) {
       }}
     >
       <AccordionSummary
-        expandIcon={unfoldable ? <ExpandMoreIcon fontSize="small" /> : null}
+        expandIcon={!unfoldable ? <ExpandMoreIcon fontSize="small" /> : null}
         sx={{
           minHeight: 0,
           px: 2,
           py: 0.5,
-          pointerEvents: unfoldable ? 'auto' : 'none',
+          pointerEvents: !unfoldable ? 'auto' : 'none',
           '& .MuiAccordionSummary-content': { my: 0.5 },
         }}
       >
@@ -64,27 +65,41 @@ function GoalsSection({ title, items, unfoldable = false }: GoalsSectionProps) {
               />
             </ListItem>
           ) : (
-            items.map(({ name, checked }, index) => (
-              <ListItem key={index} disablePadding sx={{ px: 1 }}>
-                <ListItemIcon sx={{ minWidth: 36 }}>
-                  <Checkbox size="medium" checked={checked} disableRipple sx={{ p: 0.5 }} />
-                </ListItemIcon>
-                <ListItemText
-                  primary={
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        textDecoration: checked ? 'line-through' : 'none',
-                        color: checked ? 'text.disabled' : 'text.primary',
-                        fontSize: pxToRem(14),
-                      }}
-                    >
-                      {name}
-                    </Typography>
-                  }
-                />
-              </ListItem>
-            ))
+            items.map(({ id, name, checked }) => {
+              const checkboxId = `goal-checkbox-${id}`;
+
+              return (
+                <ListItem key={id} disablePadding sx={{ px: 1 }}>
+                  <ListItemIcon sx={{ minWidth: 36 }}>
+                    <Checkbox
+                      id={checkboxId}
+                      size="medium"
+                      checked={checked}
+                      disableRipple
+                      sx={{ p: 0.5 }}
+                      onChange={() => onToggleCompleted?.(id)}
+                    />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={
+                      <Typography
+                        component="label"
+                        htmlFor={checkboxId}
+                        variant="body2"
+                        sx={{
+                          textDecoration: checked ? 'line-through' : 'none',
+                          color: checked ? 'text.disabled' : 'text.primary',
+                          fontSize: pxToRem(14),
+                          cursor: 'pointer',
+                        }}
+                      >
+                        {name}
+                      </Typography>
+                    }
+                  />
+                </ListItem>
+              );
+            })
           )}
         </List>
       </AccordionDetails>
