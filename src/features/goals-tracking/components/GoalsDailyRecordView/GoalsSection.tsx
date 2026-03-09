@@ -4,6 +4,7 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Box,
   Checkbox,
   List,
   ListItem,
@@ -11,12 +12,32 @@ import {
   ListItemText,
   Typography,
 } from '@mui/material';
+import { AnimatePresence, motion } from 'framer-motion';
+import type { ReactNode } from 'react';
 
 interface GoalsSectionProps {
   title: string;
   items: Array<{ id: string; checked: boolean; name: string }>;
   onToggleCompleted?: (id: string) => void | Promise<void>;
   unfoldable?: boolean;
+}
+
+const rowTransition = { duration: 0.18, ease: 'easeOut' } as const;
+const layoutTransition = { duration: 0.22, ease: 'easeOut' } as const;
+
+function AnimatedRow({ children }: { children: ReactNode }) {
+  return (
+    <Box
+      component={motion.div}
+      layout
+      initial={{ opacity: 0, y: -6 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 6 }}
+      transition={{ ...rowTransition, layout: layoutTransition }}
+    >
+      {children}
+    </Box>
+  );
 }
 
 function GoalsSection({ title, items, onToggleCompleted, unfoldable = false }: GoalsSectionProps) {
@@ -53,55 +74,63 @@ function GoalsSection({ title, items, onToggleCompleted, unfoldable = false }: G
       </AccordionSummary>
 
       <AccordionDetails sx={{ p: 0 }}>
-        <List dense>
-          {items.length === 0 ? (
-            <ListItem sx={{ px: 2 }}>
-              <ListItemText
-                primary={
-                  <Typography variant="body2" color="text.disabled">
-                    항목이 없습니다.
-                  </Typography>
-                }
-              />
-            </ListItem>
-          ) : (
-            items.map(({ id, name, checked }) => {
-              const checkboxId = `goal-checkbox-${id}`;
-
-              return (
-                <ListItem key={id} disablePadding sx={{ px: 1 }}>
-                  <ListItemIcon sx={{ minWidth: 36 }}>
-                    <Checkbox
-                      id={checkboxId}
-                      size="medium"
-                      checked={checked}
-                      disableRipple
-                      sx={{ p: 0.5 }}
-                      onChange={() => onToggleCompleted?.(id)}
+        <Box component={motion.div} layout transition={{ layout: layoutTransition }} sx={{ overflow: 'hidden' }}>
+          <List dense>
+            <AnimatePresence initial={false}>
+              {items.length === 0 ? (
+                <AnimatedRow key="empty">
+                  <ListItem sx={{ px: 2 }}>
+                    <ListItemText
+                      primary={
+                        <Typography variant="body2" color="text.disabled">
+                          항목이 없습니다.
+                        </Typography>
+                      }
                     />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={
-                      <Typography
-                        component="label"
-                        htmlFor={checkboxId}
-                        variant="body2"
-                        sx={{
-                          textDecoration: checked ? 'line-through' : 'none',
-                          color: checked ? 'text.disabled' : 'text.primary',
-                          fontSize: pxToRem(14),
-                          cursor: 'pointer',
-                        }}
-                      >
-                        {name}
-                      </Typography>
-                    }
-                  />
-                </ListItem>
-              );
-            })
-          )}
-        </List>
+                  </ListItem>
+                </AnimatedRow>
+              ) : (
+                items.map(({ id, name, checked }) => {
+                  const checkboxId = `goal-checkbox-${id}`;
+
+                  return (
+                    <AnimatedRow key={id}>
+                      <ListItem disablePadding sx={{ px: 1 }}>
+                        <ListItemIcon sx={{ minWidth: 36 }}>
+                          <Checkbox
+                            id={checkboxId}
+                            size="medium"
+                            checked={checked}
+                            disableRipple
+                            sx={{ p: 0.5 }}
+                            onChange={() => onToggleCompleted?.(id)}
+                          />
+                        </ListItemIcon>
+                        <ListItemText
+                          primary={
+                            <Typography
+                              component="label"
+                              htmlFor={checkboxId}
+                              variant="body2"
+                              sx={{
+                                textDecoration: checked ? 'line-through' : 'none',
+                                color: checked ? 'text.disabled' : 'text.primary',
+                                fontSize: pxToRem(14),
+                                cursor: 'pointer',
+                              }}
+                            >
+                              {name}
+                            </Typography>
+                          }
+                        />
+                      </ListItem>
+                    </AnimatedRow>
+                  );
+                })
+              )}
+            </AnimatePresence>
+          </List>
+        </Box>
       </AccordionDetails>
     </Accordion>
   );

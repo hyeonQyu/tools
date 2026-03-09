@@ -1,6 +1,7 @@
 import { ToolLayout } from '@/components/ToolLayout';
 import GoalsDailyDatePicker from '@/features/goals-tracking/components/GoalsDailyRecordView/GoalsDailyDatePicker';
 import GoalsDailyProgress from '@/features/goals-tracking/components/GoalsDailyRecordView/GoalsDailyProgress';
+import GoalsDailyProgressFallback from '@/features/goals-tracking/components/GoalsDailyRecordView/GoalsDailyProgressFallback';
 import GoalsDailyRecords from '@/features/goals-tracking/components/GoalsDailyRecordView/GoalsDailyRecords';
 import GoalsDailyRecordsSkeleton from '@/features/goals-tracking/components/GoalsDailyRecordView/GoalsDailyRecordsSkeleton';
 import { Suspense } from 'react';
@@ -10,7 +11,9 @@ function GoalsDailyRecordView() {
     <ToolLayout>
       <ToolLayout.Header sx={{ px: 1 }}>
         <GoalsDailyDatePicker />
-        <GoalsDailyProgress />
+        <Suspense fallback={<GoalsDailyProgressFallback />}>
+          <GoalsDailyProgress />
+        </Suspense>
       </ToolLayout.Header>
 
       <ToolLayout.Body>

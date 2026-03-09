@@ -1,16 +1,11 @@
 import GoalsSection from '@/features/goals-tracking/components/GoalsDailyRecordView/GoalsSection';
-import { useToggleDailyGoalCompleted } from '@/features/goals-tracking/hooks';
-import { getGoalsFindByDateQueryOptions } from '@/features/goals-tracking/queries';
+import { useDailyGoals, useToggleDailyGoalCompleted } from '@/features/goals-tracking/hooks';
 import { useGoalsTrackingDailyStore } from '@/features/goals-tracking/stores';
 import { Stack } from '@mui/material';
-import { useSuspenseQuery } from '@tanstack/react-query';
 
 function GoalsDailyRecords() {
   const date = useGoalsTrackingDailyStore((store) => store.date);
-
-  const {
-    data: { goals },
-  } = useSuspenseQuery(getGoalsFindByDateQueryOptions(date));
+  const goals = useDailyGoals(date);
 
   const handleToggleGoalCompleted = useToggleDailyGoalCompleted(date);
 
