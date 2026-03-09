@@ -3,7 +3,7 @@ import {
   GoalsTrackingServiceDependencies,
 } from '@/features/goals-tracking/data/services/goalsTracking.service.types';
 import { getServiceCreator } from '@/firebase';
-import { ConstraintError } from '@/lib';
+import { ConstraintError, NotFoundError } from '@/lib';
 
 export const createGoalsTrackingService = getServiceCreator<GoalsTrackingService, GoalsTrackingServiceDependencies>(
   ({ goalsRepository, goalDailyRecordsRepository }) => {
@@ -12,6 +12,12 @@ export const createGoalsTrackingService = getServiceCreator<GoalsTrackingService
         const existing = await goalsRepository.findByName(payload.name);
         if (existing) throw new ConstraintError('이미 같은 이름의 목표가 존재합니다.');
         await goalsRepository.create(payload);
+      },
+
+      update: async (goalId, payload) => {
+        const existing = await goalsRepository.findById(goalId);
+        if (!existing) throw new NotFoundError('목표를 찾을 수 없습니다.');
+        await goalsRepository.update(goalId, payload);
       },
 
       getDailyRecords: async (date) => {

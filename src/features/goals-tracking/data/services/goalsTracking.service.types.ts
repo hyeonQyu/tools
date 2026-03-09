@@ -18,6 +18,7 @@ export type YearlyGoal = {
 
 export interface GoalsTrackingService {
   create: (payload: GoalPayload) => Promise<void>;
+  update: (goalId: string, payload: GoalPayload) => Promise<void>;
   getDailyRecords: (date: Date) => Promise<{ date: Date; goals: DailyGoal[] }>;
   completeGoal: (payload: GoalDailyRecordPayload) => Promise<void>;
   uncompleteGoal: (payload: GoalDailyRecordPayload) => Promise<void>;

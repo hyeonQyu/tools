@@ -1,4 +1,4 @@
-import GoalYearStatsCard from '@/features/goals-tracking/components/GoalsYearStatsView/GoalYearStatsCard';
+import { GoalYearStatsCard } from '@/features/goals-tracking/components/GoalYearStatsCard';
 import { useYearlyGoals } from '@/features/goals-tracking/hooks';
 import { useGoalsTrackingYearStore } from '@/features/goals-tracking/stores';
 import { Stack } from '@mui/material';
