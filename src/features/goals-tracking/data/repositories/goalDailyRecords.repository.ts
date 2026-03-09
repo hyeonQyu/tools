@@ -26,6 +26,22 @@ export const goalDailyRecordsRepository = getFirebaseRepositoryCreator('goalDail
       return snapshot.docs.map((docSnap) => serializeEntity<GoalDailyRecordEntity>({ id: docSnap.id, ...docSnap.data() }));
     },
 
+    findByYear: async (year) => {
+      const userId = auth.currentUser!.uid;
+      const startOfYear = toKstMidnightDate(new Date(Date.UTC(year, 0, 1)));
+      const startOfNextYear = toKstMidnightDate(new Date(Date.UTC(year + 1, 0, 1)));
+
+      const q = query(
+        collection(db, collectionName),
+        where('userId', '==', userId),
+        where('date', '>=', Timestamp.fromDate(startOfYear)),
+        where('date', '<', Timestamp.fromDate(startOfNextYear)),
+      );
+
+      const snapshot = await getDocs(q);
+      return snapshot.docs.map((docSnap) => serializeEntity<GoalDailyRecordEntity>({ id: docSnap.id, ...docSnap.data() }));
+    },
+
     create: async (payload) => {
       const userId = auth.currentUser!.uid;
       const now = Timestamp.now().toDate();

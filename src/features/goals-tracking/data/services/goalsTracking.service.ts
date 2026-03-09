@@ -15,10 +15,7 @@ export const createGoalsTrackingService = getServiceCreator<GoalsTrackingService
       },
 
       getDailyRecords: async (date) => {
-        const [goals, records] = await Promise.all([
-          goalsRepository.findAll(),
-          goalDailyRecordsRepository.findByDate(date),
-        ]);
+        const [goals, records] = await Promise.all([goalsRepository.findAll(), goalDailyRecordsRepository.findByDate(date)]);
 
         const recordedIds = new Set(records.map((r) => r.goalId));
 
@@ -27,6 +24,24 @@ export const createGoalsTrackingService = getServiceCreator<GoalsTrackingService
           goals: goals.map(({ userId: _userId, ...goal }) => ({
             goal,
             done: recordedIds.has(goal.id),
+          })),
+        };
+      },
+
+      getYearlyRecords: async (year) => {
+        const [goals, records] = await Promise.all([goalsRepository.findAll(), goalDailyRecordsRepository.findByYear(year)]);
+
+        const doneDatesByGoalId = records.reduce<Map<string, Date[]>>((acc, record) => {
+          const current = acc.get(record.goalId) ?? [];
+          acc.set(record.goalId, [...current, record.date]);
+          return acc;
+        }, new Map());
+
+        return {
+          year,
+          goals: goals.map(({ userId: _userId, ...goal }) => ({
+            goal,
+            doneDates: (doneDatesByGoalId.get(goal.id) ?? []).slice().sort((a, b) => a.getTime() - b.getTime()),
           })),
         };
       },
