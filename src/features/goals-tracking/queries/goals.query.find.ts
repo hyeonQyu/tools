@@ -1,4 +1,5 @@
 import { goalsTrackingService } from '@/features/goals-tracking/data';
+import { TIME_UNIT, toKstDateKey } from '@/lib';
 
 export const getGoalsFindAllQueryOptions = () => {
   return {
@@ -8,7 +9,8 @@ export const getGoalsFindAllQueryOptions = () => {
 
 export const getGoalsFindByDateQueryOptions = (date: Date) => {
   return {
-    queryKey: [...getGoalsFindAllQueryOptions().queryKey, date.toDateString()] as const,
+    queryKey: [...getGoalsFindAllQueryOptions().queryKey, toKstDateKey(date)] as const,
     queryFn: () => goalsTrackingService.getDailyRecords(date),
+    staleTime: TIME_UNIT.unitOfMs.asDay,
   };
 };
