@@ -1,4 +1,6 @@
 export const Z_INDEX = {
-  bottomNavigation: 10000,
-  dialog: 11000,
+  bottomNavigation: 1000,
+  dialog: 1100,
 };
+
+// snackbar: 1400
