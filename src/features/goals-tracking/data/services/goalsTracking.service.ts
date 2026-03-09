@@ -20,6 +20,13 @@ export const createGoalsTrackingService = getServiceCreator<GoalsTrackingService
         await goalsRepository.update(goalId, payload);
       },
 
+      delete: async (goalId) => {
+        const existing = await goalsRepository.findById(goalId);
+        if (!existing) throw new NotFoundError('목표를 찾을 수 없습니다.');
+        await goalDailyRecordsRepository.deleteByGoalId(goalId);
+        await goalsRepository.delete(goalId);
+      },
+
       getDailyRecords: async (date) => {
         const [goals, records] = await Promise.all([goalsRepository.findAll(), goalDailyRecordsRepository.findByDate(date)]);
 

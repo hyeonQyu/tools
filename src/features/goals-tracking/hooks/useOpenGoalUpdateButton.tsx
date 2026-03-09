@@ -2,7 +2,8 @@ import { SlideUpTransition } from '@/components/SlideUpTransition';
 import { useDialog } from '@/dialog';
 import { GoalInformationDialog, GoalResult } from '@/features/goals-tracking/components/GoalInformationDialog';
 import { goalsTrackingService } from '@/features/goals-tracking/data';
-import { getGoalsFindAllQueryOptions, getGoalsFindByYearQueryOptions } from '@/features/goals-tracking/queries';
+import { useRefreshFindGoalsQuery } from '@/features/goals-tracking/hooks';
+import { getGoalsFindByYearQueryOptions } from '@/features/goals-tracking/queries';
 import { useGoalsTrackingYearStore } from '@/features/goals-tracking/stores';
 import { enqueueClosableSnackbar } from '@/styles';
 import { useQueryClient } from '@tanstack/react-query';
@@ -13,6 +14,8 @@ export const useOpenGoalUpdateButton = () => {
 
   const year = useGoalsTrackingYearStore((store) => store.year);
   const goalsByYearQueryOptions = getGoalsFindByYearQueryOptions(year);
+
+  const refreshFindGoalsQuery = useRefreshFindGoalsQuery();
 
   const findGoal = async (goalId: string) => {
     const data = await queryClient.getQueryData<ReturnType<typeof goalsByYearQueryOptions.queryFn>>(goalsByYearQueryOptions.queryKey);
@@ -40,7 +43,7 @@ export const useOpenGoalUpdateButton = () => {
             label: '수정',
             onConfirm: async (goal) => {
               await goalsTrackingService.update(goalId, goal);
-              await queryClient.invalidateQueries(getGoalsFindAllQueryOptions());
+              await refreshFindGoalsQuery();
 
               enqueueClosableSnackbar({
                 message: '목표가 수정되었습니다.',
