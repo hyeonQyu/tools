@@ -1,18 +1,13 @@
 import { ToolLayout } from '@/components/ToolLayout';
 import {
-  AllocationTypeSelector,
+  BudgetingBody,
+  BudgetingBodySkeleton,
   BudgetingConfigButton,
-  BudgetItemList,
   BudgetSummary,
-  TotalAmountInput,
-  useBudgetingAutoSave,
-  useBudgetingLoad,
 } from '@/features/budgeting';
+import { Suspense } from 'react';
 
 function BudgetingPage() {
-  useBudgetingLoad();
-  useBudgetingAutoSave();
-
   return (
     <ToolLayout>
       <ToolLayout.Header>
@@ -25,9 +20,9 @@ function BudgetingPage() {
       </ToolLayout.Header>
 
       <ToolLayout.Body>
-        <TotalAmountInput />
-        <AllocationTypeSelector />
-        <BudgetItemList />
+        <Suspense fallback={<BudgetingBodySkeleton />}>
+          <BudgetingBody />
+        </Suspense>
       </ToolLayout.Body>
     </ToolLayout>
   );

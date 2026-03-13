@@ -1,4 +1,5 @@
 export * from './AllocationTypeSelector';
+export * from './BudgetingBody';
 export * from './BudgetingConfigButton';
 export * from './BudgetingConfigDialog';
 export * from './BudgetItem';
