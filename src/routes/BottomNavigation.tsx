@@ -5,7 +5,7 @@ import { pxToRem, Z_INDEX } from '@/styles';
 import { BottomNavigationAction, BottomNavigation as MUIBottomNavigation, Paper, useTheme } from '@mui/material';
 import { ComponentType } from 'react';
 
-export const BOTTOM_NAVIGATION_HEIGHT = 72;
+export const BOTTOM_NAVIGATION_HEIGHT = 82;
 
 function BottomNavigation() {
   const { spacing } = useTheme();
@@ -21,12 +21,11 @@ function BottomNavigation() {
         bottom: 0,
         left: 0,
         right: 0,
-        pb: spacing(2),
         zIndex: Z_INDEX.bottomNavigation,
         height: pxToRem(BOTTOM_NAVIGATION_HEIGHT),
       }}
     >
-      <MUIBottomNavigation showLabels value={currentNavigationIndex}>
+      <MUIBottomNavigation showLabels value={currentNavigationIndex} sx={{ height: '100%' }}>
         {navigationData.map(({ pathname, label, iconFilled, iconOutlined }, index) => {
           const isActive = currentNavigationIndex === index;
           const IconComponent = (isActive ? iconFilled : iconOutlined) as ComponentType | null;
@@ -38,8 +37,8 @@ function BottomNavigation() {
               icon={IconComponent && <IconComponent />}
               onClick={() => navigate(pathname)}
               sx={{
-                minWidth: spacing(8),
-                padding: spacing(1, 2),
+                maxWidth: spacing(2),
+                pb: spacing(3),
               }}
             />
           );
