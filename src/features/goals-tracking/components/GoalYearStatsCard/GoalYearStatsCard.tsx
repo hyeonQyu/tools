@@ -37,12 +37,8 @@ function GoalYearStatsCard({ year, goal }: GoalYearStatsCardProps) {
   const isCurrentYear = year === today.getFullYear();
   const referenceDate = useMemo(() => (isCurrentYear ? today : new Date(year, 11, 31)), [isCurrentYear, today, year]);
 
-  const yearStart = new Date(year, 0, 1);
-  const totalDays = Math.floor((referenceDate.getTime() - yearStart.getTime()) / 86400000) + 1;
-
   const streak = useMemo(() => calculateStreak(goal.doneDates, referenceDate), [goal.doneDates, referenceDate]);
   const completedDays = goal.doneDates.length;
-  const completionRate = totalDays > 0 ? Math.round((completedDays / totalDays) * 100) : 0;
 
   return (
     <Card sx={{ borderRadius: 2 }}>
@@ -57,7 +53,6 @@ function GoalYearStatsCard({ year, goal }: GoalYearStatsCardProps) {
         <Stack direction="row" sx={{ justifyContent: 'space-around' }}>
           <GoalStatItem label="현재 연속" value={`${streak}일`} />
           <GoalStatItem label="완료 일수" value={`${completedDays}일`} />
-          <GoalStatItem label="완료율" value={`${completionRate}%`} />
         </Stack>
 
         <GoalHeatmap year={year} doneDates={goal.doneDates} color={goal.color} />
