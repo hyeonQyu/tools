@@ -55,7 +55,7 @@ function GoalYearStatsCard({ year, goal }: GoalYearStatsCardProps) {
           <GoalStatItem label="완료 일수" value={`${completedDays}일`} />
         </Stack>
 
-        <GoalHeatmap year={year} doneDates={goal.doneDates} color={goal.color} />
+        <GoalHeatmap year={year} doneDates={goal.doneDates} color={goal.color} today={today} />
       </CardContent>
     </Card>
   );
