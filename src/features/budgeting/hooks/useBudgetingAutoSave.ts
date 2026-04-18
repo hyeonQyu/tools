@@ -17,10 +17,8 @@ export const useBudgetingAutoSave = () => {
 
   const saveUpdated = useCallback(
     async (formState: BudgetingStates, configState: BudgetingConfigStates) => {
-      if (!data) return;
-
       try {
-        if (isEqual(formState, data.form) && isEqual(configState, data.config)) {
+        if (data && isEqual(formState, data.form) && isEqual(configState, data.config)) {
           return;
         }
 
