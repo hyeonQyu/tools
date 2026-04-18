@@ -1,4 +1,4 @@
-import { toKstDateKey } from '@/lib';
+import { DAYS, toKstDateKey } from '@/lib';
 import { pxToRem } from '@/styles';
 import { alpha, Box, Typography, useTheme } from '@mui/material';
 import { useMemo } from 'react';
@@ -12,7 +12,6 @@ interface GoalHeatmapProps {
 
 const CELL_SIZE = pxToRem(6);
 const CELL_GAP = 2;
-const DAYS = ['일', '월', '화', '수', '목', '금', '토'];
 
 const getMonthLabel = (week: (Date | null)[]): string | null => {
   for (const day of week) {
