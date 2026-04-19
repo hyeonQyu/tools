@@ -5,6 +5,7 @@ import { Ref } from 'react';
 
 interface NavigationPickerProps {
   label: string;
+  subLabel?: string;
   onPrev: () => void;
   onNext: () => void;
   disableNext?: boolean;
@@ -18,6 +19,7 @@ interface NavigationPickerProps {
 
 function NavigationPicker({
   label,
+  subLabel,
   onPrev,
   onNext,
   disableNext = false,
@@ -35,14 +37,19 @@ function NavigationPicker({
       </IconButton>
 
       <Box sx={{ position: 'relative' }}>
-        <Typography
-          ref={labelRef}
+        <Box
+          sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: onLabelClick ? 'pointer' : 'default' }}
           onClick={onLabelClick}
-          variant="h6"
-          sx={{ cursor: onLabelClick ? 'pointer' : 'default', userSelect: 'none' }}
         >
-          {label}
-        </Typography>
+          <Typography ref={labelRef} variant="h6">
+            {label}
+          </Typography>
+          {subLabel && (
+            <Typography variant="caption" color="text.secondary" sx={{ lineHeight: 1 }}>
+              {subLabel}
+            </Typography>
+          )}
+        </Box>
         {showJumpButton && jumpButtonLabel && onJump && (
           <Button
             size="small"

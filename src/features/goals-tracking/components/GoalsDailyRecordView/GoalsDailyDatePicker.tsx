@@ -1,7 +1,7 @@
 import { dateFormat } from '@/date';
 import NavigationPicker from '@/features/goals-tracking/components/shared/NavigationPicker';
 import { useGoalsTrackingDailyStore } from '@/features/goals-tracking/stores';
-import { getKstNow, toKstDateKey } from '@/lib';
+import { DAYS, getKstNow, toKstDateKey } from '@/lib';
 import { DatePicker } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 import { useRef, useState } from 'react';
@@ -15,6 +15,7 @@ function GoalsDailyDatePicker() {
   const today = getKstNow();
   const dayjsToday = dayjs(today);
   const isToday = toKstDateKey(date) === toKstDateKey(today);
+  const dayOfWeek = DAYS[dayjsDate.day()] + '요일';
 
   const handlePrevDay = () => setDate(dayjsDate.subtract(1, 'day').toDate());
   const handleNextDay = () => setDate(dayjsDate.add(1, 'day').toDate());
@@ -23,6 +24,7 @@ function GoalsDailyDatePicker() {
   return (
     <NavigationPicker
       label={dayjsDate.format(dateFormat)}
+      subLabel={dayOfWeek}
       onPrev={handlePrevDay}
       onNext={handleNextDay}
       disableNext={isToday}
