@@ -34,8 +34,17 @@ function GoalYearStatsCard({ year, goal }: GoalYearStatsCardProps) {
     return now;
   }, []);
 
+  const yesterday = useMemo(() => {
+    const d = new Date(today);
+    d.setDate(d.getDate() - 1);
+    return d;
+  }, [today]);
+
   const isCurrentYear = year === today.getFullYear();
-  const referenceDate = useMemo(() => (isCurrentYear ? today : new Date(year, 11, 31)), [isCurrentYear, today, year]);
+  const referenceDate = useMemo(
+    () => (isCurrentYear ? yesterday : new Date(year, 11, 31)),
+    [isCurrentYear, yesterday, year],
+  );
 
   const streak = useMemo(() => calculateStreak(goal.doneDates, referenceDate), [goal.doneDates, referenceDate]);
   const completedDays = goal.doneDates.length;
