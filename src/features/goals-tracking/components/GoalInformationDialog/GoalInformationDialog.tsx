@@ -31,6 +31,12 @@ const GOAL_COLORS = [
   '#ffca28',
   '#ffa726',
   '#8d6e63',
+  '#3949ab',
+  '#c51162',
+  '#aeea00',
+  '#546e7a',
+  '#e64a19',
+  '#00e676',
 ];
 
 function GoalInformationDialog({ defaultValues = { name: '', color: GOAL_COLORS[0] }, close, confirmConfig }: GoalInformationDialogProps) {
