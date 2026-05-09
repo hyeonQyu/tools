@@ -1,17 +1,17 @@
-import { toKstDateKey } from '@/lib';
+import { DAYS, toKstDateKey } from '@/lib';
 import { pxToRem } from '@/styles';
-import { alpha, Box, Typography } from '@mui/material';
+import { alpha, Box, Typography, useTheme } from '@mui/material';
 import { useMemo } from 'react';
 
 interface GoalHeatmapProps {
   year: number;
   doneDates: Date[];
   color: string;
+  today: Date;
 }
 
 const CELL_SIZE = pxToRem(6);
 const CELL_GAP = 2;
-const DAYS = ['일', '월', '화', '수', '목', '금', '토'];
 
 const getMonthLabel = (week: (Date | null)[]): string | null => {
   for (const day of week) {
@@ -48,9 +48,12 @@ const buildYearWeeks = (year: number): (Date | null)[][] => {
   return weeks;
 };
 
-function GoalHeatmap({ year, doneDates, color }: GoalHeatmapProps) {
+function GoalHeatmap({ year, doneDates, color, today }: GoalHeatmapProps) {
+  const { palette } = useTheme();
+
   const doneSet = useMemo(() => new Set(doneDates.map((d) => toKstDateKey(d))), [doneDates]);
   const weeks = useMemo(() => buildYearWeeks(year), [year]);
+  const todayDateKey = useMemo(() => toKstDateKey(today), [today]);
 
   return (
     <Box sx={{ overflowX: 'auto', pb: 1 }}>
@@ -110,6 +113,7 @@ function GoalHeatmap({ year, doneDates, color }: GoalHeatmapProps) {
 
                 const dateKey = toKstDateKey(day);
                 const isDone = doneSet.has(dateKey);
+                const isToday = todayDateKey === dateKey;
 
                 return (
                   <Box
@@ -117,8 +121,10 @@ function GoalHeatmap({ year, doneDates, color }: GoalHeatmapProps) {
                     sx={{
                       width: CELL_SIZE,
                       height: CELL_SIZE,
+                      boxSizing: 'border-box',
                       borderRadius: '2px',
                       backgroundColor: isDone ? color : alpha(color, 0.1),
+                      border: isToday ? `1px solid ${palette.grey[900]}` : 'none',
                     }}
                   />
                 );

@@ -37,3 +37,5 @@ export const TIME_UNIT: Record<`unitOf${TimeUnitType}`, Record<`as${TimeUnitType
     asDay: 1,
   },
 };
+
+export const DAYS = ['일', '월', '화', '수', '목', '금', '토'];
