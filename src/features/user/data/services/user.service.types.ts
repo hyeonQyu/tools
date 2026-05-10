@@ -1,7 +1,7 @@
-import { UserPayload, UsersRepository } from '@/features/user/data/repositories';
+import { UserEntity, UsersRepository } from '@/features/user/data/repositories';
 
 export interface UserService {
-  getUsers: () => Promise<UserPayload[]>;
+  getUsers: () => Promise<UserEntity[]>;
 }
 
 export interface UserServiceDependencies {
