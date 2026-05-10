@@ -14,4 +14,5 @@ export type FuelPaymentGroupEntity = DocumentEntity<FuelPaymentGroupPayload>;
 
 export interface FuelPaymentGroupsRepository {
   create: () => Promise<FuelPaymentGroupEntity>;
+  findMyGroup: () => Promise<FuelPaymentGroupEntity | null>;
 }
