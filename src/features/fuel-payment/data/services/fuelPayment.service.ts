@@ -7,6 +7,10 @@ export const createFuelPaymentService = getServiceCreator<FuelPaymentService, Fu
       createGroup: async () => {
         return fuelPaymentGroupsRepository.create();
       },
+
+      getMyGroup: async () => {
+        return fuelPaymentGroupsRepository.findMyGroup();
+      },
     };
   },
 );

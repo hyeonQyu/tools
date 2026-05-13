@@ -2,6 +2,7 @@ import { FuelPaymentGroupEntity, FuelPaymentGroupsRepository } from '@/features/
 
 export interface FuelPaymentService {
   createGroup: () => Promise<FuelPaymentGroupEntity>;
+  getMyGroup: () => Promise<FuelPaymentGroupEntity | null>;
 }
 
 export interface FuelPaymentServiceDependencies {
