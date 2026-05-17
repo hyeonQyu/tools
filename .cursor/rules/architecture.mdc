@@ -1,0 +1,7 @@
+---
+description: Repository architecture, feature module structure, data flow, persistence model
+globs: *
+alwaysApply: true
+---
+
+@.agents/rules/architecture.md

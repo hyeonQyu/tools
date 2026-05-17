@@ -1,0 +1,7 @@
+---
+description: Commands, quality checks, and change communication
+globs: *
+alwaysApply: true
+---
+
+@.agents/rules/workflow.md

@@ -40,3 +40,16 @@ workbox-*.js.map
 .pnp.*
 
 .env
+
+# AI agent directories — ignore by default, whitelist specific subdirectories
+/.agents/*
+!/.agents/rules/
+!/.agents/skills/
+
+/.claude/*
+!/.claude/rules/
+!/.claude/skills
+!/.claude/settings.json
+
+/.cursor/*
+!/.cursor/rules/
