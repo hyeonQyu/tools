@@ -35,6 +35,15 @@ When instructions conflict, follow this priority:
   - `get[Feature][Purpose]MutationOptions`
 - Keep feature folder structure consistent with existing modules under `src/features/`.
 - Respect current formatting and lint rules (Prettier + ESLint zero warnings policy).
+- All hooks must be declared as `export const` arrow functions, not `export function`:
+
+  ```ts
+  // correct
+  export const useMyHook = () => { ... };
+
+  // incorrect
+  export function useMyHook() { ... }
+  ```
 
 ## Quality Checks Before Finishing
 
