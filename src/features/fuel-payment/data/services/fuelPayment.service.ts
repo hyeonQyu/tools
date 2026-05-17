@@ -34,6 +34,18 @@ export const createFuelPaymentService = getServiceCreator<FuelPaymentService, Fu
       getGroupUsers: async (groupId: string) => {
         return fuelPaymentUsersRepository.findByGroupId(groupId);
       },
+
+      addRecord: async (groupId, record) => {
+        await fuelPaymentGroupsRepository.addRecord(groupId, record);
+      },
+
+      updateRecord: async (groupId, originalDate, record) => {
+        await fuelPaymentGroupsRepository.updateRecord(groupId, originalDate, record);
+      },
+
+      removeRecord: async (groupId, date) => {
+        await fuelPaymentGroupsRepository.removeRecord(groupId, date);
+      },
     };
   },
 );

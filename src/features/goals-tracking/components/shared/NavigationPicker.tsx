@@ -55,12 +55,12 @@ function NavigationPicker({
             size="small"
             onClick={onJump}
             variant="outlined"
+            style={{ whiteSpace: 'nowrap' }}
             sx={{
               position: 'absolute',
               top: '50%',
               left: `calc(100% + ${pxToRem(12)})`,
               transform: 'translateY(-50%)',
-              whiteSpace: 'nowrap',
               fontSize: '0.65rem',
               py: 0.25,
               px: 0.75,

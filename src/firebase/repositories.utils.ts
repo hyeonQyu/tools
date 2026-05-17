@@ -12,7 +12,14 @@ export const getFirebaseRepositoryCreator =
 const checkIsFirestoreTimestamp = (value: unknown): value is { toDate: () => Date } =>
   value != null && typeof value === 'object' && 'toDate' in value && typeof (value as { toDate: unknown }).toDate === 'function';
 
+const deserializeValue = (value: unknown): unknown => {
+  if (checkIsFirestoreTimestamp(value)) return value.toDate();
+  if (Array.isArray(value)) return value.map(deserializeValue);
+  if (value !== null && typeof value === 'object') {
+    return Object.fromEntries(Object.entries(value as Record<string, unknown>).map(([key, v]) => [key, deserializeValue(v)]));
+  }
+  return value;
+};
+
 export const serializeEntity = <T extends Record<string, unknown>>(data: DocumentData): DocumentEntity<T> =>
-  Object.fromEntries(
-    Object.entries(data).map(([key, value]) => [key, checkIsFirestoreTimestamp(value) ? value.toDate() : value]),
-  ) as DocumentEntity<T>;
+  deserializeValue(data) as DocumentEntity<T>;

@@ -1,5 +1,7 @@
 import { FuelPaymentGroupEntity, FuelPaymentGroupsRepository } from '@/features/fuel-payment/data/repositories';
 import { getFirebaseRepositoryCreator, serializeEntity } from '@/firebase';
+import { NotFoundError } from '@/lib';
+import { toKstDateKey, toKstMidnightDate } from '@/lib/time.utils';
 import {
   addDoc,
   arrayRemove,
@@ -7,6 +9,8 @@ import {
   collection,
   deleteDoc,
   doc,
+  DocumentData,
+  getDoc,
   getDocs,
   query,
   Timestamp,
@@ -19,6 +23,19 @@ export const fuelPaymentGroupsRepository = getFirebaseRepositoryCreator('fuelPay
   auth,
   collectionName,
 }) => {
+  const readGroup = async (groupId: string): Promise<FuelPaymentGroupEntity> => {
+    const snap = await getDoc(doc(db, collectionName, groupId));
+    if (!snap.exists()) throw new NotFoundError('그룹을 찾을 수 없습니다.');
+    return serializeEntity<FuelPaymentGroupEntity>({ id: snap.id, ...(snap.data() as DocumentData) });
+  };
+
+  const writeRecords = async (groupId: string, records: FuelPaymentGroupEntity['records']) => {
+    await updateDoc(doc(db, collectionName, groupId), {
+      records,
+      updatedAt: Timestamp.now().toDate(),
+    });
+  };
+
   return {
     create: async () => {
       const userId = auth.currentUser!.uid;
@@ -53,6 +70,40 @@ export const fuelPaymentGroupsRepository = getFirebaseRepositoryCreator('fuelPay
 
     delete: async (groupId: string) => {
       await deleteDoc(doc(db, collectionName, groupId));
+    },
+
+    addRecord: async (groupId, record) => {
+      const group = await readGroup(groupId);
+      const normalizedDate = toKstMidnightDate(record.date);
+      const normalizedKey = toKstDateKey(normalizedDate);
+      const nextRecords = [
+        ...group.records.filter((r) => toKstDateKey(r.date) !== normalizedKey),
+        { date: normalizedDate, userId: record.userId },
+      ];
+      await writeRecords(groupId, nextRecords);
+    },
+
+    updateRecord: async (groupId, originalDate, record) => {
+      const group = await readGroup(groupId);
+      const originalKey = toKstDateKey(originalDate);
+      const newDate = toKstMidnightDate(record.date);
+      const newKey = toKstDateKey(newDate);
+      const nextRecords = [
+        ...group.records.filter((r) => {
+          const key = toKstDateKey(r.date);
+          return key !== originalKey && key !== newKey;
+        }),
+        { date: newDate, userId: record.userId },
+      ];
+      await writeRecords(groupId, nextRecords);
+    },
+
+    removeRecord: async (groupId, date) => {
+      const group = await readGroup(groupId);
+      const targetKey = toKstDateKey(toKstMidnightDate(date));
+      const nextRecords = group.records.filter((r) => toKstDateKey(r.date) !== targetKey);
+      if (nextRecords.length === group.records.length) return;
+      await writeRecords(groupId, nextRecords);
     },
   };
 });

@@ -1,6 +1,7 @@
 import {
   FuelPaymentGroupEntity,
   FuelPaymentGroupsRepository,
+  FuelPaymentRecord,
   FuelPaymentUserEntity,
   FuelPaymentUsersRepository,
 } from '@/features/fuel-payment/data/repositories';
@@ -12,6 +13,9 @@ export interface FuelPaymentService {
   removeMember: (groupId: string, userId: string) => Promise<void>;
   deleteGroup: (groupId: string) => Promise<void>;
   getGroupUsers: (groupId: string) => Promise<FuelPaymentUserEntity[]>;
+  addRecord: (groupId: string, record: FuelPaymentRecord) => Promise<void>;
+  updateRecord: (groupId: string, originalDate: Date, record: FuelPaymentRecord) => Promise<void>;
+  removeRecord: (groupId: string, date: Date) => Promise<void>;
 }
 
 export interface FuelPaymentServiceDependencies {

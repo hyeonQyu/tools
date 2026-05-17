@@ -1,5 +1,8 @@
 export type TimeUnitType = 'Ms' | 'Second' | 'Minute' | 'Hour' | 'Day';
 
+export const FIRST_MONTH = 0;
+export const LAST_MONTH = 11;
+
 export const TIME_UNIT: Record<`unitOf${TimeUnitType}`, Record<`as${TimeUnitType}`, number>> = {
   unitOfMs: {
     asMs: 1,
