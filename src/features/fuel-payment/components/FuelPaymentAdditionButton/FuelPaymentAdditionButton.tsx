@@ -22,6 +22,7 @@ function FuelPaymentAdditionButton() {
     if (!isFetched) return;
 
     const group = myGroup ?? (await fuelPaymentService.createGroup());
+    await refreshMyGroupQuery();
 
     await dialog.open<FuelPaymentMemberAdditionResult>({
       title: '멤버 추가',
@@ -32,7 +33,7 @@ function FuelPaymentAdditionButton() {
           close={close}
           onConfirm={async (userId, color) => {
             await fuelPaymentService.addMember(group.id, userId, color);
-            await refreshMyGroupQuery();
+            await refreshMyGroupQuery(group.id);
 
             enqueueClosableSnackbar({
               message: '멤버가 추가되었습니다.',

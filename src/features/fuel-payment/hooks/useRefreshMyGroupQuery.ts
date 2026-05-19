@@ -1,7 +1,11 @@
-import { getFuelPaymentMyGroupQueryOptions } from '@/features/fuel-payment/queries';
+import { getFuelPaymentGroupUsersQueryOptions, getFuelPaymentMyGroupQueryOptions } from '@/features/fuel-payment/queries';
 import { useQueryClient } from '@tanstack/react-query';
 
 export const useRefreshMyGroupQuery = () => {
   const queryClient = useQueryClient();
-  return () => queryClient.invalidateQueries(getFuelPaymentMyGroupQueryOptions());
+  return (groupId?: string) =>
+    Promise.all([
+      queryClient.invalidateQueries(getFuelPaymentMyGroupQueryOptions()),
+      ...(groupId ? [queryClient.invalidateQueries(getFuelPaymentGroupUsersQueryOptions(groupId))] : []),
+    ]);
 };
