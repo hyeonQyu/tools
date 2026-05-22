@@ -1,56 +1,21 @@
-import { SlideUpTransition } from '@/components/SlideUpTransition';
-import { useDialog } from '@/dialog';
-import {
-  FuelPaymentMemberAdditionDialog,
-  FuelPaymentMemberAdditionResult,
-} from '@/features/fuel-payment/components/FuelPaymentMemberAdditionDialog';
-import { fuelPaymentService } from '@/features/fuel-payment/data';
-import { useRefreshMyGroupQuery } from '@/features/fuel-payment/hooks';
-import { getFuelPaymentMyGroupQueryOptions } from '@/features/fuel-payment/queries';
-import { enqueueClosableSnackbar } from '@/styles';
+import { useOpenFuelPaymentMemberAdditionDialog, useOpenFuelPaymentRecordDialog } from '@/features/fuel-payment/hooks';
+import { useFuelPaymentStore } from '@/features/fuel-payment/stores';
+import { FuelPaymentViewType } from '@/features/fuel-payment/types';
 import { Add } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
-import { useQuery } from '@tanstack/react-query';
 
 function FuelPaymentAdditionButton() {
-  const dialog = useDialog();
-  const refreshMyGroupQuery = useRefreshMyGroupQuery();
+  const currentView = useFuelPaymentStore((store) => store.currentView);
+  const openRecordDialog = useOpenFuelPaymentRecordDialog();
+  const openMemberAdditionDialog = useOpenFuelPaymentMemberAdditionDialog();
 
-  const { data: myGroup, isFetched } = useQuery(getFuelPaymentMyGroupQueryOptions());
-
-  const handleClick = async () => {
-    if (!isFetched) return;
-
-    const group = myGroup ?? (await fuelPaymentService.createGroup());
-    await refreshMyGroupQuery();
-
-    await dialog.open<FuelPaymentMemberAdditionResult>({
-      title: '멤버 추가',
-      content: (close) => (
-        <FuelPaymentMemberAdditionDialog
-          myGroup={group}
-          filterUser={(user) => !group.userIds.includes(user.id)}
-          close={close}
-          onConfirm={async (userId, color) => {
-            await fuelPaymentService.addMember(group.id, userId, color);
-            await refreshMyGroupQuery(group.id);
-
-            enqueueClosableSnackbar({
-              message: '멤버가 추가되었습니다.',
-              variant: 'success',
-            });
-          }}
-        />
-      ),
-      fullScreen: true,
-      slots: {
-        transition: SlideUpTransition,
-      },
-    });
+  const clickHandlerByViewType: Record<FuelPaymentViewType, () => Promise<void>> = {
+    records: () => openRecordDialog({ type: 'add' }),
+    members: openMemberAdditionDialog,
   };
 
   return (
-    <IconButton onClick={handleClick}>
+    <IconButton onClick={clickHandlerByViewType[currentView]}>
       <Add />
     </IconButton>
   );
