@@ -2,7 +2,7 @@ const KST_OFFSET_MS = 9 * 60 * 60 * 1000;
 
 const pad2 = (value: number) => String(value).padStart(2, '0');
 
-const getKstDateParts = (date: Date) => {
+export const getKstDateParts = (date: Date) => {
   const kstDate = new Date(date.getTime() + KST_OFFSET_MS);
 
   return {

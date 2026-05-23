@@ -1,8 +1,18 @@
 import BudgetingPage from '@/pages/budgeting/BudgetingPage';
+import FuelPaymentPage from '@/pages/fuel-payment/FuelPaymentPage';
 import GoalsTrackingPage from '@/pages/goals-tracking/GoalsTrackingPage';
 import SelectPage from '@/pages/select/SelectPage';
 import { createAppRoutes } from '@hyeonqyu/typed-router-react';
-import { Checklist, ChecklistOutlined, LocalAtm, LocalAtmOutlined, ViewCarousel, ViewCarouselOutlined } from '@mui/icons-material';
+import {
+  Checklist,
+  ChecklistOutlined,
+  LocalAtm,
+  LocalAtmOutlined,
+  LocalGasStation,
+  LocalGasStationOutlined,
+  ViewCarousel,
+  ViewCarouselOutlined,
+} from '@mui/icons-material';
 import { ComponentType, ReactNode } from 'react';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -51,6 +61,17 @@ const { AppRoutesProvider, useAppRoutes, useTypedNavigate, useCurrentRouteNode, 
           filled: Checklist,
         },
         component: <GoalsTrackingPage />,
+      },
+    },
+
+    'fuel-payment': {
+      _metadata: {
+        name: '주유비 결제',
+        icon: {
+          outlined: LocalGasStationOutlined,
+          filled: LocalGasStation,
+        },
+        component: <FuelPaymentPage />,
       },
     },
   },

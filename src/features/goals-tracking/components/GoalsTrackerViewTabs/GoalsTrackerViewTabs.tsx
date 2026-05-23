@@ -8,8 +8,8 @@ const tabs: Array<{ label: string; value: GoalsTrackerViewType }> = [
 ];
 
 function GoalsTrackerViewTabs() {
-  const currentView = useGoalsTrackingStore((s) => s.currentView);
-  const setCurrentView = useGoalsTrackingStore((s) => s.setCurrentView);
+  const currentView = useGoalsTrackingStore((store) => store.currentView);
+  const setCurrentView = useGoalsTrackingStore((store) => store.setCurrentView);
 
   return (
     <Tabs
