@@ -1,6 +1,6 @@
 import { getFuelPaymentMyGroupQueryOptions } from '@/features/fuel-payment/queries';
 import { useFuelPaymentMonthlyStore } from '@/features/fuel-payment/stores';
-import { getKstDateParts } from '@/lib';
+import { filterFuelPaymentRecordsByMonth } from '@/features/fuel-payment/utils/fuelPaymentRecord.utils';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
@@ -11,9 +11,6 @@ export const useFuelPaymentMonthlyRecords = () => {
   const { data: myGroup } = useQuery(getFuelPaymentMyGroupQueryOptions());
 
   return useMemo(() => {
-    return (myGroup?.records ?? []).filter((r) => {
-      const parts = getKstDateParts(r.date);
-      return parts.year === year && parts.month === month;
-    });
+    return filterFuelPaymentRecordsByMonth(myGroup?.records ?? [], { year, month });
   }, [myGroup?.records, year, month]);
-}
+};

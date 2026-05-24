@@ -40,3 +40,13 @@ workbox-*.js.map
 .pnp.*
 
 .env
+
+.claude/
+.cursor/
+.agents/
+!.claude/rules/
+!.cursor/rules/
+!.agents/skills/
+!.claude/settings.json
+
+.playwright-mcp/
