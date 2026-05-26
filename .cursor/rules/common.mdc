@@ -1,0 +1,7 @@
+---
+description: Cross-cutting implementation rules and naming conventions
+globs: *
+alwaysApply: true
+---
+
+@.agents/rules/common.md
