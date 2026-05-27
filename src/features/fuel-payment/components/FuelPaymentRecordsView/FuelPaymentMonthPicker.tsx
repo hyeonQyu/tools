@@ -1,11 +1,17 @@
 import { useFuelPaymentMonthlyStore } from '@/features/fuel-payment/stores';
+import { getAdjacentFuelPaymentMonth } from '@/features/fuel-payment/utils/fuelPaymentRecord.utils';
 import NavigationPicker from '@/features/goals-tracking/components/shared/NavigationPicker';
-import { FIRST_MONTH, getKstDateParts, getKstNow, LAST_MONTH } from '@/lib';
+import { getKstDateParts, getKstNow } from '@/lib';
 import { DatePicker } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 import { useRef, useState } from 'react';
 
-function FuelPaymentMonthPicker() {
+interface Props {
+  onPrev?: () => void;
+  onNext?: () => void;
+}
+
+function FuelPaymentMonthPicker({ onPrev, onNext }: Props) {
   const { year, month, setYearMonth, jumpToCurrent } = useFuelPaymentMonthlyStore();
   const [open, setOpen] = useState(false);
   const anchorRef = useRef<HTMLSpanElement>(null);
@@ -14,13 +20,21 @@ function FuelPaymentMonthPicker() {
   const isCurrent = year === current.year && month === current.month;
 
   const handlePrev = () => {
-    if (month === FIRST_MONTH) setYearMonth(year - 1, LAST_MONTH);
-    else setYearMonth(year, month - 1);
+    if (onPrev) {
+      onPrev();
+      return;
+    }
+    const target = getAdjacentFuelPaymentMonth({ year, month }, 'prev');
+    setYearMonth(target.year, target.month);
   };
 
   const handleNext = () => {
-    if (month === LAST_MONTH) setYearMonth(year + 1, FIRST_MONTH);
-    else setYearMonth(year, month + 1);
+    if (onNext) {
+      onNext();
+      return;
+    }
+    const target = getAdjacentFuelPaymentMonth({ year, month }, 'next');
+    setYearMonth(target.year, target.month);
   };
 
   return (

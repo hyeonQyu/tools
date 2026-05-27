@@ -57,7 +57,7 @@ function FuelPaymentRecordCalendar({ year, month, records, groupMembers, onCellC
               sx={{
                 aspectRatio: '1 / 1',
                 borderRadius: 1,
-                bgcolor: color ?? 'action.hover',
+                bgcolor: color || 'action.hover',
                 outline: isToday ? 2 : 0,
                 outlineColor: 'text.primary',
                 outlineOffset: -2,

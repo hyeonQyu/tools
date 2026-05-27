@@ -41,6 +41,8 @@ workbox-*.js.map
 
 .env
 
+.playwright-mcp/
+
 # AI agent directories — ignore by default, whitelist specific subdirectories
 /.agents/*
 !/.agents/rules/
