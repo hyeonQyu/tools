@@ -1,62 +1,38 @@
 # AGENTS.md
 
-Shared working rules for AI coding agents in this repository.
-
-This document is intentionally focused on implementation rules and workflow.  
-For architecture and domain details, read `docs/ARCHITECTURE.md`.
-
-## Document Map
-
-- Shared agent rules (this file): `AGENTS.md`
-- Architecture and domain reference: `docs/ARCHITECTURE.md`
+All AI assistants working in this repository (Cursor, Claude Code, Codex, Jules 등) must follow these rules regardless of tool.
 
 ## Scope and Priorities
 
-When instructions conflict, follow this priority:
+When rules conflict, resolve in this order (highest wins):
 
-1. User request in the current chat
-2. File-local constraints and code comments in touched files
-3. This shared rules document (`AGENTS.md`)
-4. Architecture and reference notes in `docs/ARCHITECTURE.md`
+1. User's explicit request in the current session
+2. Local inline comments in the file being edited
+3. Rules in `.agents/rules/` (loaded via the imports below or path-specific matching)
 
-## Implementation Rules
+## File Layout
 
-- Keep the existing layered flow in feature modules: Repository -> Service -> Query -> Hook -> Component.
-- Preserve user-scoped data behavior: include `firebase.auth.currentUser?.uid` in user-scoped query keys and logic.
-- Keep type/schema single source of truth: infer TypeScript types from Zod schemas; do not duplicate shape definitions.
-- Prefer existing utilities and patterns before introducing new abstractions (`ToolLayout`, dialog API, style helpers, Firebase utils).
-- Minimize impact: change only files required for the task and avoid broad refactors unless explicitly requested.
+- **`.agents/rules/*.md`**: 규칙 본문 (단일 진실 공급원, frontmatter 없음)
+- **`.agents/skills/`**: AI 도구가 발견하는 도메인 지식 패키지 (Cursor 네이티브 발견 지원)
+- **`.claude/rules/*.md`**: Claude Code 진입점 (`paths` frontmatter + `@import`)
+- **`.claude/skills/`**: 실제 디렉토리, 개별 skill을 `.agents/skills/`로 파일별 symlink (skill 단위 노출 제어)
+- **`.cursor/rules/*.mdc`**: Cursor 진입점 (`globs`/`alwaysApply` frontmatter + `@import`)
 
-## File and Naming Conventions
+## Loading Policy
 
-- Use path alias `@/` for source imports when consistent with nearby code.
-- Follow existing query naming patterns:
-  - `get[Feature][Purpose]QueryOptions`
-  - `get[Feature][Purpose]MutationOptions`
-- Keep feature folder structure consistent with existing modules under `src/features/`.
-- Respect current formatting and lint rules (Prettier + ESLint zero warnings policy).
-- All hooks must be declared as `export const` arrow functions, not `export function`:
+이 프로젝트는 단일 Vite React PWA로, 모노레포 scope 분리가 없으므로 모든 규칙이 항상 로드됩니다.
 
-  ```ts
-  // correct
-  export const useMyHook = () => { ... };
+- **항상 로드**: `architecture.md`, `common.md`, `workflow.md`
+  - Cursor: `.cursor/rules/*.mdc`의 `alwaysApply: true`로 트리거
+  - Claude Code: `.claude/rules/*.md`의 frontmatter 없음 → 항상 로드
+  - 기타 도구: 본 파일 하단 `@imports`로 로드
 
-  // incorrect
-  export function useMyHook() { ... }
-  ```
+향후 scope 분리(예: `apps/server/**`, `packages/core/**`)가 도입되면 해당 scope의 `.agents/rules/{scope}.md`를 추가하고 `.cursor/rules/{scope}.mdc`(globs), `.claude/rules/{scope}.md`(paths frontmatter)로 path-specific 매칭을 구성합니다.
 
-## Quality Checks Before Finishing
+---
 
-Run relevant checks for touched code:
+@.agents/rules/common.md
 
-- `yarn type` for type safety
-- `yarn lint` for lint compliance
-- `yarn build` when changes may affect build/runtime integration
+@.agents/rules/architecture.md
 
-If some checks are skipped, explicitly state what was not run and why.
-
-## Change Communication
-
-- Summarize what changed, why, and where (file paths).
-- Mention trade-offs or assumptions when behavior-affecting decisions are made.
-- Suggest concrete next actions only when useful (for example, run checks or validate a user flow).
+@.agents/rules/workflow.md

@@ -2,8 +2,6 @@
 
 Cross-agent architecture reference for this repository.
 
-For shared implementation workflow and quality rules, see `AGENTS.md`.
-
 ## Product Context
 
 - Personal finance PWA with two tools:
