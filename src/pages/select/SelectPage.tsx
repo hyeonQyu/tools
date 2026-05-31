@@ -37,11 +37,11 @@ function SelectPage() {
         sx={{
           display: 'grid',
           gridTemplateColumns: {
-            xs: 'repeat(2, 1fr)',
-            sm: 'repeat(3, 1fr)',
-            md: 'repeat(4, 1fr)',
+            xs: 'repeat(3, 1fr)',
+            sm: 'repeat(4, 1fr)',
+            md: 'repeat(5, 1fr)',
           },
-          gap: 2,
+          gap: 1.5,
         }}
       >
         {tools.map(({ key, name, IconComponent, path }) => (
@@ -72,9 +72,9 @@ function SelectPage() {
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center',
-                  gap: 1.5,
-                  p: 2,
-                  '&:last-child': { pb: 2 },
+                  gap: 1,
+                  p: 1.5,
+                  '&:last-child': { pb: 1.5 },
                 }}
               >
                 {IconComponent && (
@@ -83,9 +83,9 @@ function SelectPage() {
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      width: 48,
-                      height: 48,
-                      borderRadius: 2,
+                      width: 36,
+                      height: 36,
+                      borderRadius: 1.5,
                       bgcolor: 'primary.main',
                       color: 'primary.contrastText',
                     }}
@@ -93,7 +93,7 @@ function SelectPage() {
                     <IconComponent />
                   </Box>
                 )}
-                <Typography variant="body2" component="div" fontWeight={500}>
+                <Typography variant="caption" component="div" fontWeight={500}>
                   {name}
                 </Typography>
               </CardContent>
