@@ -15,6 +15,8 @@ export const useOpenExpirationDateDayItemsDialog = () => {
 
     await dialog.open({
       title: '만료 물품',
+      maxWidth: 'xs',
+      fullWidth: true,
       content: (close) => (
         <ExpirationDateDayItemsDialog
           close={close}
