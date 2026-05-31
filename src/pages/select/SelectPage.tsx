@@ -28,8 +28,8 @@ function SelectPage() {
     });
 
   return (
-    <Box sx={{ maxWidth: 1200, mx: 'auto', px: 3, py: 4 }}>
-      <Typography variant="h4" sx={{ mb: 4, fontWeight: 600 }}>
+    <Box sx={{ maxWidth: 900, mx: 'auto', px: 2, py: 4 }}>
+      <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
         툴 선택
       </Typography>
 
@@ -37,21 +37,21 @@ function SelectPage() {
         sx={{
           display: 'grid',
           gridTemplateColumns: {
-            xs: '1fr',
-            sm: 'repeat(2, 1fr)',
-            md: 'repeat(3, 1fr)',
+            xs: 'repeat(2, 1fr)',
+            sm: 'repeat(3, 1fr)',
+            md: 'repeat(4, 1fr)',
           },
-          gap: 3,
+          gap: 2,
         }}
       >
         {tools.map(({ key, name, IconComponent, path }) => (
           <Card
             key={key}
             sx={{
-              height: '100%',
+              aspectRatio: '1',
               transition: 'all 0.2s ease',
               '&:hover': {
-                transform: 'translateY(-4px)',
+                transform: 'translateY(-2px)',
                 boxShadow: 3,
               },
             }}
@@ -64,7 +64,6 @@ function SelectPage() {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                py: 1,
               }}
             >
               <CardContent
@@ -75,6 +74,7 @@ function SelectPage() {
                   alignItems: 'center',
                   gap: 1.5,
                   p: 2,
+                  '&:last-child': { pb: 2 },
                 }}
               >
                 {IconComponent && (
@@ -85,7 +85,7 @@ function SelectPage() {
                       justifyContent: 'center',
                       width: 48,
                       height: 48,
-                      borderRadius: 1.5,
+                      borderRadius: 2,
                       bgcolor: 'primary.main',
                       color: 'primary.contrastText',
                     }}
@@ -93,7 +93,7 @@ function SelectPage() {
                     <IconComponent />
                   </Box>
                 )}
-                <Typography variant="body1" component="div" fontWeight={500}>
+                <Typography variant="body2" component="div" fontWeight={500}>
                   {name}
                 </Typography>
               </CardContent>
