@@ -1,4 +1,5 @@
 import BudgetingPage from '@/pages/budgeting/BudgetingPage';
+import ExpirationDatesPage from '@/pages/expiration-dates/ExpirationDatesPage';
 import FuelPaymentPage from '@/pages/fuel-payment/FuelPaymentPage';
 import GoalsTrackingPage from '@/pages/goals-tracking/GoalsTrackingPage';
 import SelectPage from '@/pages/select/SelectPage';
@@ -6,6 +7,8 @@ import { createAppRoutes } from '@hyeonqyu/typed-router-react';
 import {
   Checklist,
   ChecklistOutlined,
+  EventNote,
+  EventNoteOutlined,
   LocalAtm,
   LocalAtmOutlined,
   LocalGasStation,
@@ -72,6 +75,17 @@ const { AppRoutesProvider, useAppRoutes, useTypedNavigate, useCurrentRouteNode, 
           filled: LocalGasStation,
         },
         component: <FuelPaymentPage />,
+      },
+    },
+
+    'expiration-dates': {
+      _metadata: {
+        name: '유통기한 관리',
+        icon: {
+          outlined: EventNoteOutlined,
+          filled: EventNote,
+        },
+        component: <ExpirationDatesPage />,
       },
     },
   },
