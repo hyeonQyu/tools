@@ -27,7 +27,7 @@ const GOAL_COLORS = [
   '#26c6da',
   '#26a69a',
   '#66bb6a',
-  '#d4e157',
+  '#aae6c4',
   '#ffca28',
   '#ffa726',
   '#8d6e63',
