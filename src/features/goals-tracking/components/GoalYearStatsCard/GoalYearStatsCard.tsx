@@ -1,6 +1,7 @@
 import { toKstDateKey } from '@/lib';
-import { Card, CardContent, Stack, Typography } from '@mui/material';
-import { useMemo } from 'react';
+import { DragIndicator as DragIndicatorIcon } from '@mui/icons-material';
+import { Box, Card, CardContent, Stack, Typography } from '@mui/material';
+import { HTMLAttributes, useMemo } from 'react';
 import GoalHeatmap from './GoalHeatmap';
 import GoalMenuButton from './GoalMenuButton';
 import GoalStatItem from './GoalStatItem';
@@ -13,6 +14,7 @@ interface GoalYearStatsCardProps {
     color: string;
     doneDates: Date[];
   };
+  dragHandleProps?: HTMLAttributes<HTMLElement>;
 }
 
 const calculateStreak = (doneDates: Date[], referenceDate: Date): number => {
@@ -27,7 +29,7 @@ const calculateStreak = (doneDates: Date[], referenceDate: Date): number => {
   return streak;
 };
 
-function GoalYearStatsCard({ year, goal }: GoalYearStatsCardProps) {
+function GoalYearStatsCard({ year, goal, dragHandleProps }: GoalYearStatsCardProps) {
   const today = useMemo(() => {
     const now = new Date();
     now.setHours(0, 0, 0, 0);
@@ -41,10 +43,7 @@ function GoalYearStatsCard({ year, goal }: GoalYearStatsCardProps) {
   }, [today]);
 
   const isCurrentYear = year === today.getFullYear();
-  const referenceDate = useMemo(
-    () => (isCurrentYear ? yesterday : new Date(year, 11, 31)),
-    [isCurrentYear, yesterday, year],
-  );
+  const referenceDate = useMemo(() => (isCurrentYear ? yesterday : new Date(year, 11, 31)), [isCurrentYear, yesterday, year]);
 
   const streak = useMemo(() => calculateStreak(goal.doneDates, referenceDate), [goal.doneDates, referenceDate]);
   const completedDays = goal.doneDates.length;
@@ -53,9 +52,14 @@ function GoalYearStatsCard({ year, goal }: GoalYearStatsCardProps) {
     <Card sx={{ borderRadius: 2 }}>
       <CardContent sx={{ pb: '16px !important', display: 'flex', flexDirection: 'column', gap: 1.5 }}>
         <Stack direction="row" justifyContent="space-between" alignItems="center">
-          <Typography variant="subtitle1" fontWeight={600}>
-            {goal.name}
-          </Typography>
+          <Stack direction="row" alignItems="center" gap={0.5}>
+            <Box {...dragHandleProps} sx={{ cursor: 'grab', display: 'flex', alignItems: 'center' }}>
+              <DragIndicatorIcon color="action" fontSize="small" />
+            </Box>
+            <Typography variant="subtitle1" fontWeight={600}>
+              {goal.name}
+            </Typography>
+          </Stack>
           <GoalMenuButton goalId={goal.id} />
         </Stack>
 

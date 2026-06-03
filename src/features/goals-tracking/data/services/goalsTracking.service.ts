@@ -5,6 +5,14 @@ import {
 import { getServiceCreator } from '@/firebase';
 import { ConstraintError, NotFoundError } from '@/lib';
 
+const sortGoals = <T extends { order?: number; createdAt: Date }>(goals: T[]): T[] =>
+  [...goals].sort((a, b) => {
+    const aOrder = a.order ?? Infinity;
+    const bOrder = b.order ?? Infinity;
+    if (aOrder !== bOrder) return aOrder - bOrder;
+    return a.createdAt.getTime() - b.createdAt.getTime();
+  });
+
 export const createGoalsTrackingService = getServiceCreator<GoalsTrackingService, GoalsTrackingServiceDependencies>(
   ({ goalsRepository, goalDailyRecordsRepository }) => {
     return {
@@ -18,6 +26,10 @@ export const createGoalsTrackingService = getServiceCreator<GoalsTrackingService
         const existing = await goalsRepository.findById(goalId);
         if (!existing) throw new NotFoundError('목표를 찾을 수 없습니다.');
         await goalsRepository.update(goalId, payload);
+      },
+
+      reorder: async (goalIds) => {
+        await goalsRepository.reorder(goalIds.map((id, index) => ({ id, order: index })));
       },
 
       delete: async (goalId) => {
@@ -34,7 +46,7 @@ export const createGoalsTrackingService = getServiceCreator<GoalsTrackingService
 
         return {
           date,
-          goals: goals.map(({ userId: _userId, ...goal }) => ({
+          goals: sortGoals(goals).map(({ userId: _userId, ...goal }) => ({
             goal,
             done: recordedIds.has(goal.id),
           })),
@@ -52,7 +64,7 @@ export const createGoalsTrackingService = getServiceCreator<GoalsTrackingService
 
         return {
           year,
-          goals: goals.map(({ userId: _userId, ...goal }) => ({
+          goals: sortGoals(goals).map(({ userId: _userId, ...goal }) => ({
             goal,
             doneDates: (doneDatesByGoalId.get(goal.id) ?? []).slice().sort((a, b) => a.getTime() - b.getTime()),
           })),

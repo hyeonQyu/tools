@@ -1,9 +1,10 @@
 import { goalsTrackingService } from '@/features/goals-tracking/data';
+import { firebase } from '@/firebase';
 import { toKstDateKey } from '@/lib';
 
 export const getGoalsFindAllQueryOptions = () => {
   return {
-    queryKey: ['goals', 'find'] as const,
+    queryKey: ['goals', 'find', firebase.auth.currentUser?.uid] as const,
   };
 };
 
