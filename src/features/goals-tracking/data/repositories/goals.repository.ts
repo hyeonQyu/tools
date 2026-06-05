@@ -23,6 +23,11 @@ export const goalsRepository = getFirebaseRepositoryCreator('goals')<GoalsReposi
       await updateDoc(docRef, { ...payload, updatedAt: Timestamp.now().toDate() });
     },
 
+    reorder: async (goals) => {
+      const updatedAt = Timestamp.now().toDate();
+      await Promise.all(goals.map(({ id, order }) => updateDoc(doc(db, collectionName, id), { order, updatedAt })));
+    },
+
     delete: async (goalId) => {
       await deleteDoc(doc(db, collectionName, goalId));
     },
