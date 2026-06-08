@@ -17,6 +17,9 @@ interface BudgetingActions {
   reorderItems: (items: BudgetingItem[]) => void;
   reset: (states?: Partial<BudgetingStates>) => void;
   getState: () => BudgetingStates;
+  loadedPresetId: string | null;
+  loadPreset: (presetId: string, form: BudgetingStates) => void;
+  clearLoadedPreset: () => void;
 }
 
 type BudgetingStore = BudgetingStates & BudgetingActions;
@@ -29,8 +32,9 @@ const initialStates: BudgetingStates = {
 
 export const useBudgetingStore = create<BudgetingStore>()((set, get) => ({
   ...initialStates,
-  setTotalAmount: (amount) => set({ totalAmount: amount }),
-  setAllocationType: (type) => set({ allocationType: type }),
+  loadedPresetId: null,
+  setTotalAmount: (amount) => set({ totalAmount: amount, loadedPresetId: null }),
+  setAllocationType: (type) => set({ allocationType: type, loadedPresetId: null }),
   addItem: () =>
     set((state) => ({
       items: [
@@ -42,20 +46,25 @@ export const useBudgetingStore = create<BudgetingStore>()((set, get) => ({
           isAmountFixed: false,
         },
       ],
+      loadedPresetId: null,
     })),
   updateItem: (id, updates) =>
     set((state) => ({
       items: state.items.map((item) => (item.id === id ? { ...item, ...updates } : item)),
+      loadedPresetId: null,
     })),
   deleteItem: (id) =>
     set((state) => ({
       items: state.items.filter((item) => item.id !== id),
+      loadedPresetId: null,
     })),
-  reorderItems: (items) => set({ items }),
-  reset: (states) => set({ ...initialStates, ...states }),
+  reorderItems: (items) => set({ items, loadedPresetId: null }),
+  reset: (states) => set({ ...initialStates, ...states, loadedPresetId: null }),
   getState: () => ({
     totalAmount: get().totalAmount,
     allocationType: get().allocationType,
     items: get().items,
   }),
+  loadPreset: (presetId, form) => set({ ...form, loadedPresetId: presetId }),
+  clearLoadedPreset: () => set({ loadedPresetId: null }),
 }));

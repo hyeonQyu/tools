@@ -1,9 +1,17 @@
-import { AllocationTypeSelector, BudgetItemList, TotalAmountInput, useBudgetingAutoSave, useBudgetingLoad } from '@/features/budgeting';
+import {
+  AllocationTypeSelector,
+  BudgetItemList,
+  TotalAmountInput,
+  useBudgetingAutoSave,
+  useBudgetingLoad,
+  useBudgetingPresetMigration,
+} from '@/features/budgeting';
 import { Stack } from '@mui/material';
 
 function BudgetingBody() {
   useBudgetingLoad();
   useBudgetingAutoSave();
+  useBudgetingPresetMigration();
 
   return (
     <Stack spacing={2}>

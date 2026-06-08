@@ -1,10 +1,5 @@
 import { ToolLayout } from '@/components/ToolLayout';
-import {
-  BudgetingBody,
-  BudgetingBodySkeleton,
-  BudgetingConfigButton,
-  BudgetSummary,
-} from '@/features/budgeting';
+import { BudgetingBody, BudgetingBodySkeleton, BudgetingMenuButton, BudgetSummary } from '@/features/budgeting';
 import { Suspense } from 'react';
 
 function BudgetingPage() {
@@ -13,7 +8,7 @@ function BudgetingPage() {
       <ToolLayout.Header>
         <ToolLayout.Row justifyContent="space-between" alignItems="center">
           <ToolLayout.Title />
-          <BudgetingConfigButton />
+          <BudgetingMenuButton />
         </ToolLayout.Row>
 
         <BudgetSummary />
