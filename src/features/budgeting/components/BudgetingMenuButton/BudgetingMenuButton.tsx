@@ -1,43 +1,21 @@
 import { SlideUpTransition } from '@/components/SlideUpTransition';
 import { useDialog } from '@/dialog';
-import { budgetingPresetService } from '@/features/budgeting/data';
-import { useRefreshBudgetingPresetListQuery } from '@/features/budgeting/hooks/useRefreshBudgetingPresetListQuery';
-import { getBudgetingPresetListQueryOptions } from '@/features/budgeting/queries';
-import { useBudgetingStore } from '@/features/budgeting/stores';
-import { enqueueClosableSnackbar } from '@/styles';
+import { useCreateBudgetPreset } from '@/features/budgeting/hooks/useCreateBudgetPreset';
 import { MoreVert } from '@mui/icons-material';
 import { IconButton, ListItemText, Menu, MenuItem } from '@mui/material';
-import { useQuery } from '@tanstack/react-query';
 import { useRef, useState } from 'react';
 import { BudgetingConfigDialog } from '../BudgetingConfigDialog';
 import { BudgetingLoadPresetDialog } from '../BudgetingLoadPresetDialog';
-import { BudgetingPresetNameDialog } from '../BudgetingPresetNameDialog';
 
 function BudgetingMenuButton() {
   const anchorRef = useRef<HTMLButtonElement>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const dialog = useDialog();
+  const createPreset = useCreateBudgetPreset();
 
-  const getState = useBudgetingStore((store) => store.getState);
-  const { data: presets } = useQuery(getBudgetingPresetListQueryOptions());
-  const refreshPresets = useRefreshBudgetingPresetListQuery();
-
-  const handleSave = async () => {
+  const handleCreateNew = async () => {
     setMenuOpen(false);
-    await dialog.open<boolean>({
-      title: '예산안 저장',
-      content: (close) => (
-        <BudgetingPresetNameDialog
-          existingNames={(presets ?? []).map((p) => p.name)}
-          close={close}
-          onConfirm={async (name) => {
-            await budgetingPresetService.save({ name, form: getState() });
-            await refreshPresets();
-            enqueueClosableSnackbar({ message: '예산안이 저장되었습니다.', variant: 'success' });
-          }}
-        />
-      ),
-    });
+    await createPreset();
   };
 
   const handleLoad = async () => {
@@ -66,8 +44,8 @@ function BudgetingMenuButton() {
         <MoreVert />
       </IconButton>
       <Menu anchorEl={anchorRef.current} open={menuOpen} onClose={() => setMenuOpen(false)}>
-        <MenuItem onClick={handleSave}>
-          <ListItemText>예산안 저장</ListItemText>
+        <MenuItem onClick={handleCreateNew}>
+          <ListItemText>새 예산안 생성</ListItemText>
         </MenuItem>
         <MenuItem onClick={handleLoad}>
           <ListItemText>예산안 불러오기</ListItemText>
