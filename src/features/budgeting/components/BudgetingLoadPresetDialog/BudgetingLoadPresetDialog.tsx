@@ -83,34 +83,11 @@ function BudgetingLoadPresetDialog({ close }: BudgetingLoadPresetDialogProps) {
   const { data: presets } = useQuery(getBudgetingPresetListQueryOptions());
   const refreshPresets = useRefreshBudgetingPresetListQuery();
 
-  const loadedPresetId = useBudgetingStore((store) => store.loadedPresetId);
   const loadPreset = useBudgetingStore((store) => store.loadPreset);
-  const getFormState = useBudgetingStore((store) => store.getState);
+  const loadedPresetId = useBudgetingStore((store) => store.loadedPresetId);
   const clearLoadedPreset = useBudgetingStore((store) => store.clearLoadedPreset);
 
-  const handleLoadPreset = async (preset: BudgetingPresetEntity) => {
-    if (loadedPresetId === null) {
-      const shouldSave = await dialog.confirm({ content: '현재 예산안을 저장하시겠습니까?' });
-
-      if (shouldSave) {
-        const saved = await dialog.open<boolean>({
-          title: '예산안 저장',
-          content: (saveClose) => (
-            <BudgetingPresetNameDialog
-              existingNames={(presets ?? []).map((p) => p.name)}
-              close={saveClose}
-              onConfirm={async (name) => {
-                await budgetingPresetService.save({ name, form: getFormState() });
-                await refreshPresets();
-                enqueueClosableSnackbar({ message: '예산안이 저장되었습니다.', variant: 'success' });
-              }}
-            />
-          ),
-        });
-        if (!saved) return;
-      }
-    }
-
+  const handleLoadPreset = (preset: BudgetingPresetEntity) => {
     loadPreset(preset.id, preset.form);
     enqueueClosableSnackbar({ message: `"${preset.name}" 예산안을 불러왔습니다.`, variant: 'success' });
     close();

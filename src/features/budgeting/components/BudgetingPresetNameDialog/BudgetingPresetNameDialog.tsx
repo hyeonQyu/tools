@@ -43,7 +43,7 @@ function BudgetingPresetNameDialog({
 
   return (
     <>
-      <DialogContent>
+      <DialogContent sx={{ pt: 2, overflow: 'visible' }}>
         <TextField
           fullWidth
           label="예산안 이름"

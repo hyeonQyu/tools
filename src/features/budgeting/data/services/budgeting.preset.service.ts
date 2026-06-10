@@ -12,7 +12,7 @@ export const createBudgetingPresetService = getServiceCreator<BudgetingPresetSer
     return {
       save: async (payload) => {
         await assertUniqueName(payload.name);
-        await budgetingPresetRepository.create(payload);
+        return budgetingPresetRepository.create(payload);
       },
       findAll: () => budgetingPresetRepository.findAll(),
       rename: async (id, newName) => {

@@ -11,7 +11,8 @@ export const budgetingPresetRepository = getFirebaseRepositoryCreator('budgeting
     create: async (payload) => {
       const userId = auth.currentUser!.uid;
       const now = Timestamp.now().toDate();
-      await addDoc(collection(db, collectionName), { ...payload, userId, createdAt: now, updatedAt: now });
+      const ref = await addDoc(collection(db, collectionName), { ...payload, userId, createdAt: now, updatedAt: now });
+      return ref.id;
     },
     findAll: async () => {
       const userId = auth.currentUser!.uid;
