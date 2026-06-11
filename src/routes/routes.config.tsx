@@ -1,3 +1,4 @@
+import BelongingsPage from '@/pages/belongings/BelongingsPage';
 import BudgetingPage from '@/pages/budgeting/BudgetingPage';
 import ExpirationDatesPage from '@/pages/expiration-dates/ExpirationDatesPage';
 import FuelPaymentPage from '@/pages/fuel-payment/FuelPaymentPage';
@@ -9,6 +10,8 @@ import {
   ChecklistOutlined,
   EventNote,
   EventNoteOutlined,
+  Inventory2,
+  Inventory2Outlined,
   LocalAtm,
   LocalAtmOutlined,
   LocalGasStation,
@@ -86,6 +89,17 @@ const { AppRoutesProvider, useAppRoutes, useTypedNavigate, useCurrentRouteNode, 
           filled: EventNote,
         },
         component: <ExpirationDatesPage />,
+      },
+    },
+
+    belongings: {
+      _metadata: {
+        name: '물건 관리',
+        icon: {
+          outlined: Inventory2Outlined,
+          filled: Inventory2,
+        },
+        component: <BelongingsPage />,
       },
     },
   },
