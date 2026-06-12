@@ -1,4 +1,5 @@
 import Layout from '@/components/Layout/Layout';
+import { useSplashRemove } from '@/hooks/useSplashRemove';
 import SelectPage from '@/pages/select/SelectPage';
 import { AppRouteNode, AppRouteTree, checkNestedRouteTree, checkRouteNode, useAppRoutes, useTypedNavigate } from '@/routes';
 import { useEffect } from 'react';
@@ -32,6 +33,8 @@ function App() {
   const routeNodes = getRouteNodes(appRoutes);
   const location = useLocation();
   const navigate = useTypedNavigate();
+
+  useSplashRemove();
 
   useEffect(() => {
     if (location.pathname === '/') {
