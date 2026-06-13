@@ -4,10 +4,13 @@ import ExpirationDatesPage from '@/pages/expiration-dates/ExpirationDatesPage';
 import FuelPaymentPage from '@/pages/fuel-payment/FuelPaymentPage';
 import GoalsTrackingPage from '@/pages/goals-tracking/GoalsTrackingPage';
 import SelectPage from '@/pages/select/SelectPage';
+import WsServerPage from '@/pages/ws-server/WsServerPage';
 import { createAppRoutes } from '@hyeonqyu/typed-router-react';
 import {
   Checklist,
   ChecklistOutlined,
+  Dns,
+  DnsOutlined,
   EventNote,
   EventNoteOutlined,
   Inventory2,
@@ -100,6 +103,17 @@ const { AppRoutesProvider, useAppRoutes, useTypedNavigate, useCurrentRouteNode, 
           filled: Inventory2,
         },
         component: <BelongingsPage />,
+      },
+    },
+
+    'ws-server': {
+      _metadata: {
+        name: '웹소켓 서버 관리',
+        icon: {
+          outlined: DnsOutlined,
+          filled: Dns,
+        },
+        component: <WsServerPage />,
       },
     },
   },
