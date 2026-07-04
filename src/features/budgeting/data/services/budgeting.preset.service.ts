@@ -15,6 +15,7 @@ export const createBudgetingPresetService = getServiceCreator<BudgetingPresetSer
         return budgetingPresetRepository.create(payload);
       },
       findAll: () => budgetingPresetRepository.findAll(),
+      update: (id, form) => budgetingPresetRepository.update(id, form),
       rename: async (id, newName) => {
         const existing = await budgetingPresetRepository.findByName(newName);
         if (existing && existing.id !== id) {

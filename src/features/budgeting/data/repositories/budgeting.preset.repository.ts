@@ -28,6 +28,10 @@ export const budgetingPresetRepository = getFirebaseRepositoryCreator('budgeting
       const docSnap = snapshot.docs[0];
       return serializeEntity<BudgetingPresetEntity>({ id: docSnap.id, ...docSnap.data() });
     },
+    update: async (id, form) => {
+      const docRef = doc(db, collectionName, id);
+      await updateDoc(docRef, { form, updatedAt: Timestamp.now().toDate() });
+    },
     rename: async (id, name) => {
       const docRef = doc(db, collectionName, id);
       await updateDoc(docRef, { name, updatedAt: Timestamp.now().toDate() });

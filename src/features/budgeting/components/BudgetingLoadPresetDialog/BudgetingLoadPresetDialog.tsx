@@ -2,6 +2,7 @@ import { useDialog } from '@/dialog';
 import { budgetingPresetService } from '@/features/budgeting/data';
 import { BudgetingPresetEntity } from '@/features/budgeting/data/repositories';
 import { useRefreshBudgetingPresetListQuery } from '@/features/budgeting/hooks/useRefreshBudgetingPresetListQuery';
+import { useSaveLoadedPreset } from '@/features/budgeting/hooks/useSaveLoadedPreset';
 import { getBudgetingPresetListQueryOptions } from '@/features/budgeting/queries';
 import { useBudgetingStore } from '@/features/budgeting/stores';
 import { enqueueClosableSnackbar } from '@/styles';
@@ -31,12 +32,13 @@ interface BudgetingLoadPresetDialogProps {
 
 interface PresetItemProps {
   preset: BudgetingPresetEntity;
+  loading: boolean;
   onLoad: () => void;
   onRename: () => void;
   onDelete: () => void;
 }
 
-function PresetItem({ preset, onLoad, onRename, onDelete }: PresetItemProps) {
+function PresetItem({ preset, loading, onLoad, onRename, onDelete }: PresetItemProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const anchorRef = useRef<HTMLButtonElement>(null);
 
@@ -45,7 +47,7 @@ function PresetItem({ preset, onLoad, onRename, onDelete }: PresetItemProps) {
       disablePadding
       secondaryAction={
         <>
-          <IconButton ref={anchorRef} edge="end" onClick={() => setMenuOpen(true)}>
+          <IconButton ref={anchorRef} edge="end" onClick={() => setMenuOpen(true)} disabled={loading}>
             <MoreVert />
           </IconButton>
           <Menu anchorEl={anchorRef.current} open={menuOpen} onClose={() => setMenuOpen(false)}>
@@ -70,7 +72,7 @@ function PresetItem({ preset, onLoad, onRename, onDelete }: PresetItemProps) {
         </>
       }
     >
-      <ListItemButton onClick={onLoad}>
+      <ListItemButton onClick={onLoad} disabled={loading}>
         <ListItemText primary={preset.name} />
       </ListItemButton>
     </ListItem>
@@ -86,11 +88,20 @@ function BudgetingLoadPresetDialog({ close }: BudgetingLoadPresetDialogProps) {
   const loadPreset = useBudgetingStore((store) => store.loadPreset);
   const loadedPresetId = useBudgetingStore((store) => store.loadedPresetId);
   const clearLoadedPreset = useBudgetingStore((store) => store.clearLoadedPreset);
+  const saveLoadedPreset = useSaveLoadedPreset();
 
-  const handleLoadPreset = (preset: BudgetingPresetEntity) => {
-    loadPreset(preset.id, preset.form);
-    enqueueClosableSnackbar({ message: `"${preset.name}" 예산안을 불러왔습니다.`, variant: 'success' });
-    close();
+  const [isSwitching, setIsSwitching] = useState(false);
+
+  const handleLoadPreset = async (preset: BudgetingPresetEntity) => {
+    setIsSwitching(true);
+    try {
+      await saveLoadedPreset();
+      loadPreset(preset.id, preset.form);
+      enqueueClosableSnackbar({ message: `"${preset.name}" 예산안을 불러왔습니다.`, variant: 'success' });
+      close();
+    } finally {
+      setIsSwitching(false);
+    }
   };
 
   const handleRename = async (preset: BudgetingPresetEntity) => {
@@ -151,6 +162,7 @@ function BudgetingLoadPresetDialog({ close }: BudgetingLoadPresetDialogProps) {
           <PresetItem
             key={preset.id}
             preset={preset}
+            loading={isSwitching}
             onLoad={() => handleLoadPreset(preset)}
             onRename={() => handleRename(preset)}
             onDelete={() => handleDelete(preset)}

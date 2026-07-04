@@ -6,4 +6,5 @@ export * from './useCalculateBudgetItemValue';
 export * from './useCreateBudgetPreset';
 export * from './useFixedSum';
 export * from './useRefreshBudgetingPresetListQuery';
+export * from './useSaveLoadedPreset';
 export * from './useTotalAllocatableAmount';

@@ -5,12 +5,14 @@ import {
   useBudgetingAutoSave,
   useBudgetingLoad,
   useBudgetingPresetMigration,
+  useBudgetingStore,
 } from '@/features/budgeting';
 import { useCreateBudgetPreset } from '@/features/budgeting/hooks/useCreateBudgetPreset';
 import { getBudgetingPresetListQueryOptions } from '@/features/budgeting/queries';
 import { Add } from '@mui/icons-material';
 import { Button, Stack, Typography } from '@mui/material';
 import { useSuspenseQuery } from '@tanstack/react-query';
+import { useEffect } from 'react';
 
 function BudgetingBody() {
   useBudgetingLoad();
@@ -19,6 +21,16 @@ function BudgetingBody() {
 
   const { data: presets } = useSuspenseQuery(getBudgetingPresetListQueryOptions());
   const createPreset = useCreateBudgetPreset();
+
+  const loadedPresetId = useBudgetingStore((store) => store.loadedPresetId);
+  const loadPreset = useBudgetingStore((store) => store.loadPreset);
+
+  useEffect(() => {
+    if (loadedPresetId || presets.length === 0) return;
+
+    const mostRecentPreset = [...presets].sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())[0];
+    loadPreset(mostRecentPreset.id, mostRecentPreset.form);
+  }, [presets, loadedPresetId, loadPreset]);
 
   if (presets.length === 0) {
     return (
