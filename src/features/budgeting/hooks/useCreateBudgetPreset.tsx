@@ -6,12 +6,14 @@ import { enqueueClosableSnackbar } from '@/styles';
 import { useQuery } from '@tanstack/react-query';
 import { BudgetingPresetNameDialog } from '../components/BudgetingPresetNameDialog';
 import { useRefreshBudgetingPresetListQuery } from './useRefreshBudgetingPresetListQuery';
+import { useSaveLoadedPreset } from './useSaveLoadedPreset';
 
 export const useCreateBudgetPreset = () => {
   const dialog = useDialog();
   const { data: presets } = useQuery(getBudgetingPresetListQueryOptions());
   const loadPreset = useBudgetingStore((store) => store.loadPreset);
   const refreshPresets = useRefreshBudgetingPresetListQuery();
+  const saveLoadedPreset = useSaveLoadedPreset();
 
   return async () => {
     await dialog.open<boolean>({
@@ -21,6 +23,7 @@ export const useCreateBudgetPreset = () => {
           existingNames={(presets ?? []).map((p) => p.name)}
           close={close}
           onConfirm={async (name) => {
+            await saveLoadedPreset();
             const emptyForm = { totalAmount: 0, allocationType: 'amount' as const, items: [] };
             const presetId = await budgetingPresetService.save({ name, form: emptyForm });
             await refreshPresets();
