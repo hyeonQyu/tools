@@ -3,6 +3,8 @@ import { DocumentEntity } from '@/firebase';
 export type FuelPaymentRecord = {
   date: Date;
   userId: string;
+  pricePerLiter?: number;
+  totalAmount?: number;
 };
 
 export type FuelPaymentGroupPayload = {

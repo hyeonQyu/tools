@@ -8,7 +8,9 @@ import { getFuelPaymentMyGroupQueryOptions } from '@/features/fuel-payment/queri
 import { enqueueClosableSnackbar } from '@/styles';
 import { useQuery } from '@tanstack/react-query';
 
-export type OpenFuelPaymentRecordDialogMode = { type: 'add'; date?: Date } | { type: 'edit'; date: Date; userId: string };
+export type OpenFuelPaymentRecordDialogMode =
+  | { type: 'add'; date?: Date }
+  | { type: 'edit'; date: Date; userId: string; pricePerLiter?: number; totalAmount?: number };
 
 export const useOpenFuelPaymentRecordDialog = () => {
   const dialog = useDialog();
@@ -53,7 +55,7 @@ export const useOpenFuelPaymentRecordDialog = () => {
       content: (close) => (
         <FuelPaymentRecordDialog
           groupMembers={groupMembers}
-          defaultValues={{ date: mode.date, userId: mode.userId }}
+          defaultValues={{ date: mode.date, userId: mode.userId, pricePerLiter: mode.pricePerLiter, totalAmount: mode.totalAmount }}
           close={close}
           confirmConfig={{
             label: '수정',

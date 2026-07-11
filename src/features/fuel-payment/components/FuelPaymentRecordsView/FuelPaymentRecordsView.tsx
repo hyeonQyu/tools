@@ -1,5 +1,5 @@
-import { useFuelPaymentMyGroupMembers, useOpenFuelPaymentRecordDialog } from '@/features/fuel-payment/hooks';
 import { FuelPaymentRecord } from '@/features/fuel-payment/data/repositories';
+import { useFuelPaymentMyGroupMembers, useOpenFuelPaymentRecordDialog } from '@/features/fuel-payment/hooks';
 import { getFuelPaymentMyGroupQueryOptions } from '@/features/fuel-payment/queries';
 import { useFuelPaymentMonthlyStore } from '@/features/fuel-payment/stores';
 import {
@@ -34,37 +34,28 @@ function FuelPaymentRecordsView() {
 
   const recordsThisMonth = useMemo(() => filterFuelPaymentRecordsByMonth(allRecords, { year, month }), [allRecords, year, month]);
 
-  const recordsPrevMonth = useMemo(
-    () => filterFuelPaymentRecordsByMonth(allRecords, prevYearMonth),
-    [allRecords, prevYearMonth],
-  );
+  const recordsPrevMonth = useMemo(() => filterFuelPaymentRecordsByMonth(allRecords, prevYearMonth), [allRecords, prevYearMonth]);
 
-  const recordsNextMonth = useMemo(
-    () => filterFuelPaymentRecordsByMonth(allRecords, nextYearMonth),
-    [allRecords, nextYearMonth],
-  );
+  const recordsNextMonth = useMemo(() => filterFuelPaymentRecordsByMonth(allRecords, nextYearMonth), [allRecords, nextYearMonth]);
 
-  const {
-    containerRef,
-    x,
-    peekX,
-    peekPanel,
-    navigateAdjacent,
-    handleTouchStart,
-    handleTouchMove,
-    handleTouchEnd,
-    handleTouchCancel,
-  } = useFuelPaymentRecordSwipe({
-    onNavigate: (direction) => {
-      const target = getAdjacentFuelPaymentMonth({ year, month }, direction);
-      setYearMonth(target.year, target.month);
-    },
-  });
+  const { containerRef, x, peekX, peekPanel, navigateAdjacent, handleTouchStart, handleTouchMove, handleTouchEnd, handleTouchCancel } =
+    useFuelPaymentRecordSwipe({
+      onNavigate: (direction) => {
+        const target = getAdjacentFuelPaymentMonth({ year, month }, direction);
+        setYearMonth(target.year, target.month);
+      },
+    });
 
   const handleCellClick = async (date: Date) => {
     const existing = recordByDateKey.get(toKstDateKey(date));
     if (existing) {
-      await openDialog({ type: 'edit', date: existing.date, userId: existing.userId });
+      await openDialog({
+        type: 'edit',
+        date: existing.date,
+        userId: existing.userId,
+        pricePerLiter: existing.pricePerLiter,
+        totalAmount: existing.totalAmount,
+      });
     } else {
       await openDialog({ type: 'add', date });
     }
