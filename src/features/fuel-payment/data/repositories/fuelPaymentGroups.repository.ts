@@ -8,6 +8,7 @@ import {
   arrayUnion,
   collection,
   deleteDoc,
+  deleteField,
   doc,
   DocumentData,
   getDoc,
@@ -111,6 +112,13 @@ export const fuelPaymentGroupsRepository = getFirebaseRepositoryCreator('fuelPay
       const nextRecords = group.records.filter((r) => toKstDateKey(r.date) !== targetKey);
       if (nextRecords.length === group.records.length) return;
       await writeRecords(groupId, nextRecords);
+    },
+
+    updateMemo: async (groupId, memo) => {
+      await updateDoc(doc(db, collectionName, groupId), {
+        memo: memo || deleteField(),
+        updatedAt: Timestamp.now().toDate(),
+      });
     },
   };
 });
