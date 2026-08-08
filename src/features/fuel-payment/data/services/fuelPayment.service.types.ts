@@ -16,6 +16,7 @@ export interface FuelPaymentService {
   addRecord: (groupId: string, record: FuelPaymentRecord) => Promise<void>;
   updateRecord: (groupId: string, originalDate: Date, record: FuelPaymentRecord) => Promise<void>;
   removeRecord: (groupId: string, date: Date) => Promise<void>;
+  updateMemo: (groupId: string, memo: string) => Promise<void>;
 }
 
 export interface FuelPaymentServiceDependencies {

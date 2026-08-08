@@ -22,8 +22,15 @@ export const useOpenFuelPaymentRecordDialog = () => {
   return async (mode: OpenFuelPaymentRecordDialogMode) => {
     if (!isMyGroupFetched) return;
 
-    const group = myGroup ?? (await fuelPaymentService.createGroup());
-    await refreshMyGroupQuery(group.id);
+    const initialGroup = myGroup ?? (await fuelPaymentService.createGroup());
+    await refreshMyGroupQuery(initialGroup.id);
+    const group = (await fuelPaymentService.getMyGroup()) ?? initialGroup;
+
+    const saveMemoIfChanged = async (result: FuelPaymentRecordResult) => {
+      const nextMemo = result.memo ?? '';
+      if (nextMemo === (group.memo ?? '')) return;
+      await fuelPaymentService.updateMemo(group.id, nextMemo);
+    };
 
     if (mode.type === 'add') {
       await dialog.open<FuelPaymentRecordResult>({
@@ -31,12 +38,13 @@ export const useOpenFuelPaymentRecordDialog = () => {
         content: (close) => (
           <FuelPaymentRecordDialog
             groupMembers={groupMembers}
-            defaultValues={mode.date ? { date: mode.date } : undefined}
+            defaultValues={{ date: mode.date, memo: group.memo }}
             close={close}
             confirmConfig={{
               label: '추가',
               onConfirm: async (result) => {
                 await fuelPaymentService.addRecord(group.id, result);
+                await saveMemoIfChanged(result);
                 await refreshMyGroupQuery(group.id);
                 enqueueClosableSnackbar({ message: '기록이 추가되었습니다.', variant: 'success' });
               },
@@ -55,12 +63,19 @@ export const useOpenFuelPaymentRecordDialog = () => {
       content: (close) => (
         <FuelPaymentRecordDialog
           groupMembers={groupMembers}
-          defaultValues={{ date: mode.date, userId: mode.userId, pricePerLiter: mode.pricePerLiter, totalAmount: mode.totalAmount }}
+          defaultValues={{
+            date: mode.date,
+            userId: mode.userId,
+            pricePerLiter: mode.pricePerLiter,
+            totalAmount: mode.totalAmount,
+            memo: group.memo,
+          }}
           close={close}
           confirmConfig={{
             label: '수정',
             onConfirm: async (result) => {
               await fuelPaymentService.updateRecord(group.id, originalDate, result);
+              await saveMemoIfChanged(result);
               await refreshMyGroupQuery(group.id);
               enqueueClosableSnackbar({ message: '기록이 수정되었습니다.', variant: 'success' });
             },

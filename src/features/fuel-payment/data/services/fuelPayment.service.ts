@@ -46,6 +46,10 @@ export const createFuelPaymentService = getServiceCreator<FuelPaymentService, Fu
       removeRecord: async (groupId, date) => {
         await fuelPaymentGroupsRepository.removeRecord(groupId, date);
       },
+
+      updateMemo: async (groupId, memo) => {
+        await fuelPaymentGroupsRepository.updateMemo(groupId, memo);
+      },
     };
   },
 );

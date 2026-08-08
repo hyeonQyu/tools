@@ -21,7 +21,7 @@ import { DatePicker } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 import { ChangeEvent, useState } from 'react';
 
-export type FuelPaymentRecordResult = { date: Date; userId: string; pricePerLiter?: number; totalAmount?: number };
+export type FuelPaymentRecordResult = { date: Date; userId: string; pricePerLiter?: number; totalAmount?: number; memo?: string };
 
 const toAmountInput = (value?: number): string => (value && value > 0 ? String(value) : '');
 
@@ -45,6 +45,7 @@ function FuelPaymentRecordDialog({ groupMembers, defaultValues, close, confirmCo
   const [userId, setUserId] = useState<string | null>(defaultValues?.userId ?? null);
   const [pricePerLiterInput, setPricePerLiterInput] = useState<string>(toAmountInput(defaultValues?.pricePerLiter));
   const [totalAmountInput, setTotalAmountInput] = useState<string>(toAmountInput(defaultValues?.totalAmount));
+  const [memo, setMemo] = useState<string>(defaultValues?.memo ?? '');
   const [dateError, setDateError] = useState<string | null>(null);
 
   const pricePerLiter = parseAmountInput(pricePerLiterInput);
@@ -63,6 +64,7 @@ function FuelPaymentRecordDialog({ groupMembers, defaultValues, close, confirmCo
       userId,
       pricePerLiter: pricePerLiter || undefined,
       totalAmount: totalAmount || undefined,
+      memo: memo.trim() || undefined,
     };
     try {
       await confirmConfig.onConfirm(result);
@@ -184,6 +186,19 @@ function FuelPaymentRecordDialog({ groupMembers, defaultValues, close, confirmCo
               </Typography>
             </Stack>
           )}
+
+          <Stack spacing={1}>
+            <FormLabel>메모</FormLabel>
+            <TextField
+              value={memo}
+              onChange={(e) => setMemo(e.target.value)}
+              size="small"
+              fullWidth
+              multiline
+              rows={2}
+              placeholder="다음 기록 입력 시 표시됩니다"
+            />
+          </Stack>
 
           {onDelete && (
             <Button fullWidth onClick={handleDelete} color="error" variant="outlined" startIcon={<DeleteIcon />}>
