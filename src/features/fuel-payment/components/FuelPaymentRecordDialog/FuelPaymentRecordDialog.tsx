@@ -1,4 +1,5 @@
 import { dateFormat } from '@/date';
+import { calculateFuelLiters } from '@/features/fuel-payment/utils/fuelPaymentRecord.utils';
 import { ConstraintError, getKstNow, toKstMidnightDate } from '@/lib';
 import { CheckCircle, Delete as DeleteIcon } from '@mui/icons-material';
 import {
@@ -8,17 +9,23 @@ import {
   DialogActions,
   DialogContent,
   FormLabel,
+  InputAdornment,
   List,
   ListItemButton,
   ListItemText,
   Stack,
   TextField,
+  Typography,
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
-import { useState } from 'react';
+import { ChangeEvent, useState } from 'react';
 
-export type FuelPaymentRecordResult = { date: Date; userId: string };
+export type FuelPaymentRecordResult = { date: Date; userId: string; pricePerLiter?: number; totalAmount?: number };
+
+const toAmountInput = (value?: number): string => (value && value > 0 ? String(value) : '');
+
+const parseAmountInput = (value: string): number => Number(value) || 0;
 
 export type FuelPaymentGroupMember = { id: string; name: string; color: string };
 
@@ -36,13 +43,30 @@ export interface FuelPaymentRecordDialogProps {
 function FuelPaymentRecordDialog({ groupMembers, defaultValues, close, confirmConfig, onDelete }: FuelPaymentRecordDialogProps) {
   const [date, setDate] = useState<Date>(defaultValues?.date ?? getKstNow());
   const [userId, setUserId] = useState<string | null>(defaultValues?.userId ?? null);
+  const [pricePerLiterInput, setPricePerLiterInput] = useState<string>(toAmountInput(defaultValues?.pricePerLiter));
+  const [totalAmountInput, setTotalAmountInput] = useState<string>(toAmountInput(defaultValues?.totalAmount));
   const [dateError, setDateError] = useState<string | null>(null);
+
+  const pricePerLiter = parseAmountInput(pricePerLiterInput);
+  const totalAmount = parseAmountInput(totalAmountInput);
+  const liters = calculateFuelLiters(pricePerLiter, totalAmount);
+
+  const handleAmountChange = (setter: (value: string) => void) => (e: ChangeEvent<HTMLInputElement>) => {
+    const next = e.target.value.replace(/[^\d]/g, '');
+    setter(next);
+  };
 
   const handleConfirm = async () => {
     if (!userId) return;
+    const result: FuelPaymentRecordResult = {
+      date: toKstMidnightDate(date),
+      userId,
+      pricePerLiter: pricePerLiter || undefined,
+      totalAmount: totalAmount || undefined,
+    };
     try {
-      await confirmConfig.onConfirm({ date: toKstMidnightDate(date), userId });
-      close({ date: toKstMidnightDate(date), userId });
+      await confirmConfig.onConfirm(result);
+      close(result);
     } catch (e) {
       if (e instanceof ConstraintError) {
         setDateError(e.message);
@@ -117,6 +141,49 @@ function FuelPaymentRecordDialog({ groupMembers, defaultValues, close, confirmCo
               </List>
             )}
           </Stack>
+
+          <Stack spacing={1}>
+            <FormLabel>리터당 금액</FormLabel>
+            <TextField
+              value={pricePerLiterInput}
+              onChange={handleAmountChange(setPricePerLiterInput)}
+              size="small"
+              fullWidth
+              placeholder="0"
+              slotProps={{
+                input: {
+                  endAdornment: <InputAdornment position="end">원</InputAdornment>,
+                },
+                htmlInput: { inputMode: 'numeric', pattern: '[0-9]*' },
+              }}
+            />
+          </Stack>
+
+          <Stack spacing={1}>
+            <FormLabel>총 금액</FormLabel>
+            <TextField
+              value={totalAmountInput}
+              onChange={handleAmountChange(setTotalAmountInput)}
+              size="small"
+              fullWidth
+              placeholder="0"
+              slotProps={{
+                input: {
+                  endAdornment: <InputAdornment position="end">원</InputAdornment>,
+                },
+                htmlInput: { inputMode: 'numeric', pattern: '[0-9]*' },
+              }}
+            />
+          </Stack>
+
+          {liters !== null && (
+            <Stack spacing={1}>
+              <FormLabel>주유량</FormLabel>
+              <Typography variant="body1" fontWeight={600}>
+                {liters.toFixed(1)} L
+              </Typography>
+            </Stack>
+          )}
 
           {onDelete && (
             <Button fullWidth onClick={handleDelete} color="error" variant="outlined" startIcon={<DeleteIcon />}>

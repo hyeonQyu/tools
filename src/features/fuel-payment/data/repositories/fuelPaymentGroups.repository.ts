@@ -1,4 +1,4 @@
-import { FuelPaymentGroupEntity, FuelPaymentGroupsRepository } from '@/features/fuel-payment/data/repositories';
+import { FuelPaymentGroupEntity, FuelPaymentGroupsRepository, FuelPaymentRecord } from '@/features/fuel-payment/data/repositories';
 import { getFirebaseRepositoryCreator, serializeEntity } from '@/firebase';
 import { NotFoundError } from '@/lib';
 import { toKstDateKey, toKstMidnightDate } from '@/lib/time.utils';
@@ -17,6 +17,16 @@ import {
   updateDoc,
   where,
 } from 'firebase/firestore';
+
+const buildStoredRecord = (record: FuelPaymentRecord): FuelPaymentRecord => {
+  const stored: FuelPaymentRecord = {
+    date: toKstMidnightDate(record.date),
+    userId: record.userId,
+  };
+  if (record.pricePerLiter && record.pricePerLiter > 0) stored.pricePerLiter = record.pricePerLiter;
+  if (record.totalAmount && record.totalAmount > 0) stored.totalAmount = record.totalAmount;
+  return stored;
+};
 
 export const fuelPaymentGroupsRepository = getFirebaseRepositoryCreator('fuelPaymentGroups')<FuelPaymentGroupsRepository>(({
   db,
@@ -74,26 +84,23 @@ export const fuelPaymentGroupsRepository = getFirebaseRepositoryCreator('fuelPay
 
     addRecord: async (groupId, record) => {
       const group = await readGroup(groupId);
-      const normalizedDate = toKstMidnightDate(record.date);
-      const normalizedKey = toKstDateKey(normalizedDate);
-      const nextRecords = [
-        ...group.records.filter((r) => toKstDateKey(r.date) !== normalizedKey),
-        { date: normalizedDate, userId: record.userId },
-      ];
+      const storedRecord = buildStoredRecord(record);
+      const normalizedKey = toKstDateKey(storedRecord.date);
+      const nextRecords = [...group.records.filter((r) => toKstDateKey(r.date) !== normalizedKey), storedRecord];
       await writeRecords(groupId, nextRecords);
     },
 
     updateRecord: async (groupId, originalDate, record) => {
       const group = await readGroup(groupId);
       const originalKey = toKstDateKey(originalDate);
-      const newDate = toKstMidnightDate(record.date);
-      const newKey = toKstDateKey(newDate);
+      const storedRecord = buildStoredRecord(record);
+      const newKey = toKstDateKey(storedRecord.date);
       const nextRecords = [
         ...group.records.filter((r) => {
           const key = toKstDateKey(r.date);
           return key !== originalKey && key !== newKey;
         }),
-        { date: newDate, userId: record.userId },
+        storedRecord,
       ];
       await writeRecords(groupId, nextRecords);
     },

@@ -8,7 +8,10 @@ export interface FuelPaymentYearMonth {
 
 export type FuelPaymentMonthDirection = 'prev' | 'next';
 
-export const getAdjacentFuelPaymentMonth = ({ year, month }: FuelPaymentYearMonth, direction: FuelPaymentMonthDirection): FuelPaymentYearMonth => {
+export const getAdjacentFuelPaymentMonth = (
+  { year, month }: FuelPaymentYearMonth,
+  direction: FuelPaymentMonthDirection,
+): FuelPaymentYearMonth => {
   if (direction === 'prev') {
     return month === FIRST_MONTH ? { year: year - 1, month: LAST_MONTH } : { year, month: month - 1 };
   }
@@ -25,4 +28,8 @@ export const filterFuelPaymentRecordsByMonth = (records: FuelPaymentRecord[], ta
 
 export const getFuelPaymentRecordByDateKey = (records: FuelPaymentRecord[]): Map<string, FuelPaymentRecord> => {
   return new Map(records.map((record) => [toKstDateKey(record.date), record]));
+};
+
+export const calculateFuelLiters = (pricePerLiter?: number, totalAmount?: number): number | null => {
+  return pricePerLiter && totalAmount ? totalAmount / pricePerLiter : null;
 };
