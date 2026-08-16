@@ -1,5 +1,6 @@
 import BelongingsPage from '@/pages/belongings/BelongingsPage';
 import BudgetingPage from '@/pages/budgeting/BudgetingPage';
+import DaisoShoppingPage from '@/pages/daiso-shopping/DaisoShoppingPage';
 import ExpirationDatesPage from '@/pages/expiration-dates/ExpirationDatesPage';
 import FuelPaymentPage from '@/pages/fuel-payment/FuelPaymentPage';
 import GoalsTrackingPage from '@/pages/goals-tracking/GoalsTrackingPage';
@@ -19,6 +20,8 @@ import {
   LocalAtmOutlined,
   LocalGasStation,
   LocalGasStationOutlined,
+  ShoppingBasket,
+  ShoppingBasketOutlined,
   ViewCarousel,
   ViewCarouselOutlined,
 } from '@mui/icons-material';
@@ -103,6 +106,17 @@ const { AppRoutesProvider, useAppRoutes, useTypedNavigate, useCurrentRouteNode, 
           filled: Inventory2,
         },
         component: <BelongingsPage />,
+      },
+    },
+
+    'daiso-shopping': {
+      _metadata: {
+        name: '다이소 장보기',
+        icon: {
+          outlined: ShoppingBasketOutlined,
+          filled: ShoppingBasket,
+        },
+        component: <DaisoShoppingPage />,
       },
     },
 
