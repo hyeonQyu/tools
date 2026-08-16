@@ -1,5 +1,6 @@
 import BelongingsPage from '@/pages/belongings/BelongingsPage';
 import BudgetingPage from '@/pages/budgeting/BudgetingPage';
+import CgvAlertPage from '@/pages/cgv-alert/CgvAlertPage';
 import ExpirationDatesPage from '@/pages/expiration-dates/ExpirationDatesPage';
 import FuelPaymentPage from '@/pages/fuel-payment/FuelPaymentPage';
 import GoalsTrackingPage from '@/pages/goals-tracking/GoalsTrackingPage';
@@ -19,6 +20,8 @@ import {
   LocalAtmOutlined,
   LocalGasStation,
   LocalGasStationOutlined,
+  Theaters,
+  TheatersOutlined,
   ViewCarousel,
   ViewCarouselOutlined,
 } from '@mui/icons-material';
@@ -103,6 +106,17 @@ const { AppRoutesProvider, useAppRoutes, useTypedNavigate, useCurrentRouteNode, 
           filled: Inventory2,
         },
         component: <BelongingsPage />,
+      },
+    },
+
+    'cgv-alert': {
+      _metadata: {
+        name: 'CGV 예매 알림',
+        icon: {
+          outlined: TheatersOutlined,
+          filled: Theaters,
+        },
+        component: <CgvAlertPage />,
       },
     },
 
