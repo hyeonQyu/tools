@@ -1,0 +1,151 @@
+rules_version = '2';
+
+// ⚠️ 경고 — 배포 전 반드시 확인할 것
+//
+// 이 레포에는 원래 rules 파일이 없었고, 규칙은 Firebase 콘솔에서 직접 관리되고 있었다.
+// 이 파일은 `src/features/*/data/repositories/*.repository.ts` 를 전수 조사해
+// 실제로 쓰이는 컬렉션과 접근 패턴을 코드로 옮긴 것이다.
+//
+// `firebase deploy --only firestore:rules` 는 콘솔의 현재 규칙을 **통째로 덮어쓴다.**
+// 배포하기 전에 콘솔(Firestore > 규칙)의 현재 내용과 아래를 반드시 대조하고,
+// 여기 없는 컬렉션이 콘솔에 있다면 먼저 이 파일에 옮겨 담을 것.
+// 대조 없이 배포하면 기존 도구(예산/목표/주유비/유통기한/소지품)가 권한 오류로 깨질 수 있다.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // 문서에 `userId` 필드로 소유자가 박혀 있는 컬렉션용.
+    // list 쿼리는 `where('userId', '==', uid)` 로 제한되어 있어야 통과한다.
+    function ownsExisting() {
+      return isSignedIn() && resource.data.userId == request.auth.uid;
+    }
+
+    function ownsIncoming() {
+      return isSignedIn() && request.resource.data.userId == request.auth.uid;
+    }
+
+    // ────────────────────────────────────────────────────────────
+    // CGV 예매 알림
+    // ────────────────────────────────────────────────────────────
+
+    match /cgvWatches/{watchId} {
+      allow read: if ownsExisting();
+      allow create: if ownsIncoming();
+      allow update: if ownsExisting() && ownsIncoming();
+      allow delete: if ownsExisting();
+    }
+
+    match /cgvNotifications/{notificationId} {
+      allow read: if ownsExisting();
+      allow create: if ownsIncoming();
+      allow update: if ownsExisting() && ownsIncoming();
+      allow delete: if ownsExisting();
+    }
+
+    // 문서 id = FCM 토큰 문자열.
+    match /pushTokens/{token} {
+      allow read: if ownsExisting();
+      allow create: if ownsIncoming();
+      allow update: if ownsExisting() && ownsIncoming();
+      allow delete: if ownsExisting();
+    }
+
+    // 폴링 상태와 CGV 목록 캐시는 서버 전용이다.
+    // Admin SDK(Cloud Functions)는 규칙을 우회하므로 전면 차단해도 폴링에는 영향이 없다.
+    match /cgvWatchStates/{watchId} {
+      allow read, write: if false;
+    }
+
+    match /cgvCatalogCache/{docId} {
+      allow read, write: if false;
+    }
+
+    // ────────────────────────────────────────────────────────────
+    // 기존 도구 (콘솔에서 관리하던 규칙을 코드로 옮긴 부분)
+    // ────────────────────────────────────────────────────────────
+
+    // 문서 id = uid
+    match /budgeting/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+
+    match /expirationDateSettings/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+
+    match /belongingSettings/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+
+    // `userId` 필드로 소유자를 판별하는 컬렉션
+    match /budgeting-presets/{presetId} {
+      allow read: if ownsExisting();
+      allow create: if ownsIncoming();
+      allow update: if ownsExisting() && ownsIncoming();
+      allow delete: if ownsExisting();
+    }
+
+    match /goals/{goalId} {
+      allow read: if ownsExisting();
+      allow create: if ownsIncoming();
+      allow update: if ownsExisting() && ownsIncoming();
+      allow delete: if ownsExisting();
+    }
+
+    match /goalDailyRecords/{recordId} {
+      allow read: if ownsExisting();
+      allow create: if ownsIncoming();
+      allow update: if ownsExisting() && ownsIncoming();
+      allow delete: if ownsExisting();
+    }
+
+    match /expirationDateItems/{itemId} {
+      allow read: if ownsExisting();
+      allow create: if ownsIncoming();
+      allow update: if ownsExisting() && ownsIncoming();
+      allow delete: if ownsExisting();
+    }
+
+    match /belongingItems/{itemId} {
+      allow read: if ownsExisting();
+      allow create: if ownsIncoming();
+      allow update: if ownsExisting() && ownsIncoming();
+      allow delete: if ownsExisting();
+    }
+
+    match /wsServers/{serverId} {
+      allow read: if ownsExisting();
+      allow create: if ownsIncoming();
+      allow update: if ownsExisting() && ownsIncoming();
+      allow delete: if ownsExisting();
+    }
+
+    // 주유비는 그룹을 여러 사용자가 공유한다. 소유자 판별은 `userIds` 배열로 한다.
+    // 그룹 참여는 "이미 속한 멤버가 상대를 추가"하는 흐름이므로, 비멤버의 접근은 막아도 된다.
+    match /fuelPaymentGroups/{groupId} {
+      allow read, update, delete: if isSignedIn() && request.auth.uid in resource.data.userIds;
+      allow create: if isSignedIn() && request.auth.uid in request.resource.data.userIds;
+    }
+
+    // 문서 id = uid, 값은 그룹 id와 표시 색상뿐이다.
+    // 멤버 추가 시 다른 사용자의 문서를 대신 만들어 주는 흐름이라 소유자 검사를 걸 수 없다.
+    // (민감 정보가 없어 로그인 사용자 전체에 허용한다)
+    match /fuelPaymentUsers/{userId} {
+      allow read, write: if isSignedIn();
+    }
+
+    // 멤버 추가 다이얼로그에서 전체 사용자 목록을 조회한다. 쓰기는 본인 문서만.
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      allow write: if isOwner(userId);
+    }
+  }
+}
