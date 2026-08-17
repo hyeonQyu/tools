@@ -1,6 +1,7 @@
 import BelongingsPage from '@/pages/belongings/BelongingsPage';
 import BudgetingPage from '@/pages/budgeting/BudgetingPage';
 import CgvAlertPage from '@/pages/cgv-alert/CgvAlertPage';
+import DaisoShoppingPage from '@/pages/daiso-shopping/DaisoShoppingPage';
 import ExpirationDatesPage from '@/pages/expiration-dates/ExpirationDatesPage';
 import FuelPaymentPage from '@/pages/fuel-payment/FuelPaymentPage';
 import GoalsTrackingPage from '@/pages/goals-tracking/GoalsTrackingPage';
@@ -20,6 +21,8 @@ import {
   LocalAtmOutlined,
   LocalGasStation,
   LocalGasStationOutlined,
+  ShoppingBasket,
+  ShoppingBasketOutlined,
   Theaters,
   TheatersOutlined,
   ViewCarousel,
@@ -117,6 +120,17 @@ const { AppRoutesProvider, useAppRoutes, useTypedNavigate, useCurrentRouteNode, 
           filled: Theaters,
         },
         component: <CgvAlertPage />,
+      },
+    },
+
+    'daiso-shopping': {
+      _metadata: {
+        name: '다이소 장보기',
+        icon: {
+          outlined: ShoppingBasketOutlined,
+          filled: ShoppingBasket,
+        },
+        component: <DaisoShoppingPage />,
       },
     },
 
