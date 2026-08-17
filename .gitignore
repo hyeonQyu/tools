@@ -43,6 +43,11 @@ workbox-*.js.map
 
 .playwright-mcp/
 
+# Firebase Cloud Functions
+functions/lib
+.firebase/
+.runtimeconfig.json
+
 # AI agent directories — ignore by default, whitelist specific subdirectories
 /.agents/*
 !/.agents/rules/

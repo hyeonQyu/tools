@@ -45,6 +45,8 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
+        // FCM 서비스워커는 런타임에 쿼리스트링을 붙여 별도 스코프로 직접 등록하므로 precache 대상에서 제외한다.
+        globIgnores: ['**/node_modules/**/*', '**/firebase-messaging-sw.js'],
         skipWaiting: true,
         clientsClaim: true,
         navigateFallback: 'index.html',
