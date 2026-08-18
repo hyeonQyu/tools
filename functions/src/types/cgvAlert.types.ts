@@ -72,9 +72,48 @@ export type CgvNotificationDraft = {
 /** 감시 항목 하나가 조회할 수 있는 최대 상영일 수. CGV 호출량 상한. */
 export const CGV_MAX_WATCHED_DAYS = 14;
 
-/** 예매 페이지 딥링크. `siteNm`을 함께 넘기지 않으면 극장이 선택되지 않은 화면이 열린다. */
-export const getCgvBookingLink = ({ siteNo, siteNm, scnYmd }: { siteNo: string; siteNm: string; scnYmd?: string }): string => {
+/** 예매 딥링크가 가리킬 대상. 알림 종류에 따라 특정할 수 있는 범위가 달라 대부분이 선택 항목이다. */
+export type CgvBookingLinkTarget = {
+  siteNo: string;
+  siteNm: string;
+  /** `YYYYMMDD` */
+  scnYmd?: string;
+  /** 영화가 하나로 특정될 때만. 상영관/회차 파라미터는 이 값이 있어야 의미가 있다. */
+  movNo?: string | null;
+  scnsNo?: string | null;
+  scnSseq?: string | null;
+};
+
+/**
+ * 예매 페이지 딥링크.
+ *
+ * - `siteNm`을 함께 넘기지 않으면 극장이 선택되지 않은 화면이 열린다.
+ * - 영화가 특정되면 **영화별 예매**(`/cnm/movieBook/movie`)로 보낸다. 극장별 예매(`/cnm/movieBook/cinema`)는
+ *   그 극장의 모든 영화를 나열해서, 어떤 회차 때문에 알림이 왔는지 찾아야 한다.
+ *   영화별 예매는 영화·극장·날짜가 모두 선택된 채로 그 영화의 회차만 보여준다. (실제 페이지로 확인)
+ * - `scnsNo`/`scnSseq`는 페이지가 읽기는 하지만 첫 진입에서는 회차 강조까지 이어지지 않는다.
+ *   무해하고 앱 쪽에서 쓰일 여지가 있어 회차가 특정될 때만 함께 넘긴다.
+ * - `eventYn=Y`는 붙이지 말 것. 극장 선택이 풀리고 극장 선택 모달이 뜬 채로 열린다. (실측)
+ */
+export const getCgvBookingLink = ({ siteNo, siteNm, scnYmd, movNo, scnsNo, scnSseq }: CgvBookingLinkTarget): string => {
   const params = new URLSearchParams({ siteNo, siteNm });
   if (scnYmd) params.set('scnYmd', scnYmd);
-  return `https://cgv.co.kr/cnm/movieBook/cinema?${params.toString()}`;
+
+  if (!movNo) return `https://cgv.co.kr/cnm/movieBook/cinema?${params.toString()}`;
+
+  params.set('movNo', movNo);
+  if (scnsNo) params.set('scnsNo', scnsNo);
+  if (scnSseq) params.set('scnSseq', scnSseq);
+  return `https://cgv.co.kr/cnm/movieBook/movie?${params.toString()}`;
 };
+
+/**
+ * 알림 클릭 시 실제로 열리는 주소. CGV 예매 페이지로 바로 보내지 않고 앱 안의 브리지
+ * 페이지(`public/cgv-open.html`)를 거친다. 거기서만 플랫폼별로 CGV 앱 실행을 시도하고
+ * 실패 시 브라우저로 넘길 수 있기 때문이다. (서비스워커에서는 이 분기를 만들 수 없다)
+ *
+ * 상대 경로로 만들어 서비스워커가 자기 오리진 기준으로 해석하게 한다. 그래야 서버가
+ * 배포 도메인을 알 필요가 없다.
+ */
+export const getCgvOpenLink = ({ bookingUrl, title, body }: { bookingUrl: string; title: string; body: string }): string =>
+  `/cgv-open.html?${new URLSearchParams({ url: bookingUrl, t: title, b: body }).toString()}`;

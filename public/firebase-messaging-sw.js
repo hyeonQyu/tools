@@ -15,6 +15,8 @@ importScripts('https://www.gstatic.com/firebasejs/12.9.0/firebase-messaging-comp
 
 const DEFAULT_NOTIFICATION_TITLE = '알림';
 const NOTIFICATION_ICON = '/icon-192x192.png';
+/** 워치가 진동으로 알아챌 수 있을 만큼의 패턴. Android 계열에서만 의미가 있다. */
+const NOTIFICATION_VIBRATE = [300, 120, 300];
 
 const searchParams = new URL(self.location).searchParams;
 
@@ -31,12 +33,20 @@ if (firebaseConfig.apiKey && firebaseConfig.projectId && firebaseConfig.messagin
 
   firebase.messaging().onBackgroundMessage((payload) => {
     const data = payload.data || {};
+    const isWatchAlert = data.watchAlert === '1';
 
     self.registration.showNotification(data.title || DEFAULT_NOTIFICATION_TITLE, {
       body: data.body || '',
       icon: NOTIFICATION_ICON,
       badge: NOTIFICATION_ICON,
-      ...(data.tag ? { tag: data.tag } : {}),
+      // 같은 태그로 덮어쓰는 알림은 기본적으로 소리/진동 없이 조용히 교체된다.
+      // 취소표처럼 "다시 떴다"는 사실 자체가 알림인 경우 워치까지 도달하지 않으므로 항상 다시 알린다.
+      // `renotify`는 `tag` 없이 쓰면 TypeError가 나므로 태그가 있을 때만 켠다.
+      ...(data.tag ? { tag: data.tag, renotify: true } : {}),
+      silent: false,
+      // 워치 알림을 켠 기기에서만 강하게 띄운다.
+      // 셋 다 iOS Safari에서는 지원되지 않아 무시된다(Android/Chrome 전용). 켜 두어도 해가 없다.
+      ...(isWatchAlert ? { vibrate: NOTIFICATION_VIBRATE, requireInteraction: true } : {}),
       data: { link: data.link || '/' },
     });
   });

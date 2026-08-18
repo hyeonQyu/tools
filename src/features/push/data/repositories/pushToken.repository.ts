@@ -17,6 +17,15 @@ export const pushTokenRepository = getFirebaseRepositoryCreator('pushTokens')<Pu
       await setDoc(doc(db, collectionName, payload.token), { ...payload, userId, createdAt: now, updatedAt: now }, { merge: true });
     },
 
+    /**
+     * 보안 규칙이 `request.resource.data.userId`를 검사하므로 `userId`를 함께 써야 한다.
+     * `merge: true`라 문서가 없어도 create로 평가되어 통과한다.
+     */
+    updateSettings: async (token, settings) => {
+      const userId = auth.currentUser!.uid;
+      await setDoc(doc(db, collectionName, token), { ...settings, userId, updatedAt: Timestamp.now().toDate() }, { merge: true });
+    },
+
     deleteByToken: async (token) => {
       await deleteDoc(doc(db, collectionName, token));
     },

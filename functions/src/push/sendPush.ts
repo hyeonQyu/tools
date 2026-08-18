@@ -43,7 +43,12 @@ export const sendPushToUser = async ({ userId, title, body, link, tag }: SendPus
 
   // 문서 id가 곧 토큰이지만, 데이터의 `token` 필드가 다를 가능성에 대비해 삭제는 항상 문서 id로 한다.
   const entries = snapshot.docs
-    .map((doc) => ({ docId: doc.id, token: typeof doc.data().token === 'string' ? (doc.data().token as string) : doc.id }))
+    .map((doc) => ({
+      docId: doc.id,
+      token: typeof doc.data().token === 'string' ? (doc.data().token as string) : doc.id,
+      /** 워치 알림을 켠 기기. 알림 옵션이 달라져 다른 페이로드로 나간다. */
+      watchAlert: doc.data().watchAlert === true,
+    }))
     .filter((entry) => entry.token.length > 0);
   if (entries.length === 0) {
     logger.info('발송할 푸시 토큰이 없습니다.', { userId });
@@ -55,30 +60,40 @@ export const sendPushToUser = async ({ userId, title, body, link, tag }: SendPus
   let successCount = 0;
   let failureCount = 0;
 
-  for (const entryChunk of chunk(entries, MULTICAST_CHUNK_SIZE)) {
-    const response = await messaging.sendEachForMulticast({
-      tokens: entryChunk.map((entry) => entry.token),
-      // 데이터 전용 메시지로 보낸다. `notification`을 실으면 FCM SDK의 서비스워커가 알림을 먼저 자동 표시한 뒤
-      // `onBackgroundMessage`까지 호출해 같은 알림이 2개 뜨고, SDK가 `notificationclick`을 선점한 채
-      // 외부 도메인(cgv.co.kr) 링크를 차단해 버린다. 표시와 클릭 처리는 전부 우리 서비스워커가 담당한다.
-      data: { title, body, link, ...(tag ? { tag } : {}) },
-      webpush: {
-        headers: { Urgency: 'high' },
-      },
-    });
+  /**
+   * 워치 알림 설정은 기기마다 다르고 알림 옵션(`watchAlert`)이 페이로드에 실리므로,
+   * 설정이 같은 토큰끼리 묶어 두 번에 나눠 보낸다.
+   */
+  const entryGroups = [entries.filter((entry) => entry.watchAlert), entries.filter((entry) => !entry.watchAlert)].filter(
+    (group) => group.length > 0,
+  );
 
-    successCount += response.successCount;
-    failureCount += response.failureCount;
+  for (const group of entryGroups) {
+    for (const entryChunk of chunk(group, MULTICAST_CHUNK_SIZE)) {
+      const response = await messaging.sendEachForMulticast({
+        tokens: entryChunk.map((entry) => entry.token),
+        // 데이터 전용 메시지로 보낸다. `notification`을 실으면 FCM SDK의 서비스워커가 알림을 먼저 자동 표시한 뒤
+        // `onBackgroundMessage`까지 호출해 같은 알림이 2개 뜨고, SDK가 `notificationclick`을 선점한 채
+        // 외부 도메인(cgv.co.kr) 링크를 차단해 버린다. 표시와 클릭 처리는 전부 우리 서비스워커가 담당한다.
+        data: { title, body, link, ...(tag ? { tag } : {}), watchAlert: group[0].watchAlert ? '1' : '0' },
+        webpush: {
+          headers: { Urgency: 'high' },
+        },
+      });
 
-    response.responses.forEach((result, index) => {
-      if (result.success) return;
-      const code = result.error?.code ?? '';
-      if (PERMANENT_TOKEN_ERROR_CODES.has(code)) {
-        invalidDocIds.push(entryChunk[index].docId);
-        return;
-      }
-      logger.warn('푸시 발송 실패', { userId, code, message: result.error?.message });
-    });
+      successCount += response.successCount;
+      failureCount += response.failureCount;
+
+      response.responses.forEach((result, index) => {
+        if (result.success) return;
+        const code = result.error?.code ?? '';
+        if (PERMANENT_TOKEN_ERROR_CODES.has(code)) {
+          invalidDocIds.push(entryChunk[index].docId);
+          return;
+        }
+        logger.warn('푸시 발송 실패', { userId, code, message: result.error?.message });
+      });
+    }
   }
 
   if (invalidDocIds.length > 0) {

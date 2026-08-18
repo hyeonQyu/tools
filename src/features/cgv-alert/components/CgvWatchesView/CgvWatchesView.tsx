@@ -1,15 +1,20 @@
 import { CgvPushPermissionCard } from '@/features/cgv-alert/components/CgvPushPermissionCard';
+import { CgvWatchAlertCard } from '@/features/cgv-alert/components/CgvWatchAlertCard';
 import { CgvWatchListItem } from '@/features/cgv-alert/components/CgvWatchListItem';
 import { useCgvWatches } from '@/features/cgv-alert/hooks';
+import { usePushNotification } from '@/features/push';
 import { Box, List, Stack, Typography } from '@mui/material';
 
 function CgvWatchesView() {
   const watches = useCgvWatches();
+  // 두 카드가 각자 호출하면 포그라운드 알림 스낵바가 두 번 뜨고 권한 상태도 서로 어긋난다. 여기서 한 번만 만든다.
+  const push = usePushNotification();
 
   return (
     <Box sx={{ height: '100%', overflowY: 'auto' }}>
       <Stack spacing={2} sx={{ p: 2 }}>
-        <CgvPushPermissionCard />
+        <CgvPushPermissionCard push={push} />
+        <CgvWatchAlertCard push={push} />
       </Stack>
 
       {watches.length === 0 ? (
