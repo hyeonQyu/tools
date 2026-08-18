@@ -11,4 +11,13 @@ export const createPushTokenService = getServiceCreator<PushTokenService, PushTo
     if (!existing) return;
     await pushTokenRepository.deleteByToken(token);
   },
+
+  getWatchAlert: async (token) => {
+    const existing = await pushTokenRepository.findByToken(token);
+    return existing?.watchAlert === true;
+  },
+
+  setWatchAlert: async (token, watchAlert) => {
+    await pushTokenRepository.updateSettings(token, { watchAlert });
+  },
 }));

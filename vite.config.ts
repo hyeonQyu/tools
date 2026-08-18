@@ -50,7 +50,8 @@ export default defineConfig({
         skipWaiting: true,
         clientsClaim: true,
         navigateFallback: 'index.html',
-        navigateFallbackDenylist: [/^\/api/],
+        // `cgv-open.html`은 알림 클릭 착지 페이지라 SPA 셸로 대체되면 안 된다.
+        navigateFallbackDenylist: [/^\/api/, /^\/cgv-open\.html/],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,

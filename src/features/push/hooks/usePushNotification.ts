@@ -22,11 +22,18 @@ const ERROR_MESSAGE = {
   registerFailed: '알림 등록에 실패했습니다.',
 } as const;
 
+/**
+ * 앱 전체에서 **한 번만** 호출해야 한다. 이 훅은 포그라운드 메시지 구독과 토큰 재발급이라는
+ * 부수효과를 갖고 있어서, 두 컴포넌트가 각자 호출하면 알림 스낵바가 두 번 뜨고
+ * 같은 문서에 동시에 쓰기가 나간다. 필요한 컴포넌트에는 반환값을 props로 내려 준다.
+ */
 export const usePushNotification = () => {
   const [isSupported, setIsSupported] = useState(false);
   const [permission, setPermission] = useState<NotificationPermission>(getNotificationPermission);
   const [isRegistering, setIsRegistering] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  /** 이 기기의 FCM 토큰. 기기별 알림 설정(`pushTokens` 문서)의 키라서 밖으로 내보낸다. */
+  const [token, setToken] = useState<string | null>(null);
 
   const isIos = useMemo(checkIsIos, []);
   const isStandalone = useMemo(checkIsStandalone, []);
@@ -71,9 +78,10 @@ export const usePushNotification = () => {
     const refreshToken = async () => {
       try {
         const registration = await registerMessagingServiceWorker();
-        const token = await issuePushToken(registration);
-        if (!isActive || !token) return;
-        await pushTokenService.register({ token, userAgent: navigator.userAgent });
+        const issuedToken = await issuePushToken(registration);
+        if (!isActive || !issuedToken) return;
+        await pushTokenService.register({ token: issuedToken, userAgent: navigator.userAgent });
+        if (isActive) setToken(issuedToken);
       } catch (e) {
         // 사용자가 명시적으로 요청한 동작이 아니므로 화면에 에러를 띄우지 않는다.
         console.error('푸시 토큰 갱신에 실패했습니다.', e);
@@ -112,13 +120,14 @@ export const usePushNotification = () => {
       }
 
       const registration = await registerMessagingServiceWorker();
-      const token = await issuePushToken(registration);
-      if (!token) {
+      const issuedToken = await issuePushToken(registration);
+      if (!issuedToken) {
         setError(ERROR_MESSAGE.tokenIssueFailed);
         return;
       }
 
-      await pushTokenService.register({ token, userAgent: navigator.userAgent });
+      await pushTokenService.register({ token: issuedToken, userAgent: navigator.userAgent });
+      setToken(issuedToken);
     } catch (e) {
       setError(e instanceof Error ? e.message : ERROR_MESSAGE.registerFailed);
     } finally {
@@ -126,5 +135,7 @@ export const usePushNotification = () => {
     }
   }, [isIos, isStandalone, isSupported]);
 
-  return { isSupported, isStandalone, isIos, permission, isRegistering, error, requestPermission };
+  return { isSupported, isStandalone, isIos, permission, isRegistering, error, token, requestPermission };
 };
+
+export type PushNotificationState = ReturnType<typeof usePushNotification>;

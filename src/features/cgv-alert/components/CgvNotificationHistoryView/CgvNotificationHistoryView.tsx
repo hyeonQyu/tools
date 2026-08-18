@@ -1,5 +1,5 @@
 import { useCgvNotifications } from '@/features/cgv-alert/hooks';
-import { CGV_TRIGGER_LABELS } from '@/features/cgv-alert/types';
+import { CGV_TRIGGER_LABELS, getCgvOpenLink } from '@/features/cgv-alert/types';
 import { Box, Chip, List, ListItem, ListItemButton, ListItemText, Stack, Typography } from '@mui/material';
 import dayjs from 'dayjs';
 
@@ -18,7 +18,11 @@ function CgvNotificationHistoryView() {
         <List disablePadding>
           {notifications.map((notification) => (
             <ListItem key={notification.id} disablePadding divider>
-              <ListItemButton component="a" href={notification.linkUrl} target="_blank" rel="noopener noreferrer">
+              {/* 알림 클릭과 같은 동선을 타야 CGV 앱/브라우저로 열린다. (앱 안에서 바로 열면 로그아웃된 웹뷰가 뜬다) */}
+              <ListItemButton
+                component="a"
+                href={getCgvOpenLink({ bookingUrl: notification.linkUrl, title: notification.title, body: notification.body })}
+              >
                 <ListItemText
                   primary={
                     <Stack direction="row" alignItems="center" spacing={1}>

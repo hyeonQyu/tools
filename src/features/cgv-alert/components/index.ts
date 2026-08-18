@@ -6,6 +6,7 @@ export * from './CgvNotificationHistoryView';
 export * from './CgvPushPermissionCard';
 export * from './CgvSpecialScreenSelector';
 export * from './CgvTheaterSelector';
+export * from './CgvWatchAlertCard';
 export * from './CgvWatchDialog';
 export * from './CgvWatchesView';
 export * from './CgvWatchListItem';

@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="robots" content="noindex" />
+    <title>CGV 예매 열기</title>
+    <!--
+      CGV 예매 알림의 클릭 착지점.
+
+      서비스워커의 `notificationclick`에서 CGV 주소를 바로 열면, 설치형 PWA 안의 웹뷰가 열린다.
+      iOS 홈 화면 웹앱은 Safari와 쿠키 저장소가 분리되어 있어 그 웹뷰에서는 늘 로그아웃 상태다.
+      그렇다고 서비스워커에서 앱 스킴을 열 수도 없다(플랫폼 분기·폴백 UI를 만들 수 없다).
+
+      그래서 알림은 같은 오리진의 이 페이지로 보내고, 여기서만 아래를 처리한다.
+      - Android: `intent://` 로 CGV 앱 실행 → 미설치면 `browser_fallback_url` 로 브라우저 이동 (크롬이 알아서 처리)
+      - iOS: 저장된 앱 스킴으로 실행 시도 → `x-safari-https:` 로 Safari 열기 (웹앱 웹뷰를 벗어나야 로그인이 유지된다)
+
+      cgv.co.kr 은 assetlinks.json / apple-app-site-association 을 제공하지 않는다(실측 404).
+      즉 https 주소만으로는 앱이 절대 열리지 않아 스킴/intent 외의 방법이 없다.
+    -->
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #ffffff;
+        --fg: #111111;
+        --muted: #6b6b6b;
+        --line: #e4e4e7;
+        --accent: #e51937;
+        --accent-fg: #ffffff;
+        --surface: #f6f6f7;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #121212;
+          --fg: #f2f2f2;
+          --muted: #a1a1aa;
+          --line: #2c2c2e;
+          --surface: #1c1c1e;
+        }
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      /* 아래에서 `display`를 직접 지정하는 요소들이 있어 `hidden` 속성이 무시되지 않게 못 박는다. */
+      [hidden] {
+        display: none !important;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100dvh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px 20px calc(24px + env(safe-area-inset-bottom));
+        background: var(--bg);
+        color: var(--fg);
+        font-family: -apple-system, BlinkMacSystemFont, 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+        line-height: 1.5;
+        -webkit-text-size-adjust: 100%;
+      }
+
+      main {
+        width: 100%;
+        max-width: 420px;
+      }
+
+      .eyebrow {
+        margin: 0 0 6px;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--accent);
+      }
+
+      h1 {
+        margin: 0 0 8px;
+        font-size: 20px;
+        font-weight: 700;
+        word-break: keep-all;
+      }
+
+      .detail {
+        margin: 0 0 24px;
+        font-size: 15px;
+        color: var(--muted);
+        white-space: pre-line;
+        word-break: keep-all;
+      }
+
+      button,
+      .link-button {
+        display: block;
+        width: 100%;
+        padding: 14px 16px;
+        border-radius: 12px;
+        border: 1px solid var(--line);
+        background: var(--surface);
+        color: var(--fg);
+        font-size: 16px;
+        font-weight: 600;
+        font-family: inherit;
+        text-align: center;
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      button.primary {
+        border-color: transparent;
+        background: var(--accent);
+        color: var(--accent-fg);
+        margin-bottom: 10px;
+      }
+
+      .hint {
+        margin: 16px 0 0;
+        font-size: 13px;
+        color: var(--muted);
+        word-break: keep-all;
+      }
+
+      details {
+        margin-top: 24px;
+        border-top: 1px solid var(--line);
+        padding-top: 16px;
+      }
+
+      summary {
+        font-size: 14px;
+        color: var(--muted);
+        cursor: pointer;
+      }
+
+      .scheme-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 12px;
+      }
+
+      .scheme-list button {
+        width: auto;
+        flex: 0 0 auto;
+        padding: 8px 12px;
+        font-size: 14px;
+        font-weight: 500;
+      }
+
+      .scheme-list button[aria-pressed='true'] {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p class="eyebrow">CGV 예매 알림</p>
+      <h1 id="title">CGV 예매</h1>
+      <p class="detail" id="detail"></p>
+
+      <button class="primary" id="open-app" type="button">CGV 앱으로 열기</button>
+      <button id="open-browser" type="button">브라우저로 열기</button>
+
+      <p class="hint" id="hint"></p>
+
+      <!-- 스킴을 직접 찾아야 하는 iOS에서만 노출한다. -->
+      <details id="finder" hidden>
+        <summary>CGV 앱이 열리지 않나요?</summary>
+        <p class="hint">
+          CGV는 앱 실행 주소(스킴)를 공개하지 않습니다. 아래를 하나씩 눌러 앱이 열리는 것을 찾아 주세요. 마지막에 누른 값이 이 기기에
+          저장되어, 다음부터는 &ldquo;CGV 앱으로 열기&rdquo;가 그 값을 씁니다.
+        </p>
+        <div class="scheme-list" id="scheme-list"></div>
+        <p class="hint" id="scheme-status"></p>
+      </details>
+    </main>
+
+    <script>
+      (function () {
+        /** 열람을 허용할 기본 주소. 파라미터가 없거나 신뢰할 수 없을 때 쓴다. */
+        var FALLBACK_URL = 'https://cgv.co.kr/cnm/movieBook/cinema';
+        /** 신규 CGV 앱(2025년 리뉴얼)의 Android 패키지. 구 앱은 `com.cgv.android.movieapp`이었다. */
+        var ANDROID_PACKAGE = 'co.kr.cgv.cjcgv';
+        var SCHEME_STORAGE_KEY = 'cgv-alert:app-scheme';
+        /** 찾아볼 스킴 후보. 확인되면 사용자의 기기에 저장된다. */
+        var SCHEME_CANDIDATES = ['cgv', 'cgvapp', 'cjcgv', 'newcgv', 'cgvnext', 'cgvmovie', 'cgvkorea'];
+        /** 앱으로 전환되지 않았다고 판단하기까지 기다리는 시간. */
+        var SWITCH_TIMEOUT_MS = 1200;
+
+        var params = new URLSearchParams(location.search);
+
+        /**
+         * 이 페이지는 우리 오리진에 있으므로, 파라미터를 검증하지 않으면 임의의 주소로 보내는
+         * 오픈 리다이렉트가 된다. cgv.co.kr 로만 나갈 수 있게 제한한다.
+         */
+        function toSafeBookingUrl(raw) {
+          if (!raw) return FALLBACK_URL;
+          try {
+            var url = new URL(raw, FALLBACK_URL);
+            if (url.protocol !== 'https:') return FALLBACK_URL;
+            var isCgvHost = url.hostname === 'cgv.co.kr' || /\.cgv\.co\.kr$/.test(url.hostname);
+            return isCgvHost ? url.href : FALLBACK_URL;
+          } catch (error) {
+            return FALLBACK_URL;
+          }
+        }
+
+        var bookingUrl = toSafeBookingUrl(params.get('url'));
+        var ua = navigator.userAgent || '';
+        var isAndroid = /android/i.test(ua);
+        var isIos = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+        var titleElement = document.getElementById('title');
+        var detailElement = document.getElementById('detail');
+        var appButton = document.getElementById('open-app');
+        var browserButton = document.getElementById('open-browser');
+        var hintElement = document.getElementById('hint');
+        var finderElement = document.getElementById('finder');
+        var schemeListElement = document.getElementById('scheme-list');
+        var schemeStatusElement = document.getElementById('scheme-status');
+
+        titleElement.textContent = params.get('t') || 'CGV 예매';
+        detailElement.textContent = params.get('b') || '';
+        document.title = titleElement.textContent;
+
+        function readSavedScheme() {
+          try {
+            var saved = localStorage.getItem(SCHEME_STORAGE_KEY);
+            return SCHEME_CANDIDATES.indexOf(saved) >= 0 ? saved : '';
+          } catch (error) {
+            return '';
+          }
+        }
+
+        function saveScheme(scheme) {
+          try {
+            localStorage.setItem(SCHEME_STORAGE_KEY, scheme);
+          } catch (error) {
+            /* 프라이빗 모드 등에서 실패해도 이번 실행에는 영향이 없다. */
+          }
+        }
+
+        /** `intent://` 는 앱이 없으면 크롬이 `browser_fallback_url` 로 대신 이동해 준다. */
+        function toIntentUrl(url) {
+          var parsed = new URL(url);
+          return (
+            'intent://' +
+            parsed.host +
+            parsed.pathname +
+            parsed.search +
+            '#Intent;scheme=https;package=' +
+            ANDROID_PACKAGE +
+            ';S.browser_fallback_url=' +
+            encodeURIComponent(url) +
+            ';end'
+          );
+        }
+
+        function toSchemeUrl(scheme, url) {
+          return scheme + '://' + url.replace(/^https?:\/\//, '');
+        }
+
+        /**
+         * 외부 앱으로 전환되면 이 페이지는 숨겨진다. 전환되지 않았을 때만 대체 동작을 실행한다.
+         * (전환에 성공했는데도 대체 동작이 돌면 브라우저 창이 하나 더 열린다)
+         */
+        function navigateWithFallback(target, fallback) {
+          var switched = false;
+          var markSwitched = function () {
+            if (document.hidden) switched = true;
+          };
+
+          document.addEventListener('visibilitychange', markSwitched);
+          window.addEventListener('pagehide', function () {
+            switched = true;
+          });
+
+          location.href = target;
+
+          if (!fallback) return;
+          setTimeout(function () {
+            document.removeEventListener('visibilitychange', markSwitched);
+            if (!switched && !document.hidden) fallback();
+          }, SWITCH_TIMEOUT_MS);
+        }
+
+        function openInApp() {
+          if (isAndroid) {
+            location.href = toIntentUrl(bookingUrl);
+            return;
+          }
+
+          var scheme = readSavedScheme();
+          if (!scheme) {
+            finderElement.open = true;
+            finderElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            return;
+          }
+
+          navigateWithFallback(toSchemeUrl(scheme, bookingUrl), openInBrowser);
+        }
+
+        function openInBrowser() {
+          // `x-safari-https:` 는 문서화되지 않았지만 최근 iOS에서 웹앱/인앱 브라우저를 벗어나 Safari를 여는
+          // 유일한 방법이다. 동작하지 않으면 평범한 이동으로 되돌린다(지금과 같은 동작).
+          if (isIos) {
+            navigateWithFallback('x-safari-' + bookingUrl, function () {
+              location.href = bookingUrl;
+            });
+            return;
+          }
+
+          location.href = bookingUrl;
+        }
+
+        appButton.addEventListener('click', openInApp);
+        browserButton.addEventListener('click', openInBrowser);
+
+        SCHEME_CANDIDATES.forEach(function (scheme) {
+          var button = document.createElement('button');
+          button.type = 'button';
+          button.textContent = scheme + '://';
+          button.setAttribute('aria-pressed', String(scheme === readSavedScheme()));
+          button.addEventListener('click', function () {
+            saveScheme(scheme);
+            renderSchemeState();
+            location.href = scheme + '://';
+          });
+          schemeListElement.appendChild(button);
+        });
+
+        function renderSchemeState() {
+          var saved = readSavedScheme();
+          schemeStatusElement.textContent = saved ? '저장된 스킴: ' + saved + '://' : '아직 저장된 스킴이 없습니다.';
+          Array.prototype.forEach.call(schemeListElement.children, function (button) {
+            button.setAttribute('aria-pressed', String(button.textContent === saved + '://'));
+          });
+        }
+
+        renderSchemeState();
+
+        if (isAndroid) {
+          hintElement.textContent = 'CGV 앱이 없으면 브라우저로 자동 이동합니다.';
+          // 알림에서 넘어온 흐름이므로 곧바로 앱 실행을 시도한다. 자동 실행이 막히면 위 버튼으로 이어간다.
+          location.replace(toIntentUrl(bookingUrl));
+          return;
+        }
+
+        if (isIos) {
+          hintElement.textContent = readSavedScheme()
+            ? 'CGV 앱이 열리지 않으면 브라우저로 열어 주세요.'
+            : 'iOS는 앱 스킴을 한 번 찾아 두어야 앱으로 열 수 있습니다. 아래에서 찾아 주세요.';
+          finderElement.hidden = false;
+          return;
+        }
+
+        // 데스크톱 등 앱이 없는 환경.
+        hintElement.textContent = '이 기기에는 CGV 앱이 없어 브라우저로 열립니다.';
+        appButton.hidden = true;
+      })();
+    </script>
+  </body>
+</html>

@@ -1,9 +1,14 @@
-import { usePushNotification } from '@/features/push';
+import { PushNotificationState } from '@/features/push';
 import { Alert, AlertTitle, Button } from '@mui/material';
 
+interface CgvPushPermissionCardProps {
+  /** `usePushNotification`은 부수효과가 있어 화면당 한 번만 호출한다. 소유자가 내려 준다. */
+  push: PushNotificationState;
+}
+
 /** 알림이 실제로 도착할 수 있는 상태인지 안내한다. 정상 상태(권한 허용)에서는 아무것도 렌더링하지 않는다. */
-function CgvPushPermissionCard() {
-  const { isSupported, isStandalone, isIos, permission, isRegistering, error, requestPermission } = usePushNotification();
+function CgvPushPermissionCard({ push }: CgvPushPermissionCardProps) {
+  const { isSupported, isStandalone, isIos, permission, isRegistering, error, requestPermission } = push;
 
   if (permission === 'granted' && !error) return null;
 

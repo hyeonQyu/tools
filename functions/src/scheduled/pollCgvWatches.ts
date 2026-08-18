@@ -10,6 +10,7 @@ import { sendPushToUser } from '../push/sendPush';
 import {
   CGV_MAX_WATCHED_DAYS,
   getCgvBookingLink,
+  getCgvOpenLink,
   type CgvNotificationDraft,
   type CgvWatchDocument,
   type CgvWatchState,
@@ -97,12 +98,21 @@ const getShowtimeLabel = (showtime: CgvShowtime): string => {
   return [showtime.movNm, formatShowtime(showtime.scnsrtTm), screenName].filter(Boolean).join(' · ');
 };
 
-/** 예매 오픈 알림 초안. */
+/**
+ * 회차 목록이 한 영화로 모아지면 그 `movNo`를 돌려준다. 섞여 있으면 `null`.
+ * 딥링크를 영화별 예매로 보낼 수 있는지 판단하는 데 쓴다.
+ */
+const getSingleMovNo = (showtimes: CgvShowtime[]): string | null => {
+  const movNos = new Set(showtimes.map((showtime) => showtime.movNo).filter(Boolean));
+  return movNos.size === 1 ? (Array.from(movNos)[0] as string) : null;
+};
+
+/** 예매 오픈 알림 초안. 감시 조건에 영화가 걸려 있으면 그 영화로 좁혀 보낸다. */
 const createOpenDateDraft = (watch: CgvWatchDocument, scnYmd: string): CgvNotificationDraft => ({
   type: 'OPEN_DATE',
   title: `${watch.siteNm || watch.siteNo} 예매 오픈`,
   body: `${formatScnYmd(scnYmd)} 상영 예매가 열렸어요.`,
-  linkUrl: getCgvBookingLink({ siteNo: watch.siteNo, siteNm: watch.siteNm, scnYmd }),
+  linkUrl: getCgvBookingLink({ siteNo: watch.siteNo, siteNm: watch.siteNm, scnYmd, movNo: watch.filters.movNo }),
   scnYmd,
 });
 
@@ -110,16 +120,18 @@ const createOpenDateDraft = (watch: CgvWatchDocument, scnYmd: string): CgvNotifi
 const createNewShowtimeDraft = (watch: CgvWatchDocument, scnYmd: string, showtimes: CgvShowtime[]): CgvNotificationDraft => {
   const listed = showtimes.slice(0, MAX_LISTED_SHOWTIMES).map(getShowtimeLabel).join('\n');
   const rest = showtimes.length - Math.min(showtimes.length, MAX_LISTED_SHOWTIMES);
+  // 묶인 회차가 여러 영화에 걸쳐 있으면 하나를 고를 수 없으므로 극장별 예매로 보낸다.
+  const movNo = getSingleMovNo(showtimes) ?? watch.filters.movNo;
   return {
     type: 'NEW_SHOWTIME',
     title: `${watch.siteNm || watch.siteNo} 신규 회차 ${showtimes.length}건`,
     body: `${formatScnYmd(scnYmd)}\n${listed}${rest > 0 ? `\n외 ${rest}건` : ''}`,
-    linkUrl: getCgvBookingLink({ siteNo: watch.siteNo, siteNm: watch.siteNm, scnYmd }),
+    linkUrl: getCgvBookingLink({ siteNo: watch.siteNo, siteNm: watch.siteNm, scnYmd, movNo }),
     scnYmd,
   };
 };
 
-/** 취소표 알림 초안. */
+/** 취소표 알림 초안. 회차가 하나로 특정되므로 상영관/회차까지 딥링크에 실어 보낸다. */
 const createSeatAvailableDraft = (
   watch: CgvWatchDocument,
   scnYmd: string,
@@ -131,7 +143,14 @@ const createSeatAvailableDraft = (
     type: 'SEAT_AVAILABLE',
     title: `${watch.siteNm || watch.siteNo} 취소표 ${freeSeatCount}석`,
     body: `${formatScnYmd(scnYmd)} · ${getShowtimeLabel(showtime)}`,
-    linkUrl: getCgvBookingLink({ siteNo: watch.siteNo, siteNm: watch.siteNm, scnYmd }),
+    linkUrl: getCgvBookingLink({
+      siteNo: watch.siteNo,
+      siteNm: watch.siteNm,
+      scnYmd,
+      movNo: showtime.movNo,
+      scnsNo: showtime.scnsNo,
+      scnSseq: String(showtime.scnSseq),
+    }),
     scnYmd,
     // 같은 날짜의 다른 회차 취소표 알림이 서로를 덮어쓰지 않도록 회차 키를 태그에 포함한다.
     tagSuffix: showtimeKey,
@@ -263,7 +282,8 @@ const publishNotifications = async (watch: CgvWatchDocument, drafts: CgvNotifica
         userId: watch.userId,
         title: draft.title,
         body: draft.body,
-        link: draft.linkUrl,
+        // 기록에는 CGV 주소를 그대로 남기고, 클릭 동선만 브리지 페이지를 거치게 한다.
+        link: getCgvOpenLink({ bookingUrl: draft.linkUrl, title: draft.title, body: draft.body }),
         tag: [watch.id, draft.type, draft.scnYmd, draft.tagSuffix].filter(Boolean).join('-'),
       });
     } catch (error) {
