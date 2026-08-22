@@ -69,6 +69,22 @@ service cloud.firestore {
     }
 
     // ────────────────────────────────────────────────────────────
+    // 다이소 장보기
+    // ────────────────────────────────────────────────────────────
+
+    match /daisoShoppingItems/{itemId} {
+      allow read: if ownsExisting();
+      allow create: if ownsIncoming();
+      allow update: if ownsExisting() && ownsIncoming();
+      allow delete: if ownsExisting();
+    }
+
+    // 문서 id = uid. 저장한 매장 목록과 선택 상태만 들어 있다.
+    match /daisoShoppingSettings/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+
+    // ────────────────────────────────────────────────────────────
     // 기존 도구 (콘솔에서 관리하던 규칙을 코드로 옮긴 부분)
     // ────────────────────────────────────────────────────────────
 
