@@ -39,6 +39,8 @@ const { AppRoutesProvider, useAppRoutes, useTypedNavigate, useCurrentRouteNode, 
       outlined: ComponentType;
       filled: ComponentType;
     };
+    /** 도구 검색에서 이름 외에 추가로 매칭할 별칭 */
+    keywords?: string[];
   },
   Record<string, unknown>
 >()({
@@ -65,6 +67,7 @@ const { AppRoutesProvider, useAppRoutes, useTypedNavigate, useCurrentRouteNode, 
           filled: LocalAtm,
         },
         component: <BudgetingPage />,
+        keywords: ['예산', '분배', '가계부', '생활비', '월급', 'budget'],
       },
     },
 
@@ -76,6 +79,7 @@ const { AppRoutesProvider, useAppRoutes, useTypedNavigate, useCurrentRouteNode, 
           filled: Checklist,
         },
         component: <GoalsTrackingPage />,
+        keywords: ['목표', '관리', '달성', '계획', '습관', 'goal', 'tracking'],
       },
     },
 
@@ -87,6 +91,7 @@ const { AppRoutesProvider, useAppRoutes, useTypedNavigate, useCurrentRouteNode, 
           filled: LocalGasStation,
         },
         component: <FuelPaymentPage />,
+        keywords: ['주유', '기름', '연료', '결제', '정산', '카풀', 'fuel', 'gas'],
       },
     },
 
@@ -98,6 +103,7 @@ const { AppRoutesProvider, useAppRoutes, useTypedNavigate, useCurrentRouteNode, 
           filled: EventNote,
         },
         component: <ExpirationDatesPage />,
+        keywords: ['유통기한', '소비기한', '식품', '냉장고', '만료', 'expiration'],
       },
     },
 
@@ -109,6 +115,7 @@ const { AppRoutesProvider, useAppRoutes, useTypedNavigate, useCurrentRouteNode, 
           filled: Inventory2,
         },
         component: <BelongingsPage />,
+        keywords: ['물건', '물품', '보관', '위치', '소지품', 'belongings'],
       },
     },
 
@@ -120,6 +127,7 @@ const { AppRoutesProvider, useAppRoutes, useTypedNavigate, useCurrentRouteNode, 
           filled: Theaters,
         },
         component: <CgvAlertPage />,
+        keywords: ['씨지비', '영화', '예매', '알림', '좌석', '상영', 'movie'],
       },
     },
 
@@ -131,6 +139,7 @@ const { AppRoutesProvider, useAppRoutes, useTypedNavigate, useCurrentRouteNode, 
           filled: ShoppingBasket,
         },
         component: <DaisoShoppingPage />,
+        keywords: ['다이소', '장보기', '쇼핑', '재고', '매장', '생필품', 'shopping'],
       },
     },
 
@@ -142,6 +151,7 @@ const { AppRoutesProvider, useAppRoutes, useTypedNavigate, useCurrentRouteNode, 
           filled: Dns,
         },
         component: <WsServerPage />,
+        keywords: ['웹소켓', '소켓', '서버', '관리', 'websocket', 'ws', 'server'],
       },
     },
   },
