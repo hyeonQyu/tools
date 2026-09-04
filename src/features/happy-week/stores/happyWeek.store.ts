@@ -16,8 +16,11 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 const RECENT_QUERY_LIMIT = 3;
 
 export type MunichCarDay = '2026-09-10' | '2026-09-11' | null;
+export type HappyWeekView = 'today' | 'trip';
 
 interface HappyWeekStates {
+  /** 오늘(레일) / 14일(구간 조망). 세션 한정. */
+  currentView: HappyWeekView;
   /** 세션 한정. 앱에 다시 들어오면 항상 오늘로 리셋된다. */
   viewDateKey: string;
   recentQueries: string[];
@@ -38,6 +41,7 @@ interface HappyWeekStates {
 }
 
 interface HappyWeekActions {
+  setCurrentView: (view: HappyWeekView) => void;
   setViewDateKey: (dateKey: string) => void;
   resetViewDateToToday: () => void;
   pushRecentQuery: (query: string) => void;
@@ -55,13 +59,17 @@ const getTodayDateKey = () => toCestDateKey(new Date());
 export const useHappyWeekStore = create<HappyWeekStore>()(
   persist(
     (set) => ({
+      currentView: 'today',
       viewDateKey: getTodayDateKey(),
       recentQueries: [],
       dismissedDeadlineIds: [],
       munichCarDay: null,
       localNotes: {},
 
-      setViewDateKey: (viewDateKey) => set({ viewDateKey }),
+      setCurrentView: (currentView) => set({ currentView }),
+
+      /** 날짜를 고르면 그 날의 레일로 간다 — 14일 탭에서 행을 눌렀을 때의 자연스러운 결과다. */
+      setViewDateKey: (viewDateKey) => set({ viewDateKey, currentView: 'today' }),
 
       resetViewDateToToday: () => set({ viewDateKey: getTodayDateKey() }),
 
