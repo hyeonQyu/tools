@@ -5,6 +5,7 @@ import DaisoShoppingPage from '@/pages/daiso-shopping/DaisoShoppingPage';
 import ExpirationDatesPage from '@/pages/expiration-dates/ExpirationDatesPage';
 import FuelPaymentPage from '@/pages/fuel-payment/FuelPaymentPage';
 import GoalsTrackingPage from '@/pages/goals-tracking/GoalsTrackingPage';
+import HappyWeekPage from '@/pages/happy-week/HappyWeekPage';
 import SelectPage from '@/pages/select/SelectPage';
 import WsServerPage from '@/pages/ws-server/WsServerPage';
 import { createAppRoutes } from '@hyeonqyu/typed-router-react';
@@ -21,6 +22,8 @@ import {
   LocalAtmOutlined,
   LocalGasStation,
   LocalGasStationOutlined,
+  Luggage,
+  LuggageOutlined,
   ShoppingBasket,
   ShoppingBasketOutlined,
   Theaters,
@@ -140,6 +143,18 @@ const { AppRoutesProvider, useAppRoutes, useTypedNavigate, useCurrentRouteNode, 
         },
         component: <DaisoShoppingPage />,
         keywords: ['다이소', '장보기', '쇼핑', '재고', '매장', '생필품', 'shopping'],
+      },
+    },
+
+    'happy-week': {
+      _metadata: {
+        name: '해피위크',
+        icon: {
+          outlined: LuggageOutlined,
+          filled: Luggage,
+        },
+        component: <HappyWeekPage />,
+        keywords: ['여행', '유럽', '일정', '해피위크', '암스테르담', '뮌헨', '돌로미티', '베네치아', 'happy', 'week', 'trip'],
       },
     },
 
