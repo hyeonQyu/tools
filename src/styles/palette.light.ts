@@ -38,8 +38,14 @@ export const paletteLight: PaletteOptions = {
     dark: '#16a34a',
     contrastText: '#ffffff',
   },
+  accent: {
+    main: '#5b68d6',
+    light: '#7d88e0',
+    dark: '#4a56b8',
+    contrastText: '#ffffff',
+  },
   background: {
-    default: '#fafafa',
+    default: '#eef0f5',
     paper: '#ffffff',
   },
   text: {

@@ -19,7 +19,7 @@ export default defineConfig({
         name: 'Tools',
         short_name: 'Tools',
         description: 'Tools PWA 애플리케이션',
-        theme_color: '#000000',
+        theme_color: '#eef0f5',
         background_color: '#ffffff',
         display: 'standalone',
         scope: '/',

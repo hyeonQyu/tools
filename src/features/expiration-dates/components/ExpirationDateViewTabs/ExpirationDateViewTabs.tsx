@@ -12,7 +12,7 @@ function ExpirationDateViewTabs() {
   const setCurrentView = useExpirationDateStore((s) => s.setCurrentView);
 
   return (
-    <Tabs sx={{ '&.MuiTabs-root': { mb: -2 } }} variant="fullWidth" value={currentView} onChange={(_, value) => setCurrentView(value)}>
+    <Tabs variant="fullWidth" value={currentView} onChange={(_, value) => setCurrentView(value)}>
       {tabs.map(({ label, value }) => (
         <Tab key={value} value={value} label={label} sx={{ padding: 1 }} />
       ))}
