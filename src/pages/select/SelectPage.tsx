@@ -1,7 +1,8 @@
 import { checkChosungOnly, getChosung, normalizeSearchText } from '@/lib';
-import { AppRouteNode, checkRouteNode, getPathnameFromNode, useAppRoutes, useTypedNavigate } from '@/routes';
+import { AppRouteNode, BOTTOM_NAVIGATION_CLEARANCE, checkRouteNode, getPathnameFromNode, useAppRoutes, useTypedNavigate } from '@/routes';
+import { pxToRem } from '@/styles';
 import { Search } from '@mui/icons-material';
-import { Box, Card, CardActionArea, CardContent, InputAdornment, TextField, Typography } from '@mui/material';
+import { Box, InputAdornment, List, ListItemButton, Paper, Stack, TextField, Typography, useTheme } from '@mui/material';
 import { ComponentType, useMemo, useState } from 'react';
 
 interface Tool {
@@ -26,6 +27,7 @@ const checkToolMatched = ({ searchTargets }: Tool, query: string) => {
 function SelectPage() {
   const appRoutes = useAppRoutes();
   const navigate = useTypedNavigate();
+  const { glass } = useTheme();
   const [search, setSearch] = useState('');
 
   const tools: Tool[] = useMemo(
@@ -40,7 +42,7 @@ function SelectPage() {
           return {
             key,
             name,
-            IconComponent: node._metadata.icon?.filled ?? null,
+            IconComponent: node._metadata.icon?.outlined ?? null,
             path: path as string,
             searchTargets: [name, key, ...(node._metadata.keywords ?? [])],
           };
@@ -51,105 +53,70 @@ function SelectPage() {
   const filteredTools = useMemo(() => tools.filter((tool) => checkToolMatched(tool, search)), [tools, search]);
 
   return (
-    <Box sx={{ maxWidth: 900, mx: 'auto', px: 2, py: 4 }}>
-      <Typography variant="h5" sx={{ mb: 2, fontWeight: 600 }}>
-        툴 선택
-      </Typography>
+    <Box sx={{ maxWidth: 900, mx: 'auto', px: 2.5, pt: 3, pb: pxToRem(BOTTOM_NAVIGATION_CLEARANCE) }}>
+      <Stack spacing={2}>
+        <Typography variant="h5">툴 선택</Typography>
 
-      <TextField
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        placeholder="도구 이름, 초성, 키워드 검색"
-        size="small"
-        fullWidth
-        sx={{ mb: 3 }}
-        slotProps={{
-          input: {
-            startAdornment: (
-              <InputAdornment position="start">
-                <Search fontSize="small" />
-              </InputAdornment>
-            ),
-          },
-        }}
-      />
-
-      {filteredTools.length === 0 ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
-          <Typography variant="body2" color="text.secondary">
-            검색 결과가 없습니다.
-          </Typography>
-        </Box>
-      ) : (
-        <Box
-          sx={{
-            display: 'grid',
-            gridTemplateColumns: {
-              xs: 'repeat(3, 1fr)',
-              sm: 'repeat(4, 1fr)',
-              md: 'repeat(5, 1fr)',
+        <TextField
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="도구 이름, 초성, 키워드 검색"
+          fullWidth
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search fontSize="small" />
+                </InputAdornment>
+              ),
             },
-            gap: 1.5,
           }}
-        >
-          {filteredTools.map(({ key, name, IconComponent, path }) => (
-            <Card
-              key={key}
-              sx={{
-                aspectRatio: '1',
-                transition: 'all 0.2s ease',
-                '&:hover': {
-                  transform: 'translateY(-2px)',
-                  boxShadow: 3,
-                },
-              }}
-            >
-              <CardActionArea
-                onClick={() => navigate(path as Parameters<typeof navigate>[0])}
-                sx={{
-                  height: '100%',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <CardContent
+        />
+
+        {filteredTools.length === 0 ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
+            <Typography variant="body2" color="text.secondary">
+              검색 결과가 없습니다.
+            </Typography>
+          </Box>
+        ) : (
+          <Paper>
+            <List disablePadding>
+              {filteredTools.map(({ key, name, IconComponent, path }, index) => (
+                <ListItemButton
+                  key={key}
+                  onClick={() => navigate(path as Parameters<typeof navigate>[0])}
                   sx={{
-                    textAlign: 'center',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: 1,
-                    p: 1.5,
-                    '&:last-child': { pb: 1.5 },
+                    gap: 1.5,
+                    minHeight: pxToRem(52),
+                    px: 1.75,
+                    borderTop: index === 0 ? 'none' : `1px solid ${glass.hairline}`,
                   }}
                 >
-                  {IconComponent && (
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: 36,
-                        height: 36,
-                        borderRadius: 1.5,
-                        bgcolor: 'primary.main',
-                        color: 'primary.contrastText',
-                      }}
-                    >
-                      <IconComponent />
-                    </Box>
-                  )}
-                  <Typography variant="caption" component="div" fontWeight={500}>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: 28,
+                      height: 28,
+                      borderRadius: '7px',
+                      bgcolor: glass.iconWell,
+                      color: 'text.primary',
+                      '& svg': { fontSize: pxToRem(18) },
+                    }}
+                  >
+                    {IconComponent && <IconComponent />}
+                  </Box>
+                  <Typography variant="body1" fontWeight={500} sx={{ flex: 1, letterSpacing: '-0.01em' }}>
                     {name}
                   </Typography>
-                </CardContent>
-              </CardActionArea>
-            </Card>
-          ))}
-        </Box>
-      )}
+                </ListItemButton>
+              ))}
+            </List>
+          </Paper>
+        )}
+      </Stack>
     </Box>
   );
 }

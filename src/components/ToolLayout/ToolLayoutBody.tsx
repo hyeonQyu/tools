@@ -1,3 +1,5 @@
+import { BOTTOM_NAVIGATION_CLEARANCE } from '@/routes';
+import { pxToRem } from '@/styles';
 import { Stack, SxProps, Theme } from '@mui/material';
 import { ReactNode } from 'react';
 
@@ -11,8 +13,9 @@ function ToolLayoutBody({ children, sx }: ToolLayoutBodyProps) {
     <Stack
       spacing={2}
       sx={{
-        px: 4,
-        py: 2,
+        px: 3,
+        pt: 1,
+        pb: pxToRem(BOTTOM_NAVIGATION_CLEARANCE),
         flex: 1,
         overflowY: 'auto',
         minHeight: 0,

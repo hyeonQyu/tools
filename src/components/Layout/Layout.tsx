@@ -1,6 +1,5 @@
-import { BOTTOM_NAVIGATION_HEIGHT, BottomNavigation } from '@/routes';
-import { pxToRem } from '@/styles';
-import { Box } from '@mui/material';
+import { BottomNavigation } from '@/routes';
+import { Box, useTheme } from '@mui/material';
 import { ReactNode } from 'react';
 
 interface LayoutProps {
@@ -8,16 +7,29 @@ interface LayoutProps {
 }
 
 function Layout({ children }: LayoutProps) {
+  const { glass } = useTheme();
+
   return (
     <Box
       sx={{
-        minHeight: `calc(100vh - ${pxToRem(BOTTOM_NAVIGATION_HEIGHT)})`,
-        height: `calc(100vh - ${pxToRem(BOTTOM_NAVIGATION_HEIGHT)})`,
+        height: '100vh',
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
       }}
     >
+      {/* 페이지 바탕: 저채도 색 번짐. 탭바와 유리 시트가 이 위에 뜬다. */}
+      <Box
+        aria-hidden
+        sx={{
+          position: 'fixed',
+          inset: 0,
+          zIndex: -1,
+          backgroundColor: glass.pageBackground,
+          backgroundImage: glass.pageBackgroundImage,
+          backgroundRepeat: 'no-repeat',
+        }}
+      />
       <Box sx={{ flex: 1, overflow: 'auto', height: '100%', maxHeight: '100%' }}>{children}</Box>
       <BottomNavigation />
     </Box>

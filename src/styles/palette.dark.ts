@@ -38,9 +38,15 @@ export const paletteDark: PaletteOptions = {
     dark: '#22c55e',
     contrastText: '#09090b',
   },
+  accent: {
+    main: '#8b95ea',
+    light: '#a7aff0',
+    dark: '#6a76d9',
+    contrastText: '#0b0c10',
+  },
   background: {
-    default: '#09090b',
-    paper: '#18181b',
+    default: '#101116',
+    paper: '#1c1e26',
   },
   text: {
     primary: '#fafafa',
