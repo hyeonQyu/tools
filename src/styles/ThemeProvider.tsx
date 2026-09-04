@@ -249,6 +249,11 @@ function ThemeProvider({ children }: ThemeProviderProps) {
             paper: {
               backgroundColor: glass.popoverBackground,
             },
+            // 클리어/드롭다운 아이콘도 이미 absolute라서 fieldset과 같은 층이라, DOM
+            // 순서상 fieldset이 나중에 그려져 위를 덮는다. z-index로 명시적으로 올린다.
+            endAdornment: {
+              zIndex: 1,
+            },
           },
         },
         MuiDialog: {
@@ -296,6 +301,15 @@ function ThemeProvider({ children }: ThemeProviderProps) {
             },
           },
         },
+        MuiInputAdornment: {
+          styleOverrides: {
+            // MuiOutlinedInput.input과 같은 이유로 fieldset 배경 위로 끌어올린다.
+            root: {
+              position: 'relative',
+              zIndex: 1,
+            },
+          },
+        },
         MuiOutlinedInput: {
           styleOverrides: {
             // 배경은 fieldset(outline)에 둔다: root에 두면 fieldset이 위로 5px 더 뻗는 MUI 기본
@@ -333,6 +347,12 @@ function ThemeProvider({ children }: ThemeProviderProps) {
             input: {
               padding: `${pxToRem(14)} ${pxToRem(16)}`,
               fontSize: pxToRem(14),
+              fontWeight: 500,
+              // fieldset(=notchedOutline)이 배경을 들고 있고 absolute라서, static인 입력
+              // 텍스트보다 항상 위에 페인트되어 반투명 흰 배경이 글자를 덮어 흐리게 만들었다.
+              // 글자 쪽을 끌어올려 그 위에 그려지게 한다.
+              position: 'relative',
+              zIndex: 1,
               '&.MuiInputBase-inputSizeSmall': {
                 padding: `${pxToRem(10)} ${pxToRem(14)}`,
                 fontSize: pxToRem(13),
@@ -362,6 +382,10 @@ function ThemeProvider({ children }: ThemeProviderProps) {
             sectionsContainer: {
               padding: `${pxToRem(14)} 0`,
               fontSize: pxToRem(14),
+              fontWeight: 500,
+              // OutlinedInput.input과 같은 이유로 fieldset 배경 위로 끌어올린다.
+              position: 'relative',
+              zIndex: 1,
             },
           },
         },
