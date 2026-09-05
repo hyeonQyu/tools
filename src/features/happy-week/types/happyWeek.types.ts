@@ -303,6 +303,35 @@ export const happyWeekDecisionSchema = z.object({
 
 export type HappyWeekDecision = z.infer<typeof happyWeekDecisionSchema>;
 
+/* ─── LiveDocs: 새로고침으로 받은 최신 원문 ─────────────── */
+
+export const happyWeekDocFileSchema = z.object({
+  path: z.string(),
+  sha: z.string(),
+  content: z.string(),
+});
+
+export type HappyWeekDocFile = z.infer<typeof happyWeekDocFileSchema>;
+
+/** callable getHappyWeekDocs 응답. 클라이언트가 보낸 SHA와 다른 문서만 files에 온다. */
+export const happyWeekDocsResponseSchema = z.object({
+  headSha: z.string(),
+  fetchedAt: z.string(),
+  files: z.array(happyWeekDocFileSchema),
+  unchanged: z.array(z.string()),
+});
+
+export type HappyWeekDocsResponse = z.infer<typeof happyWeekDocsResponseSchema>;
+
+/** localStorage에 누적 보관하는 최신 원문. path → 파일. */
+export const happyWeekLiveDocsSchema = z.object({
+  headSha: z.string(),
+  fetchedAt: z.string(),
+  files: z.record(z.string(), happyWeekDocFileSchema),
+});
+
+export type HappyWeekLiveDocs = z.infer<typeof happyWeekLiveDocsSchema>;
+
 /* ─── 루트 스냅샷 ───────────────────────────────────────── */
 
 export const happyWeekSnapshotSchema = z.object({
@@ -314,6 +343,10 @@ export const happyWeekSnapshotSchema = z.object({
     tzOffsetMin: z.literal(120),
     travelers: z.array(z.object({ en: z.string(), ko: z.string() })),
     warning: z.string(),
+    /** 스냅샷을 구울 때의 원본 저장소 HEAD. 새로고침 결과와 대조한다. */
+    sourceHeadSha: z.string(),
+    /** 문서 경로 → blob SHA. 어느 문서가 바뀌었는지 알기 위한 것. */
+    sourceShas: z.record(z.string(), z.string()),
   }),
   days: z.array(happyWeekDaySchema).length(14),
   items: z.array(happyWeekItemSchema),

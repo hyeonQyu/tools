@@ -1,7 +1,14 @@
 import { useHappyWeekNow } from '@/features/happy-week/hooks';
 import { useHappyWeekStore } from '@/features/happy-week/stores';
 import { HappyWeekSnapshot } from '@/features/happy-week/types';
-import { clampToTripRange, getDayByDateKey, getTripPhase, toCestDateKey, toCestTimeText } from '@/features/happy-week/utils';
+import {
+  clampToTripRange,
+  getChangedDocPaths,
+  getDayByDateKey,
+  getTripPhase,
+  toCestDateKey,
+  toCestTimeText,
+} from '@/features/happy-week/utils';
 import { Chip, Stack, Typography } from '@mui/material';
 
 interface HappyWeekHeaderMetaProps {
@@ -18,6 +25,8 @@ const RISK_COLOR = {
 function HappyWeekHeaderMeta({ snapshot }: HappyWeekHeaderMetaProps) {
   const now = useHappyWeekNow();
   const viewDateKey = useHappyWeekStore((state) => state.viewDateKey);
+  const liveDocs = useHappyWeekStore((state) => state.liveDocs);
+  const changedDocCount = getChangedDocPaths(snapshot, liveDocs).length;
 
   const todayDateKey = toCestDateKey(now);
   const activeDateKey = clampToTripRange(snapshot, viewDateKey);
@@ -40,6 +49,7 @@ function HappyWeekHeaderMeta({ snapshot }: HappyWeekHeaderMetaProps) {
 
       {phase === 'before' && <Chip size="small" color="info" label="여행 시작 전" />}
       {phase === 'after' && <Chip size="small" label="여행 종료" />}
+      {changedDocCount > 0 && <Chip size="small" color="warning" variant="outlined" label={`원문 변경 ${changedDocCount}`} />}
 
       <Typography variant="caption" color="text.secondary" sx={{ ml: 'auto' }}>
         현지 {toCestTimeText(now)}

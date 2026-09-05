@@ -13,4 +13,5 @@ initializeApp();
 setGlobalOptions({ region: FUNCTIONS_REGION, maxInstances: 10 });
 
 export { getCgvCatalog, getCgvSiteSpecialScreens } from './callable/getCgvCatalog';
+export { getHappyWeekDocs } from './callable/getHappyWeekDocs';
 export { pollCgvWatches } from './scheduled/pollCgvWatches';

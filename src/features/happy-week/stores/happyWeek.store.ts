@@ -1,3 +1,4 @@
+import { HappyWeekDocFile, HappyWeekLiveDocs } from '@/features/happy-week/types';
 import { toCestDateKey } from '@/features/happy-week/utils';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
@@ -38,6 +39,11 @@ interface HappyWeekStates {
    * 스냅샷을 덮어쓰지 않고 화면에서만 겹쳐 보여준다.
    */
   localNotes: Record<string, string>;
+  /**
+   * 새로고침으로 받은 최신 원문. 경로별로 누적한다 — 한 번 받은 문서는 다음 응답에 안 와도 남는다.
+   * 스냅샷(구조화 데이터)을 덮어쓰지 않는다. 원문 열람과 '무엇이 바뀌었나' 표시에만 쓴다.
+   */
+  liveDocs: HappyWeekLiveDocs | null;
 }
 
 interface HappyWeekActions {
@@ -50,6 +56,7 @@ interface HappyWeekActions {
   setMunichCarDay: (day: MunichCarDay) => void;
   setLocalNote: (id: string, value: string) => void;
   removeLocalNote: (id: string) => void;
+  mergeLiveDocs: (headSha: string, fetchedAt: string, files: HappyWeekDocFile[]) => void;
 }
 
 type HappyWeekStore = HappyWeekStates & HappyWeekActions;
@@ -65,6 +72,7 @@ export const useHappyWeekStore = create<HappyWeekStore>()(
       dismissedDeadlineIds: [],
       munichCarDay: null,
       localNotes: {},
+      liveDocs: null,
 
       setCurrentView: (currentView) => set({ currentView }),
 
@@ -102,16 +110,26 @@ export const useHappyWeekStore = create<HappyWeekStore>()(
         set((state) => ({
           localNotes: Object.fromEntries(Object.entries(state.localNotes).filter(([key]) => key !== id)),
         })),
+
+      mergeLiveDocs: (headSha, fetchedAt, files) =>
+        set((state) => ({
+          liveDocs: {
+            headSha,
+            fetchedAt,
+            files: { ...(state.liveDocs?.files ?? {}), ...Object.fromEntries(files.map((file) => [file.path, file])) },
+          },
+        })),
     }),
     {
       name: 'happy-week',
       storage: createJSONStorage(() => localStorage),
       /** viewDateKey는 세션 한정이라 저장하지 않는다. */
-      partialize: ({ recentQueries, dismissedDeadlineIds, munichCarDay, localNotes }) => ({
+      partialize: ({ recentQueries, dismissedDeadlineIds, munichCarDay, localNotes, liveDocs }) => ({
         recentQueries,
         dismissedDeadlineIds,
         munichCarDay,
         localNotes,
+        liveDocs,
       }),
     },
   ),

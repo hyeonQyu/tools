@@ -7,6 +7,7 @@ export { default as HappyWeekEmergencySheet } from './HappyWeekEmergencySheet';
 export { default as HappyWeekHeaderMeta } from './HappyWeekHeaderMeta';
 export { default as HappyWeekItemSheet } from './HappyWeekItemSheet';
 export { default as HappyWeekProcedureSheet } from './HappyWeekProcedureSheet';
+export { default as HappyWeekRefreshButton } from './HappyWeekRefreshButton';
 export { default as HappyWeekSearchButton } from './HappyWeekSearchButton';
 export { default as HappyWeekSearchDialog } from './HappyWeekSearchDialog';
 export { default as HappyWeekSosButton } from './HappyWeekSosButton';

@@ -34,10 +34,28 @@ KST 유틸을 대체하지 않고 형제로 복제했으므로 다른 도구는 
 
 고정 +2가 안전한 이유는 `tripTime.utils.ts` 상단 주석에 적어 두었다.
 
-## 데이터 갱신
+## 데이터 갱신 — 두 층
 
-스냅샷은 원문 문서에서 만들어진다. 문서가 갱신되면 스냅샷을 다시 구워야 반영된다.
-자세한 절차는 `scripts/happy-week/` 참고.
+**구조화 스냅샷**(`data/snapshot.ts`)은 개발 시점에 굽는다. 시드의 약 10%(고정 앵커·마감·긴급번호 등
+"틀리면 여행이 망하는" 값)는 손으로 정규화했기 때문에 런타임에 재생성하지 않는다.
+`yarn happy-week:validate`가 Zod + dangling 참조 + 시각 변환 + hard/headline을 검증한다.
+
+**최신 원문**은 헤더의 새로고침 버튼이 받아온다 (`data/happyWeekDocs.api.ts` →
+callable `getHappyWeekDocs`, `functions/src/callable/getHappyWeekDocs.ts`).
+
+- 스냅샷을 구울 때의 문서 SHA(`data/sourceShas.ts`)를 보내면 **바뀐 문서만** 돌아온다.
+- 결과는 `localStorage`(`liveDocs`)에 누적된다. 구조화 데이터를 덮어쓰지 않는다.
+- 헤더에 `원문 변경 N` 칩이 뜨고, 각 아이템 시트 하단에서 해당 문서의 최신 원문을 읽을 수 있다.
+- 오프라인이면 실패하고, 실패해도 앱은 스냅샷으로 그대로 동작한다.
+
+서버는 `GITHUB_TOKEN` 시크릿(fine-grained PAT · happy-week 한 저장소 · Contents read-only)이 필요하다.
+`firebase functions:secrets:set GITHUB_TOKEN` — **버전이 없으면 함수 배포 자체가 실패한다.**
+
+`sourceShas.ts` 재생성:
+
+```bash
+gh api "repos/hyeonQyu/happy-week/git/trees/develop?recursive=1" --jq '.tree[] | select(.path|endswith(".md")) | "\(.path)\t\(.sha)"'
+```
 
 `meta.builtAt`이 스냅샷 기준일이고 화면에 항상 표시된다 — 원문 문서 스스로가
 "여기 적힌 요금·영업시간은 조사 시점 기준이다. 현장에서 다르면 현장이 맞다"고 선언하기 때문이다.

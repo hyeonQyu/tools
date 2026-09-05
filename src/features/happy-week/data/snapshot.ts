@@ -8,6 +8,7 @@ import { happyWeekAnchorItemsSeed } from '@/features/happy-week/data/seed/items.
 import { happyWeekCityItemsSeed } from '@/features/happy-week/data/seed/items.cities.seed';
 import { happyWeekDolomitiItemsSeed } from '@/features/happy-week/data/seed/items.dolomiti.seed';
 import { happyWeekStandbySeed } from '@/features/happy-week/data/seed/standby.seed';
+import { HAPPY_WEEK_SOURCE_HEAD_SHA, HAPPY_WEEK_SOURCE_SHAS } from '@/features/happy-week/data/sourceShas';
 import { HappyWeekItem, HappyWeekSnapshot } from '@/features/happy-week/types';
 
 /**
@@ -102,6 +103,8 @@ export const HAPPY_WEEK_SNAPSHOT: HappyWeekSnapshot = {
       { en: 'KIM HEESUNG', ko: '희성' },
     ],
     warning: '요금·영업시간은 이 날짜 기준이다. 현장에서 다르면 현장이 맞다.',
+    sourceHeadSha: HAPPY_WEEK_SOURCE_HEAD_SHA,
+    sourceShas: HAPPY_WEEK_SOURCE_SHAS,
   },
   days: happyWeekDaysSeed,
   items: mergeItems([...happyWeekAnchorItemsSeed, ...happyWeekDolomitiItemsSeed, ...happyWeekCityItemsSeed]),

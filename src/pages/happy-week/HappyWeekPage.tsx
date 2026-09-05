@@ -3,6 +3,7 @@ import {
   HAPPY_WEEK_SNAPSHOT,
   HappyWeekDayRailView,
   HappyWeekHeaderMeta,
+  HappyWeekRefreshButton,
   HappyWeekSearchButton,
   HappyWeekSosButton,
   HappyWeekTripRailView,
@@ -20,6 +21,7 @@ function HappyWeekPage() {
         <ToolLayout.Row justifyContent="space-between" alignItems="center">
           <ToolLayout.Title />
           <Stack direction="row" spacing={0.5}>
+            <HappyWeekRefreshButton snapshot={HAPPY_WEEK_SNAPSHOT} />
             <HappyWeekSearchButton snapshot={HAPPY_WEEK_SNAPSHOT} />
             <HappyWeekSosButton snapshot={HAPPY_WEEK_SNAPSHOT} />
           </Stack>

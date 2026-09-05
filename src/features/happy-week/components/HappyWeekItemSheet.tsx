@@ -1,8 +1,10 @@
+import { HAPPY_WEEK_SNAPSHOT } from '@/features/happy-week/data/snapshot';
+import { useHappyWeekStore } from '@/features/happy-week/stores';
 import { HappyWeekFact, HappyWeekItem } from '@/features/happy-week/types';
-import { getTzBadge, parseSnapshotIso, toCestTimeText } from '@/features/happy-week/utils';
+import { getLiveDocsForSource, getTzBadge, parseSnapshotIso, toCestTimeText } from '@/features/happy-week/utils';
 import { enqueueClosableSnackbar } from '@/styles';
-import { ContentCopy } from '@mui/icons-material';
-import { Alert, Box, Chip, Divider, IconButton, Link, Stack, Typography } from '@mui/material';
+import { ContentCopy, ExpandMore } from '@mui/icons-material';
+import { Accordion, AccordionDetails, AccordionSummary, Alert, Box, Chip, Divider, IconButton, Link, Stack, Typography } from '@mui/material';
 
 interface HappyWeekItemSheetProps {
   item: HappyWeekItem;
@@ -183,9 +185,47 @@ function HappyWeekItemSheet({ item }: HappyWeekItemSheetProps) {
         </Box>
       )}
 
+      <LiveSourceDocs sourceDoc={item.sourceDoc} />
+
       <Typography variant="caption" color="text.disabled">
         출처: {item.sourceDoc}
       </Typography>
+    </Stack>
+  );
+}
+
+/**
+ * 새로고침으로 받은 최신 원문. 구조화 데이터는 스냅샷 시점에 고정이므로,
+ * 문서가 그 뒤에 바뀌었다면 여기서 바뀐 원문을 그대로 읽는 것이 정답이다.
+ */
+function LiveSourceDocs({ sourceDoc }: { sourceDoc: string }) {
+  const liveDocs = useHappyWeekStore((state) => state.liveDocs);
+  const docs = getLiveDocsForSource(sourceDoc, HAPPY_WEEK_SNAPSHOT, liveDocs).filter((doc) => doc.file !== null);
+  if (docs.length === 0) return null;
+
+  return (
+    <Stack spacing={0.75}>
+      <Divider />
+      {docs.map((doc) => (
+        <Accordion key={doc.path} disableGutters variant="outlined">
+          <AccordionSummary expandIcon={<ExpandMore />}>
+            <Stack direction="row" spacing={0.75} alignItems="center">
+              <Typography variant="caption" fontWeight={600}>
+                최신 원문 · {doc.path.split('/').pop()}
+              </Typography>
+              {doc.changed && <Chip size="small" color="warning" label="스냅샷 이후 변경" sx={{ height: 18, fontSize: '0.65rem' }} />}
+            </Stack>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Typography
+              variant="caption"
+              sx={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', fontFamily: 'monospace', display: 'block' }}
+            >
+              {doc.file?.content}
+            </Typography>
+          </AccordionDetails>
+        </Accordion>
+      ))}
     </Stack>
   );
 }
