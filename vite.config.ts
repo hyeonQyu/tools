@@ -45,6 +45,11 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
+        // 기본 한도는 2 MiB인데 메인 번들이 그걸 넘으면 precache에서 조용히 빠진다.
+        // 온라인에서는 멀쩡해 보이고 오프라인에서만 앱이 비는 형태로 드러나므로 위험하다.
+        // 해피위크(/tool/happy-week)는 해외 로밍·산간에서 쓰는 오프라인 전제 도구라
+        // 번들이 반드시 precache되어야 한다. 여유를 두고 5 MiB로 올린다.
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
         // FCM 서비스워커는 런타임에 쿼리스트링을 붙여 별도 스코프로 직접 등록하므로 precache 대상에서 제외한다.
         globIgnores: ['**/node_modules/**/*', '**/firebase-messaging-sw.js'],
         skipWaiting: true,
