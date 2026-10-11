@@ -1,5 +1,6 @@
 import { getDaisoStoreSearchQueryOptions } from '@/features/daiso-shopping/queries';
 import { useDaisoShoppingStore } from '@/features/daiso-shopping/stores';
+import { useGeolocation } from '@/hooks/useGeolocation';
 import { TIME_UNIT } from '@/lib';
 import { useQuery } from '@tanstack/react-query';
 import { debounce } from 'es-toolkit';
@@ -9,6 +10,7 @@ import { useEffect, useRef, useState } from 'react';
 const SEARCH_DEBOUNCE_MS = TIME_UNIT.unitOfMs.asSecond * 0.4;
 
 export const useDaisoStoreSearch = () => {
+  const { coords, status: geolocationStatus, request: requestGeolocation } = useGeolocation();
   const items = useDaisoShoppingStore((s) => s.items);
   const [inputKeyword, setInputKeyword] = useState('');
   const [searchKeyword, setSearchKeyword] = useState('');
@@ -18,7 +20,9 @@ export const useDaisoStoreSearch = () => {
   useEffect(() => () => updateSearchKeyword.cancel(), [updateSearchKeyword]);
 
   // 담긴 상품이 있으면 실제 상품 ID로 조회해 프로브 ID 의존을 줄인다.
-  const { data, isFetching, isError } = useQuery(getDaisoStoreSearchQueryOptions(searchKeyword, items[0]?.productId));
+  const { data, isFetching, isError } = useQuery(
+    getDaisoStoreSearchQueryOptions({ keyword: searchKeyword, probeProductId: items[0]?.productId, lat: coords?.lat, lng: coords?.lng }),
+  );
 
   return {
     keyword: inputKeyword,
@@ -30,5 +34,7 @@ export const useDaisoStoreSearch = () => {
     isFetching,
     isError,
     isSearched: searchKeyword.trim().length > 0,
+    geolocationStatus,
+    requestGeolocation,
   };
 };

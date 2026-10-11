@@ -1,5 +1,6 @@
-import { getDaisoRegionKeyword, sortDaisoStoresByDistance } from '@/features/daiso-shopping/utils';
+import { getDaisoRegionKeyword, rankDaisoStoresByKeyword, sortDaisoStoresByDistance } from '@/features/daiso-shopping/utils';
 import { getServiceCreator } from '@/firebase';
+import { DataError } from '@/lib';
 import { DaisoApiService, DaisoApiServiceDeps } from './daisoApi.service.types';
 
 /**
@@ -14,20 +15,52 @@ export const DAISO_STORE_PROBE_PRODUCT_ID = '0';
 /** 넓은 지역 키워드도 한 번에 다 받도록 넉넉하게 잡은 페이지 크기 (서울 전체가 282개) */
 const DAISO_NEARBY_PAGE_SIZE = 300;
 
+/**
+ * 키워드 없이 현재 위치 기준 목록을 만들 때 쓰는 "전체 매장" 키워드.
+ * 모든 매장명이 '점'으로 끝나 한 번에 전국 매장(약 1,900곳)이 내려오고, lat/lng가 있으면 거리도 함께 계산된다.
+ */
+const DAISO_ALL_STORES_KEYWORD = '점';
+const DAISO_ALL_STORES_PAGE_SIZE = 3000;
+/** 위치 기반 기본 목록에 보여줄 매장 수 */
+const DAISO_NEAREST_STORE_LIMIT = 30;
+
 export const createDaisoApiService = getServiceCreator<DaisoApiService, DaisoApiServiceDeps>(({ daisoApiRepository }) => ({
   searchProducts: ({ keyword, page }) => daisoApiRepository.searchProducts({ keyword, page }),
 
   getProduct: (productId) => daisoApiRepository.getProduct(productId),
 
   searchStores: async ({ keyword, probeProductId, lat, lng }) => {
+    const trimmed = keyword.trim();
+
+    // 키워드가 없으면 위치 기준 가까운 매장 목록. 위치도 없으면 보여줄 기준이 없으므로 비운다.
+    if (!trimmed) {
+      if (lat === undefined || lng === undefined) return [];
+
+      const { stores, totalStores } = await daisoApiRepository.getInventory({
+        productId: probeProductId || DAISO_STORE_PROBE_PRODUCT_ID,
+        keyword: DAISO_ALL_STORES_KEYWORD,
+        lat,
+        lng,
+        pageSize: DAISO_ALL_STORES_PAGE_SIZE,
+      });
+
+      // 서버가 pageSize를 제한하기 시작하면 일부 매장만 받아 "가장 가까운 매장"이 틀려지므로 조용히 넘기지 않는다.
+      if (stores.length < totalStores) {
+        throw new DataError('매장 목록을 모두 불러오지 못했습니다. 검색으로 찾아 주세요.');
+      }
+
+      return sortDaisoStoresByDistance(stores).slice(0, DAISO_NEAREST_STORE_LIMIT);
+    }
+
     const { stores } = await daisoApiRepository.getInventory({
       productId: probeProductId || DAISO_STORE_PROBE_PRODUCT_ID,
-      keyword,
+      keyword: trimmed,
       lat,
       lng,
+      pageSize: DAISO_NEARBY_PAGE_SIZE,
     });
 
-    return sortDaisoStoresByDistance(stores);
+    return rankDaisoStoresByKeyword(stores, trimmed);
   },
 
   getStoreStock: async ({ productId, store }) => {

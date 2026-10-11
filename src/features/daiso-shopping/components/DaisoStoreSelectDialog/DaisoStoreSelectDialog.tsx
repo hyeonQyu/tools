@@ -4,7 +4,7 @@ import { useDaisoShoppingStore } from '@/features/daiso-shopping/stores';
 import { DaisoStoreStock } from '@/features/daiso-shopping/types';
 import { formatDaisoDistance } from '@/features/daiso-shopping/utils';
 import { useAutoTimeoutFocus } from '@/hooks/useAutoTimeoutFocus';
-import { DeleteOutline, Search, Storefront } from '@mui/icons-material';
+import { DeleteOutline, MyLocation, Search, Storefront } from '@mui/icons-material';
 import {
   Alert,
   Box,
@@ -33,7 +33,7 @@ function DaisoStoreSelectDialog({ close }: DaisoStoreSelectDialogProps) {
   const savedStores = useDaisoShoppingStore((s) => s.settings.stores);
   const selectedStore = useDaisoSelectedStore();
   const { save, select, remove } = useDaisoStoreActions();
-  const { keyword, setKeyword, stores, isFetching, isError, isSearched } = useDaisoStoreSearch();
+  const { keyword, setKeyword, stores, isFetching, isError, isSearched, geolocationStatus, requestGeolocation } = useDaisoStoreSearch();
   const dialog = useDialog();
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -64,7 +64,7 @@ function DaisoStoreSelectDialog({ close }: DaisoStoreSelectDialogProps) {
           <>
             <Box sx={{ px: 3, py: 1, bgcolor: 'action.hover' }}>
               <Typography variant="caption" color="text.secondary" fontWeight={600}>
-                내 매장
+                최근 목록
               </Typography>
             </Box>
 
@@ -132,10 +132,35 @@ function DaisoStoreSelectDialog({ close }: DaisoStoreSelectDialogProps) {
           </Alert>
         )}
 
+        {!isSearched && geolocationStatus === 'loading' && stores.length === 0 && (
+          <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', py: 4 }}>
+            현재 위치를 확인하고 있어요...
+          </Typography>
+        )}
+
+        {!isSearched && (geolocationStatus === 'denied' || geolocationStatus === 'unsupported') && (
+          <Stack alignItems="center" spacing={1} sx={{ py: 4 }}>
+            <Typography variant="body2" color="text.secondary">
+              위치를 확인하지 못했어요. 위치 권한을 허용하면 가까운 매장이 먼저 보여요.
+            </Typography>
+            <Button size="small" startIcon={<MyLocation fontSize="small" />} onClick={requestGeolocation}>
+              다시 시도
+            </Button>
+          </Stack>
+        )}
+
         {isSearched && !isFetching && stores.length === 0 && !isError && (
           <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', py: 4 }}>
             검색 결과가 없습니다.
           </Typography>
+        )}
+
+        {stores.length > 0 && (
+          <Box sx={{ px: 3, py: 1, bgcolor: 'action.hover' }}>
+            <Typography variant="caption" color="text.secondary" fontWeight={600}>
+              {isSearched ? '검색 결과' : '내 주변 매장'}
+            </Typography>
+          </Box>
         )}
 
         <List disablePadding>
