@@ -83,6 +83,29 @@ export const sortDaisoStoresByDistance = (stores: DaisoStoreStock[]): DaisoStore
     return distanceA - distanceB;
   });
 
+const normalizeForMatch = (value: string) => value.replace(/\s+/g, '').replace(/^다이소/, '');
+
+/** 키워드와 매장명/주소가 얼마나 정확히 맞는지. 낮을수록 정확하다. */
+const getKeywordMatchTier = (store: DaisoStoreStock, keyword: string): number => {
+  const name = normalizeForMatch(store.storeName);
+  const target = normalizeForMatch(keyword);
+
+  if (name === target) return 0;
+  if (name.startsWith(target)) return 1;
+  if (name.includes(target)) return 2;
+  if (normalizeForMatch(store.address).includes(target)) return 3;
+  return 4;
+};
+
+/** 키워드 일치 정확도가 높은 매장을 먼저, 같은 정확도 안에서는 가까운 순으로 정렬한다. */
+export const rankDaisoStoresByKeyword = (stores: DaisoStoreStock[], keyword: string): DaisoStoreStock[] => {
+  const tiers = new Map(stores.map((store) => [store, getKeywordMatchTier(store, keyword)]));
+  const byDistance = sortDaisoStoresByDistance(stores);
+
+  // 정렬은 안정 정렬이므로 거리순으로 먼저 정렬해 둔 뒤 정확도 등급으로 다시 정렬한다.
+  return byDistance.sort((a, b) => (tiers.get(a) ?? 4) - (tiers.get(b) ?? 4));
+};
+
 export const formatRelativeTimeFromNow = (timestamp: number): string => {
   const diff = Date.now() - timestamp;
   if (diff < TIME_UNIT.unitOfMs.asMinute) return '방금';
