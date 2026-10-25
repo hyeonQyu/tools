@@ -57,7 +57,7 @@ export const createDaisoShoppingService = getServiceCreator<DaisoShoppingService
         const savedStore = toSavedStore(store);
         const others = settings.stores.filter((item) => item.storeCode !== savedStore.storeCode);
 
-        await daisoShoppingSettingsRepository.saveStores([...others, savedStore]);
+        await daisoShoppingSettingsRepository.saveStores([savedStore, ...others]);
         await daisoShoppingSettingsRepository.selectStore(savedStore.storeCode);
       },
 
@@ -72,7 +72,19 @@ export const createDaisoShoppingService = getServiceCreator<DaisoShoppingService
         }
       },
 
-      selectStore: (storeCode) => daisoShoppingSettingsRepository.selectStore(storeCode),
+      selectStore: async (storeCode) => {
+        // '최근 목록'이므로 선택한 매장을 맨 앞으로 올린다.
+        if (storeCode) {
+          const settings = await getSettings();
+          const selected = settings.stores.find((item) => item.storeCode === storeCode);
+
+          if (selected && settings.stores[0]?.storeCode !== storeCode) {
+            await daisoShoppingSettingsRepository.saveStores([selected, ...settings.stores.filter((item) => item.storeCode !== storeCode)]);
+          }
+        }
+
+        await daisoShoppingSettingsRepository.selectStore(storeCode);
+      },
     };
   },
 );
